@@ -26,7 +26,7 @@ import { useToast } from './hooks/useToast';
 
 // ─── Layout ──────────────────────────────────────────────────────────────────
 const Layout = () => (
-  <div className="min-h-[100dvh] bg-slate-50 flex flex-col">
+  <div className="min-h-[100dvh] bg-[#FDFCF0] flex flex-col">
     <Navbar />
     <main className="flex-1 w-full flex flex-col pt-1">
       <Outlet />
@@ -88,7 +88,7 @@ export default function App() {
     <>
       {/* Full-screen auth spinner — only while bootstrapping session */}
       {authLoading && token && !user && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-50">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#FDFCF0]">
           <SpinnerIcon className="w-10 h-10 text-blue-600" />
         </div>
       )}

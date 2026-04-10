@@ -122,7 +122,7 @@ const SingleListing = () => {
 
                             {showMenu && (
                                 <div className="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg border border-slate-100 overflow-hidden">
-                                    <button onClick={() => navigate(`/edit-listing/${id}`)} className="w-full text-left px-4 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50 border-b">
+                                    <button onClick={() => navigate(`/edit-listing/${id}`)} className="w-full text-left px-4 py-3 text-sm font-semibold text-slate-700 hover:bg-[#FDFCF0] border-b">
                                         Edit Listing
                                     </button>
                                     <button onClick={handleDelete} className="w-full text-left px-4 py-3 text-sm font-semibold text-rose-600 hover:bg-rose-50">
@@ -157,7 +157,7 @@ const SingleListing = () => {
 
                         <div className="flex gap-3 flex-wrap pt-4">
                             {displayTags.map(tag => (
-                                <span key={tag} className="px-5 py-2.5 bg-slate-50 border border-slate-200 rounded-full text-sm font-semibold text-slate-700">
+                                <span key={tag} className="px-5 py-2.5 bg-[#FDFCF0] border border-slate-200 rounded-full text-sm font-semibold text-slate-700">
                                     {tag}
                                 </span>
                             ))}

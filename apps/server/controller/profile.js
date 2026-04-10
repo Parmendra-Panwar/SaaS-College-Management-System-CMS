@@ -1,5 +1,4 @@
 import User from "../models/user.js";
-
 import Listing from "../models/listing.js";
 
 export const getProfile = async (req, res) => {
@@ -30,6 +29,7 @@ export const getProfile = async (req, res) => {
   
   res.json({
     ...data,
+    user,
     currentPage: page,
     hasNext,
     followers: 1200,

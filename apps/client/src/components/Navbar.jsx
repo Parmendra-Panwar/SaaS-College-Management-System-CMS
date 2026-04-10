@@ -19,7 +19,7 @@ const Navbar = () => {
     };
 
     const isBusiness = user?.roles?.includes('BUSINESS');
-    const isNormal = user?.roles?.includes('NORMAL');
+    // const isNormal = user?.roles?.includes('NORMAL');
 
     // Outside click handler to close modal
     useEffect(() => {
@@ -47,7 +47,7 @@ const Navbar = () => {
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                         </svg>
                     </div>
-                    <span className="text-[22px] font-[800] text-[#FF385C] tracking-tighter">tripLinker</span>
+                    <span className="text-[22px] font-[800] text-[#FF385C] tracking-tighter">SaaS CMS</span>
                 </Link>
 
                 <div className="flex items-center gap-4 sm:gap-6">
@@ -57,8 +57,6 @@ const Navbar = () => {
                             {/* Desktop Quick Links */}
                             <div className="hidden md:flex items-center gap-6 pr-2">
                                 <Link to="/listings" className={linkStyle('/listings') + " cursor-pointer"}>Explore Properties</Link>
-                                <Link to="/activities" className={linkStyle('/activities') + " cursor-pointer"}>Trending Activities</Link>
-                                <Link to="/trips" className={linkStyle('/trips') + " cursor-pointer"}>Trip Experiences</Link>
                             </div>
 
                             {/* Airbnb-style Profile Pill with Modal */}
@@ -92,18 +90,12 @@ const Navbar = () => {
 
                                         <div className="flex md:hidden flex-col items-center pr-2">
                                             <button onClick={() => navigate('/listings')} className="cursor-pointer w-full text-left px-4 py-2.5 text-sm font-semibold text-gray-700 hover:bg-gray-50 transition-colors">Explore Properties</button>
-                                            <button onClick={() => navigate('/activities')} className="cursor-pointer w-full text-left px-4 py-2.5 text-sm font-semibold text-gray-700 hover:bg-gray-50 transition-colors">Trending Activities</button>
-                                            <button onClick={() => navigate('/trips')} className="cursor-pointer w-full text-left px-4 py-2.5 text-sm font-semibold text-gray-700 hover:bg-gray-50 transition-colors">Trip Experiences</button>
                                         </div>
 
                                         {isBusiness && (
                                             <>
                                                 <button onClick={() => navigate('/createlisting')} className="cursor-pointer w-full text-left px-4 py-2.5 text-sm font-semibold text-gray-700 hover:bg-gray-50 transition-colors">List Property</button>
-                                                <button onClick={() => navigate('/createactivity')} className="cursor-pointer w-full text-left px-4 py-2.5 text-sm font-semibold text-gray-700 hover:bg-gray-50 transition-colors">Add Activity</button>
                                             </>
-                                        )}
-                                        {isNormal && (
-                                            <button onClick={() => navigate('/createtrip')} className="cursor-pointer w-full text-left px-4 py-2.5 text-sm font-semibold text-gray-700 hover:bg-gray-50 transition-colors">Share Trip</button>
                                         )}
 
                                         <div className="h-[1px] bg-gray-100 my-1"></div>

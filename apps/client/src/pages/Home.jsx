@@ -60,7 +60,7 @@ const Home = () => {
             {/* Feeds Section */}
             <div className="bg-[#FAFAFA] pt-2">
                 <div className="max-w-[1305px] mx-auto px-6 md:px-10 space-y-12">
-                    {/* <AllListing /> */}
+                    <AllListing />
                 </div>
             </div>
         </div >

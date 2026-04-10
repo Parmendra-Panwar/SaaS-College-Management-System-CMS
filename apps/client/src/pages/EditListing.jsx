@@ -244,7 +244,7 @@ const EditListing = () => {
 
                     {/* Image Upload Area */}
                     <div>
-                        <div className="border-2 border-dashed border-slate-200 p-8 rounded-2xl flex flex-col items-center justify-center cursor-pointer hover:bg-slate-50 hover:border-rose-300 transition group relative">
+                        <div className="border-2 border-dashed border-slate-200 p-8 rounded-2xl flex flex-col items-center justify-center cursor-pointer hover:bg-[#FDFCF0] hover:border-rose-300 transition group relative">
                             <input type="file" multiple accept="image/*" onChange={handleImageChange} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" />
                             <svg className="w-10 h-10 text-slate-400 group-hover:text-rose-500 transition mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
                             <p className="font-medium text-slate-700 group-hover:text-rose-600 transition">Drag & drop or click to replace images</p>

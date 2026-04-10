@@ -13,8 +13,6 @@ const ProfilePage = () => {
     const { username } = useParams();
     const dispatch = useDispatch();
     const { userData, stats, loading } = useSelector((state) => state.profile);
-    const { user: currentUser } = useSelector((state) => state.auth);
-
     const [activeTab, setActiveTab] = useState('listings');
     const [isEditOpen, setIsEditOpen] = useState(false);
     const [isSettingsOpen, setIsSettingsOpen] = useState(false);
@@ -22,8 +20,6 @@ const ProfilePage = () => {
     // Modals States (Restored)
     const [editAbout, setEditAbout] = useState("");
     const [selectedRole, setSelectedRole] = useState([]);
-
-    const isOwnProfile = currentUser?.username === username;
 
     useEffect(() => {
         if (!userData || userData.username !== username) {
@@ -77,7 +73,7 @@ const ProfilePage = () => {
                         value={editAbout}
                         onChange={(e) => setEditAbout(e.target.value)}
                         placeholder="Tell the world about your travels..."
-                        className="w-full border border-slate-200 rounded-xl p-4 focus:outline-none focus:ring-2 focus:ring-[#FF385C] focus:border-transparent transition-all resize-none bg-slate-50"
+                        className="w-full border border-slate-200 rounded-xl p-4 focus:outline-none focus:ring-2 focus:ring-[#FF385C] focus:border-transparent transition-all resize-none bg-[#FDFCF0]"
                     />
                     <button onClick={handleUpdateAbout} className="cursor-pointer w-full bg-[#222222] text-white py-3 rounded-xl font-bold hover:bg-[#FF385C] transition shadow-lg mt-2">
                         Save Changes

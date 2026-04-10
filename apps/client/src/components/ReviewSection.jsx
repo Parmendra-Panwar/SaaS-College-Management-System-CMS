@@ -30,7 +30,7 @@ const ReviewSection = ({ reviews, entityType, entityId, onReviewAdded }) => {
                 ★ {reviews?.length > 0 ? "5.0" : "New"} · {reviews?.length || 0} Reviews
             </h3>
 
-            <form onSubmit={handleSubmit} className="mb-8 p-6 bg-slate-50 border rounded-3xl">
+            <form onSubmit={handleSubmit} className="mb-8 p-6 bg-[#FDFCF0] border rounded-3xl">
                 <h4 className="font-semibold mb-4 text-lg">Add a Review</h4>
                 <div className="flex gap-4 mb-4">
                     <div className="flex flex-col">
