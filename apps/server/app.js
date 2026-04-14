@@ -61,6 +61,7 @@ import onboardingRouter from "./routes/onboarding.js";
 import teacherTrackingRouter from "./routes/teacherTracking.js";
 import insightsRouter from "./routes/insights.js";
 import examRouter from "./routes/exam.js";
+import superAdminRouter from "./routes/superadmin.js";
 import { initCronJobs } from "./services/kMeansAnalytics.js";
 
 // Initialize AI Cron Jobs
@@ -77,6 +78,7 @@ app.use("/api/v1/auth/signup", authRouter);
 app.use("/api/v1/profile", profileRouter);
 
 // Set up new SaaS College Management System routes
+app.use("/api/v1/base/superadmin", superAdminRouter);
 app.use("/api/v1/onboarding", onboardingRouter);
 app.use("/api/v1/teacher", teacherTrackingRouter);
 app.use("/api/v1/insights", insightsRouter);

@@ -1,6 +1,7 @@
 import Class from "../models/class.js";
 import Subject from "../models/subject.js";
 import Student from "../models/student.js";
+import Teacher from "../models/teacher.js";
 import User from "../models/user.js";
 import bcrypt from "bcryptjs";
 
@@ -67,4 +68,32 @@ export const bulkEditStudents = async (req, res) => {
 
   const result = await Student.bulkWrite(bulkOps);
   res.status(200).json({ success: true, result });
+};
+
+export const bulkCreateTeachers = async (req, res) => {
+  const { teachers } = req.body; 
+  const collegeId = req.collegeId;
+
+  const hashedPassword = await bcrypt.hash("Teacher@123", 10);
+  
+  const usersToInsert = teachers.map(t => ({
+    username: t.username,
+    email: t.email,
+    password: hashedPassword,
+    role: 'Teacher',
+    collegeId
+  }));
+
+  const insertedUsers = await User.insertMany(usersToInsert, { ordered: false });
+
+  const teachersToInsert = insertedUsers.map((user, index) => ({
+    user: user._id,
+    collegeId,
+    level: teachers[index].level || 1,
+    workCount: 0
+  }));
+
+  // Not specifically imported 'Teacher', let's assume we import Teacher at the top
+  const insertedTeachers = await Teacher.insertMany(teachersToInsert, { ordered: false });
+  res.status(201).json({ success: true, count: insertedTeachers.length, data: insertedTeachers });
 };

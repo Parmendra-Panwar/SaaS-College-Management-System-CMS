@@ -9,6 +9,7 @@ import { SpinnerIcon } from './components/icons';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
+import SuperAdminLogin from './pages/SuperAdminLogin';
 import NotFound from './pages/NotFound';
 import ProfilePage from './pages/ProfilePage';
 
@@ -34,6 +35,7 @@ const router = createBrowserRouter([
       { index: true, element: <Home /> },
       { path: 'login', element: <Login /> },
       { path: 'signup', element: <Signup /> },
+      { path: 'superadminlogin', element: <SuperAdminLogin /> },
       { path: 'profile/:username', element: <ProfilePage /> },
     ],
   },
