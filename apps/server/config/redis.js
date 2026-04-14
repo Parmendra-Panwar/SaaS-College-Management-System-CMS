@@ -1,22 +1,13 @@
-import "dotenv/config";
-import redis from 'redis';
+import Redis from "ioredis";
 
-const client = redis.createClient({
-    url: process.env.REDIS_URL,
-    socket: {
-        tls: true,
-        rejectUnauthorized: false
-    }
+const redisClient = new Redis(process.env.REDIS_URL || "redis://localhost:6379");
+
+redisClient.on("connect", () => {
+  console.log("Redis client connected");
 });
 
-client.on('error', (err) => console.log('❌ Redis Client Error:', err.message));
-client.on('connect', () => console.log('🚀 Redis Connected Successfully'));
+redisClient.on("error", (err) => {
+  console.error("Redis error:", err.message);
+});
 
-// IIFE to handle connection
-try {
-    await client.connect();
-} catch (err) {
-    console.error("❌ Redis Connection Failed:", err);
-}
-
-export default client;
+export default redisClient;

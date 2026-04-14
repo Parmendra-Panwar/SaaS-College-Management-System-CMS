@@ -11,12 +11,15 @@ export const isloggedIn = async (req, res, next) => {
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-    // IMPORTANT: req.user ko populate karna padega
     req.user = await User.findById(decoded.id);
 
     if (!req.user) {
       return res.status(404).json({ error: "User Not Found" });
     }
+
+    // TENANT INTERCEPTOR LOGIC
+    // Extract collegeId to enforce strict tenant isolation in subsequent queries
+    req.collegeId = req.user.collegeId;
 
     next();
   } catch (err) {

@@ -1,6 +1,6 @@
 # SaaS College Management System (MONOREPO)
 
-SaaS College Management System
+A robust, Multi-Tenant SaaS platform designed to streamline administrative and academic workflows for multiple educational institutions under a single ecosystem. Built with the MERN Stack, this project aims to replace fragmented systems with a unified, high-impact software solution.
 
 Live URL -> https://saascms.vercel.app
 

@@ -1,69 +1,103 @@
-import AllListing from '../components/AllListing';
+import React from 'react';
+import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import FallbackImage from '../components/FallbackImage';
+import DashboardRouter from './DashboardRouter';
 
 const Home = () => {
     const navigate = useNavigate();
+    const { user } = useSelector((state) => state.auth);
+
+    if (user) {
+        return <DashboardRouter user={user} />;
+    }
+
     return (
-        <div className="pb-32 min-h-screen bg-white">
+        <div className="min-h-screen bg-[#FDFCF0]">
             {/* Massive Brand Statement Hero */}
-            <div className="max-w-[1305px] mx-auto px-6 md:pt-8 md:pb-10 pt-8 pb-16">
+            <div className="max-w-[1305px] mx-auto px-6 md:pt-16 pb-16">
                 <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-20">
                     <div className="flex-1 w-full relative z-10 pt-3">
-                        <span className="text-[#FF385C] font-extrabold tracking-widest text-[11px] mb-4 block uppercase flex items-center gap-2">
-                            <span className="w-6 h-[2px] bg-[#FF385C] rounded-full"></span> Save Time and money with
+                        <span className="text-indigo-600 font-extrabold tracking-widest text-[11px] mb-4 uppercase flex items-center gap-2">
+                            <span className="w-6 h-[2px] bg-indigo-600 rounded-full"></span> Next-Generation Infrastructure
                         </span>
-                        <h1 className="text-[42px] lg:text-[60px] font-[800] leading-[1.05] tracking-tighter text-[#222222] mb-6">
-                            Smart routes <br className="hidden lg:block" /> On budget..
+                        <h1 className="text-[42px] lg:text-[70px] font-[800] leading-[1.05] tracking-tighter text-[#222222] mb-6">
+                            Scalable. <br className="hidden lg:block" /> Analytics-Driven. <br /> CMS.
                         </h1>
-                        <p className="text-[#717171] text-[14px] lg:text-[18px] leading-relaxed max-w-lg mb-4 font-light">
-                            Enter your budget and destination. Our system calculates the optimal route, stopovers, and stays so you never overspend.
+                        <p className="text-[#555] text-[16px] lg:text-[20px] leading-relaxed max-w-lg mb-10 font-light">
+                            Empower your institution with K-Means predictive clustering, hyper-fast onboarding, and high-frequency operational tracking.
                         </p>
 
-                        {/* Redirect Button Element */}
-
-                        <div onClick={() => navigate('/')} className="cursor-pointer bg-white border border-[#EBEBEB] pl-6 rounded-full shadow-[0_6px_16px_rgba(0,0,0,0.06)] flex items-center max-w-xl w-full transition-shadow duration-300 hover:shadow-[0_6px_20px_rgba(255,56,92,0.25)]">
-                            <div className="flex-1">
-                                <p className="text-[16px] font-[800] text-[#808080] uppercase tracking-wide">Let's Plan Your Next</p>
-                            </div>
+                        <div className="flex gap-4">
                             <button
-
-                                className="bg-[#FF385C] cursor-pointer text-white px-8 py-4 border border-[#EBEBEB] rounded-r-full shadow-[0_6px_16px_rgba(255,56,92,0.3)] flex items-center gap-3 hover:shadow-[0_6px_20px_rgba(255,56,92,0.5)] transition-all duration-300 font-bold text-[16px]"
+                                onClick={() => navigate('/login')}
+                                className="bg-indigo-600 text-white px-8 py-4 rounded-full shadow-[0_6px_16px_rgba(79,70,229,0.3)] hover:shadow-[0_6px_20px_rgba(79,70,229,0.5)] transition-all duration-300 font-bold text-[16px]"
                             >
-                                ITINERARY
-                                {/* <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg> */}
+                                Enter Dashboard
+                            </button>
+                            <button
+                                onClick={() => navigate('/signup')}
+                                className="bg-white border border-gray-200 text-gray-800 px-8 py-4 rounded-full hover:bg-gray-50 transition-all duration-300 font-bold text-[16px]"
+                            >
+                                Request Demo
                             </button>
                         </div>
                     </div>
 
                     <div className="flex-1 w-full relative">
-                        <div className="relative aspect-[6/4] rounded-[1rem] overflow-hidden shadow-xl z-10">
-                            <FallbackImage
-                                src="https://images.unsplash.com/photo-1615966192539-f1731963b19a?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                        <div className="relative aspect-[4/3] rounded-3xl overflow-hidden shadow-2xl z-10 border-8 border-white/50 backdrop-blur-md">
+                            <img
+                                src="https://amazingarchitecture.com/storage/files/1/Articles/building/university_of_vrginia.jpeg"
                                 className="w-full h-full object-cover"
-                                alt="Travel Destination"
-                                type="trip"
+                                alt="Modern College Campus"
                             />
-                            <div className="absolute bottom-2 right-2 bg-white/10 backdrop-blur-xl text-white p-3 rounded-3xl shadow-xl max-w-xs border border-white/10">
-                                <p className="text-sm leading-relaxed text-gray-200">
-                                    Sikkim, India
+                            <div className="absolute bottom-6 right-6 bg-white/20 backdrop-blur-xl text-white p-4 rounded-2xl shadow-xl border border-white/10">
+                                <p className="text-sm font-semibold tracking-wider uppercase drop-shadow-md">
+                                    Predictive AI Powered
                                 </p>
                             </div>
                         </div>
                         {/* Abstract Decorators */}
-                        <div className="absolute -bottom-10 -left-10 w-64 h-64 bg-[#FF385C]/10 rounded-full blur-3xl -z-10"></div>
-                        <div className="absolute -top-10 -right-10 w-72 h-72 bg-blue-500/10 rounded-full blur-3xl -z-10"></div>
+                        <div className="absolute -bottom-10 -left-10 w-64 h-64 bg-indigo-500/20 rounded-full blur-3xl -z-10"></div>
+                        <div className="absolute -top-10 -right-10 w-72 h-72 bg-blue-500/20 rounded-full blur-3xl -z-10"></div>
                     </div>
                 </div>
             </div>
 
-            {/* Feeds Section */}
-            <div className="bg-[#FAFAFA] pt-2">
-                <div className="max-w-[1305px] mx-auto px-6 md:px-10 space-y-12">
-                    <AllListing />
+            <div className="bg-white py-24">
+                <div className="max-w-[1305px] mx-auto px-6">
+                    <div className="text-center mb-16">
+                        <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">Everything you need to manage your institution</h2>
+                        <p className="mt-4 text-lg text-gray-500">Strict tenant isolation built right into the Mongoose level.</p>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
+                        {/* Feature 1 */}
+                        <div className="bg-gray-50 p-8 rounded-3xl border border-gray-100 hover:shadow-lg transition">
+                            <div className="w-12 h-12 bg-indigo-100 text-indigo-600 rounded-2xl flex items-center justify-center mb-6">
+                                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 002-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                            </div>
+                            <h3 className="text-xl font-bold text-gray-900 mb-3">Multi-Tenant Core</h3>
+                            <p className="text-gray-600">Gatekeeper middleware safely intercepts and injects tenant constraints to prevent cross-institution data leaks.</p>
+                        </div>
+                        {/* Feature 2 */}
+                        <div className="bg-gray-50 p-8 rounded-3xl border border-gray-100 hover:shadow-lg transition">
+                            <div className="w-12 h-12 bg-emerald-100 text-emerald-600 rounded-2xl flex items-center justify-center mb-6">
+                                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                            </div>
+                            <h3 className="text-xl font-bold text-gray-900 mb-3">Lightning Onboarding</h3>
+                            <p className="text-gray-600">Instantly provision departments, subjects, and massive student rosters via automated bulk inserts.</p>
+                        </div>
+                        {/* Feature 3 */}
+                        <div className="bg-gray-50 p-8 rounded-3xl border border-gray-100 hover:shadow-lg transition">
+                            <div className="w-12 h-12 bg-rose-100 text-rose-600 rounded-2xl flex items-center justify-center mb-6">
+                                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path></svg>
+                            </div>
+                            <h3 className="text-xl font-bold text-gray-900 mb-3">AI Intelligence</h3>
+                            <p className="text-gray-600">Bi-weekly K-Means jobs compute feature vectors across attendance and performance to group high-achievers and at-risk students.</p>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div >
+        </div>
     );
 };
 
