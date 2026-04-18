@@ -39,7 +39,6 @@ const SuperAdminLogin = () => {
                 toast.success('System Overrode - Welcome Super Admin');
                 navigate('/');
             }
-            console.log("res.data>> ", res.data)
         } catch (error) {
             toast.error(error.response?.data?.error || 'Access Denied');
         } finally {

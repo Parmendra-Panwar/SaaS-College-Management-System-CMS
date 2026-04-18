@@ -8,9 +8,11 @@ const CollegeHeadDashboard = ({ activeMainTab }) => {
 
     const [loading, setLoading] = useState(false);
     const [dataList, setDataList] = useState([]);
+    const [pageMode, setPageMode] = useState('list'); // 'list', 'create', 'edit'
+    const [editingId, setEditingId] = useState(null);
 
     // Form fields specific to active tab
-    const [formDept, setFormDept] = useState({ name: '', description: '' });
+    const [formDept, setFormDept] = useState({ name: '', description: '', classes: [] });
     const [formClass, setFormClass] = useState({ name: '', departmentId: '' });
     const [formTeacher, setFormTeacher] = useState({ username: '', email: '', level: '1' });
     const [formStudent, setFormStudent] = useState({ username: '', email: '', roll_number: '', class: '' });
@@ -53,10 +55,47 @@ const CollegeHeadDashboard = ({ activeMainTab }) => {
     }, []);
 
     useEffect(() => {
-        if (activeMainTab) fetchData();
+        if (activeMainTab) {
+            setPageMode('list');
+            setEditingId(null);
+            fetchData();
+        }
     }, [activeMainTab]);
 
-    const handleCreate = async (e) => {
+    const handleDeptClassChange = (e) => {
+        const options = e.target.options;
+        const selectedValues = [];
+        for (let i = 0; i < options.length; i++) {
+            if (options[i].selected) {
+                selectedValues.push(options[i].value);
+            }
+        }
+        setFormDept({...formDept, classes: selectedValues});
+    };
+
+    const handleEditBtn = (item) => {
+        setEditingId(item._id);
+        setPageMode('edit');
+        if (activeMainTab === 'departments') {
+            setSelectedCollegeId(item.collegeId?._id || item.collegeId);
+            const classIds = classes.filter(c => c.departmentId && (c.departmentId._id === item._id || c.departmentId === item._id)).map(c => c._id);
+            setFormDept({ name: item.name, description: item.description, classes: item.classes?.map(c => c._id || c) || classIds });
+        }
+        else if (activeMainTab === 'classes') {
+            setSelectedCollegeId(item.collegeId?._id || item.collegeId);
+            setFormClass({ name: item.name, departmentId: item.departmentId?._id || item.departmentId || '' });
+        }
+        else if (activeMainTab === 'teachers') {
+            setSelectedCollegeId(item.collegeId?._id || item.collegeId);
+            setFormTeacher({ username: item.user?.username || '', email: item.user?.email || '', level: item.level || '1' });
+        }
+        else if (activeMainTab === 'students') {
+            setSelectedCollegeId(item.collegeId?._id || item.collegeId);
+            setFormStudent({ username: item.user?.username || '', email: item.user?.email || '', roll_number: item.roll_number || '', class: item.class?._id || item.class || '' });
+        }
+    };
+
+    const handleSubmitSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
         try {
@@ -66,19 +105,27 @@ const CollegeHeadDashboard = ({ activeMainTab }) => {
             else if (activeMainTab === 'teachers') payload = { ...formTeacher, collegeId: selectedCollegeId };
             else if (activeMainTab === 'students') payload = { ...formStudent, collegeId: selectedCollegeId };
 
-            await axios.post(`${import.meta.env.VITE_BACKEND_URL || 'http://localhost:8080/api/v1'}/academic/${activeMainTab}`, payload, authHeader);
-            toast.success("Created successfully");
+            if (pageMode === 'edit') {
+                await axios.put(`${import.meta.env.VITE_BACKEND_URL || 'http://localhost:8080/api/v1'}/academic/${activeMainTab}/${editingId}`, payload, authHeader);
+                toast.success("Updated successfully");
+            } else {
+                await axios.post(`${import.meta.env.VITE_BACKEND_URL || 'http://localhost:8080/api/v1'}/academic/${activeMainTab}`, payload, authHeader);
+                toast.success("Created successfully");
+            }
+            
+            setPageMode('list');
+            setEditingId(null);
             fetchData();
 
             // Reset forms
-            setFormDept({ name: '', description: '' });
+            setFormDept({ name: '', description: '', classes: [] });
             setFormClass({ name: '', departmentId: '' });
             setFormTeacher({ username: '', email: '', level: '1' });
             setFormStudent({ username: '', email: '', roll_number: '', class: '' });
 
             if (activeMainTab === 'departments' || activeMainTab === 'classes') fetchLookups();
         } catch (err) {
-            toast.error(err.response?.data?.error || "Creation failed");
+            toast.error(err.response?.data?.error || "Operation failed");
         }
         setLoading(false);
     };
@@ -119,10 +166,21 @@ const CollegeHeadDashboard = ({ activeMainTab }) => {
                 </div>
             </div> */}
 
-            <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-8 mb-10">
+            <div className="flex gap-4 mb-6">
+                <button onClick={() => { setPageMode('list'); setEditingId(null); }} className={`px-5 py-2 font-bold rounded-xl transition ${pageMode === 'list' ? 'bg-indigo-600 text-white shadow-md' : 'bg-white text-gray-700 border border-gray-200 hover:bg-gray-50'}`}>All Records</button>
+                <button onClick={() => { setPageMode('create'); setEditingId(null); 
+                    setFormDept({ name: '', description: '', classes: [] });
+                    setFormClass({ name: '', departmentId: '' });
+                    setFormTeacher({ username: '', email: '', level: '1' });
+                    setFormStudent({ username: '', email: '', roll_number: '', class: '' });
+                }} className={`px-5 py-2 font-bold rounded-xl transition ${pageMode === 'create' ? 'bg-indigo-600 text-white shadow-md' : 'bg-white text-gray-700 border border-gray-200 hover:bg-gray-50'}`}>+ Create New</button>
+            </div>
+
+            {(pageMode === 'create' || pageMode === 'edit') && (
+            <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-8 mb-10 animate-in slide-in-from-bottom-4">
                 <div className="flex justify-between items-center mb-6 border-b border-gray-100 pb-4">
-                    <h2 className="text-xl font-bold capitalize">Create New {activeMainTab?.slice(0, -1)}</h2>
-                    {colleges.length > 1 && (
+                    <h2 className="text-xl font-bold capitalize">{pageMode === 'edit' ? 'Edit' : 'Create New'} {activeMainTab?.slice(0, -1)}</h2>
+                    {colleges.length > 1 && pageMode === 'create' && (
                         <div className="flex items-center gap-3 bg-gray-50 px-4 py-2 rounded-xl border border-gray-200">
                             <label className="text-sm font-bold text-gray-500 whitespace-nowrap">Target College:</label>
                             <select
@@ -136,12 +194,19 @@ const CollegeHeadDashboard = ({ activeMainTab }) => {
                     )}
                 </div>
 
-                <form onSubmit={handleCreate} className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+                <form onSubmit={handleSubmitSubmit} className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
 
                     {activeMainTab === 'departments' && (
                         <>
                             <div className="col-span-1"><label className="block text-sm font-semibold text-gray-700 mb-1">Dept Name</label><input required className="w-full border px-4 py-2 rounded-xl" value={formDept.name} onChange={e => setFormDept({ ...formDept, name: e.target.value })} /></div>
-                            <div className="col-span-2"><label className="block text-sm font-semibold text-gray-700 mb-1">Description</label><input className="w-full border px-4 py-2 rounded-xl" value={formDept.description} onChange={e => setFormDept({ ...formDept, description: e.target.value })} /></div>
+                            <div className="col-span-1"><label className="block text-sm font-semibold text-gray-700 mb-1">Description</label><input className="w-full border px-4 py-2 rounded-xl" value={formDept.description} onChange={e => setFormDept({ ...formDept, description: e.target.value })} /></div>
+                            <div className="col-span-2">
+                                <label className="block text-sm font-semibold text-gray-700 mb-1">Assign Classes (Multiple)</label>
+                                <select multiple className="w-full border px-4 py-2 rounded-xl h-24" value={formDept.classes} onChange={handleDeptClassChange}>
+                                    {classes.map(c => <option key={c._id} value={c._id}>{c.name}</option>)}
+                                </select>
+                                <p className="text-xs text-gray-400 mt-1">Hold CTRL/CMD to select multiple classes.</p>
+                            </div>
                         </>
                     )}
 
@@ -186,15 +251,22 @@ const CollegeHeadDashboard = ({ activeMainTab }) => {
                         </>
                     )}
 
-                    <div className="col-span-1 md:col-span-4 mt-2">
+                    <div className="col-span-1 md:col-span-4 mt-4 flex gap-3">
                         <button type="submit" disabled={loading} className="px-8 py-3 bg-indigo-600 text-white font-bold rounded-xl hover:bg-indigo-700 transition w-full md:w-auto shadow-md">
-                            {loading ? 'Loading...' : `Create ${activeMainTab?.slice(0, -1)}`}
+                            {loading ? 'Processing...' : pageMode === 'edit' ? `Update ${activeMainTab?.slice(0, -1)}` : `Create ${activeMainTab?.slice(0, -1)}`}
                         </button>
+                        {pageMode === 'edit' && (
+                            <button type="button" onClick={() => { setPageMode('list'); setEditingId(null); }} className="px-8 py-3 bg-gray-100 text-gray-700 font-bold rounded-xl hover:bg-gray-200 transition">
+                                Cancel
+                            </button>
+                        )}
                     </div>
                 </form>
             </div>
+            )}
 
-            <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-8">
+            {pageMode === 'list' && (
+            <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-8 animate-in slide-in-from-bottom-4">
                 <h2 className="text-xl font-bold mb-6 capitalize">{activeMainTab} Directory</h2>
                 <div className="overflow-x-auto">
                     <table className="w-full text-left">
@@ -204,7 +276,7 @@ const CollegeHeadDashboard = ({ activeMainTab }) => {
                                 {activeMainTab === 'classes' && <><th className="pb-3">Name</th><th className="pb-3">Department</th></>}
                                 {activeMainTab === 'teachers' && <><th className="pb-3">Name</th><th className="pb-3">Email</th><th className="pb-3">Level</th><th className="pb-3 text-red-600">Password</th></>}
                                 {activeMainTab === 'students' && <><th className="pb-3">Name</th><th className="pb-3">Roll Number</th><th className="pb-3">Email</th><th className="pb-3">Class</th></>}
-                                {(activeMainTab === 'departments' || activeMainTab === 'classes') && <th className="pb-3">Actions</th>}
+                                <th className="pb-3">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -232,11 +304,12 @@ const CollegeHeadDashboard = ({ activeMainTab }) => {
                                         </>
                                     )}
 
-                                    {(activeMainTab === 'departments' || activeMainTab === 'classes') && (
-                                        <td className="py-4">
-                                            <button onClick={() => handleDelete(item._id)} className="text-sm bg-rose-100 text-rose-600 px-3 py-1.5 rounded-lg hover:bg-rose-200 font-bold">Delete</button>
-                                        </td>
-                                    )}
+                                    <td className="py-4">
+                                        <div className="flex gap-2">
+                                            <button onClick={() => handleEditBtn(item)} className="text-sm bg-indigo-50 text-indigo-600 px-3 py-1.5 rounded-lg hover:bg-indigo-100 font-bold">Edit</button>
+                                            <button onClick={() => handleDelete(item._id)} className="text-sm bg-rose-50 text-rose-600 px-3 py-1.5 rounded-lg hover:bg-rose-100 font-bold">Delete</button>
+                                        </div>
+                                    </td>
                                 </tr>
                             ))}
                             {dataList.length === 0 && <tr><td colSpan="5" className="py-8 text-center text-gray-500">No {activeMainTab} found. Create one above!</td></tr>}
@@ -244,6 +317,7 @@ const CollegeHeadDashboard = ({ activeMainTab }) => {
                     </table>
                 </div>
             </div>
+            )}
         </div>
     );
 };

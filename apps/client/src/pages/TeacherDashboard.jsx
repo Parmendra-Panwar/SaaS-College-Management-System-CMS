@@ -11,11 +11,9 @@ const TeacherDashboard = ({ activeTab }) => {
         setMockStudents(students => students.map(s => s.id === id ? { ...s, [field]: value } : s));
     };
 
-    console.log("activeTab>>> ", activeTab)
-
     return (
         <div className="max-w-[1305px] mx-auto px-6 py-10 w-full animate-in fade-in slide-in-from-bottom-4 duration-500 bg-[#FDFCF0] min-h-screen">
-            <h1 className="text-4xl font-extrabold text-gray-900 mb-6 border-b pb-4">Teacher Portal</h1>
+            {/* <h1 className="text-4xl font-extrabold text-gray-900 mb-6 border-b pb-4">Teacher Portal</h1> */}
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
                 <div className="bg-gradient-to-br from-purple-500 to-indigo-600 p-6 rounded-3xl shadow-lg text-white flex flex-col gap-2">

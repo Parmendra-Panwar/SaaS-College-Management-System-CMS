@@ -26,7 +26,6 @@ const Home = () => {
             setLoading(false);
         }
     };
-    console.log(">user after > Login > ", user)
     React.useEffect(() => {
         if (user) {
             navigate('/dashboard');

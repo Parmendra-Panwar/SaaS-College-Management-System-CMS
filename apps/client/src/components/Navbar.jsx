@@ -33,8 +33,6 @@ const Navbar = (showLogo = true) => {
         `text-[15px] font-[600] tracking-tight transition-all duration-300 ${location.pathname === path ? 'text-indigo-600' : 'text-[#717171] hover:text-indigo-600'
         }`;
 
-    console.log("showLogo>>> ", showLogo)
-
     return (
         <nav className="bg-white/90 backdrop-blur-xl border-b border-[#EBEBEB] sticky top-0 z-40">
             <div className={`px-6 md:px-10 mx-auto w-full flex ${showLogo.showLogo ? 'justify-between' : 'justify-end'} items-center h-[70px]`}>

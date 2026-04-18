@@ -8,10 +8,10 @@ const SuperAdminDashboard = ({ activeTab }) => {
     const [managers, setManagers] = useState([]);
     const [requests, setRequests] = useState([]);
 
-    // Form States
     const [formData, setFormData] = useState({ name: '', principalName: '', principalEmail: '' });
     const [managerForm, setManagerForm] = useState({ username: '', email: '', assignedColleges: [] });
     const [loading, setLoading] = useState(false);
+    const [editingManagerId, setEditingManagerId] = useState(null);
 
     const authHeader = { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } };
 
@@ -59,13 +59,25 @@ const SuperAdminDashboard = ({ activeTab }) => {
         e.preventDefault();
         setLoading(true);
         try {
-            await axios.post(`${import.meta.env.VITE_BACKEND_URL || 'http://localhost:8080/api/v1'}/base/superadmin/create-manager`, managerForm, authHeader);
-            toast.success("Manager created successfully!");
+            if (editingManagerId) {
+                await axios.put(`${import.meta.env.VITE_BACKEND_URL || 'http://localhost:8080/api/v1'}/base/superadmin/manager/${editingManagerId}`, managerForm, authHeader);
+                toast.success("Manager updated successfully!");
+            } else {
+                await axios.post(`${import.meta.env.VITE_BACKEND_URL || 'http://localhost:8080/api/v1'}/base/superadmin/create-manager`, managerForm, authHeader);
+                toast.success("Manager created successfully!");
+            }
             setManagerForm({ username: '', email: '', assignedColleges: [] });
+            setEditingManagerId(null);
             fetchManagers();
         } catch (error) {
-            toast.error(error.response?.data?.error || "Failed to create manager");
+            toast.error(error.response?.data?.error || "Operation failed");
         } finally { setLoading(false); }
+    };
+    
+    const handleEditManager = (m) => {
+        setEditingManagerId(m._id);
+        const collegeIds = m.assignedColleges.map(c => c._id || c);
+        setManagerForm({ username: m.username, email: m.email, assignedColleges: collegeIds });
     };
 
     const handleDeleteManager = async (id) => {
@@ -138,7 +150,12 @@ const SuperAdminDashboard = ({ activeTab }) => {
             {activeTab === 'managers' && (
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
                     <div className="md:col-span-1 bg-white p-8 rounded-3xl shadow-sm border border-gray-100">
-                        <h2 className="text-2xl font-bold mb-6 text-gray-800">Create Manager</h2>
+                        <div className="flex justify-between items-center mb-6">
+                            <h2 className="text-2xl font-bold text-gray-800">{editingManagerId ? 'Edit Manager' : 'Create Manager'}</h2>
+                            {editingManagerId && (
+                                <button onClick={() => { setEditingManagerId(null); setManagerForm({ username: '', email: '', assignedColleges: [] }); }} className="text-sm font-bold text-gray-500 hover:text-gray-800">Cancel</button>
+                            )}
+                        </div>
                         <form onSubmit={handleCreateManager} className="space-y-4">
                             <div>
                                 <label className="block text-sm font-semibold text-gray-700 mb-1">Manager Name</label>
@@ -171,7 +188,7 @@ const SuperAdminDashboard = ({ activeTab }) => {
                                 {managerForm.assignedColleges.length === 0 && <span className="text-xs text-rose-500 mt-1">Please select at least one college.</span>}
                             </div>
                             <button disabled={loading || managerForm.assignedColleges.length === 0} type="submit" className="w-full bg-emerald-600 text-white py-4 rounded-xl font-bold hover:bg-emerald-700 transition shadow-md mt-4 disabled:opacity-50">
-                                Create Manager
+                                {editingManagerId ? 'Update Manager' : 'Create Manager'}
                             </button>
                         </form>
                     </div>
@@ -196,7 +213,10 @@ const SuperAdminDashboard = ({ activeTab }) => {
                                         <td className="py-4 text-sm"><span className="bg-indigo-100 text-indigo-700 px-3 py-1 rounded-full">{m.assignedColleges?.length || 0} colleges</span></td>
                                         <td className="py-4 font-mono text-sm text-gray-600">{m.tempPassword || '***'}</td>
                                         <td className="py-4">
-                                            <button onClick={() => handleDeleteManager(m._id)} className="text-sm bg-rose-100 text-rose-600 px-3 py-1.5 rounded-lg hover:bg-rose-200 font-bold">Delete</button>
+                                            <div className="flex gap-2">
+                                                <button onClick={() => handleEditManager(m)} className="text-sm bg-indigo-50 text-indigo-600 px-3 py-1.5 rounded-lg hover:bg-indigo-100 font-bold">Edit</button>
+                                                <button onClick={() => handleDeleteManager(m._id)} className="text-sm bg-rose-50 text-rose-600 px-3 py-1.5 rounded-lg hover:bg-rose-100 font-bold">Delete</button>
+                                            </div>
                                         </td>
                                     </tr>
                                 ))}

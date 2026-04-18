@@ -4,6 +4,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import SuperAdminDashboard from './SuperAdminDashboard';
 import CollegeHeadDashboard from './CollegeHeadDashboard';
 import TeacherDashboard from './TeacherDashboard';
+import AttendanceModule from './AttendanceModule';
 import { logout } from '../store/slices/authSlice';
 import Navbar from '../components/Navbar';
 import Sidebar from '../components/Sidebar'; // Import the new Sidebar
@@ -38,13 +39,15 @@ const DashboardRouter = () => {
         { id: 'departments', label: 'Departments' },
         { id: 'classes', label: 'Classes' },
         { id: 'students', label: 'Manage Students' },
-        { id: 'teachers', label: 'Manage Teachers' }
+        { id: 'teachers', label: 'Manage Teachers' },
+        { id: 'attendance', label: 'Attendance' }
     ];
     else if (user.role === 'Principal' || user.role === 'Manager') navItems = [
         { id: 'departments', label: 'Departments' },
         { id: 'classes', label: 'Classes' },
         { id: 'students', label: 'Manage Students' },
-        { id: 'teachers', label: 'Manage Teachers' }
+        { id: 'teachers', label: 'Manage Teachers' },
+        { id: 'attendance', label: 'Attendance' }
     ];
     else if (user.role === 'Teacher') navItems = [
         { id: 'attendance', label: 'Attendance' },
@@ -53,6 +56,8 @@ const DashboardRouter = () => {
     ];
 
     const renderContent = () => {
+        if (activeTab === 'attendance') return <AttendanceModule user={user} />;
+
         switch (user.role) {
             case 'Admin':
                 if (['colleges', 'managers', 'requests'].includes(activeTab)) return <SuperAdminDashboard activeTab={activeTab} />;

@@ -25,7 +25,6 @@ export const superAdminLogin = async (req, res) => {
         }
 
         const token = jwt.sign({ id: admin._id }, process.env.JWT_SECRET, { expiresIn: "7d" });
-        console.log("user>> ", admin)
         return res.json({ token, user: { id: admin._id, username: admin.username, email: admin.email, role: admin.role } });
     }
 
@@ -106,7 +105,7 @@ export const createManager = async (req, res) => {
 
 export const editManager = async (req, res) => {
     if (req.user.role !== 'Admin') return res.status(403).json({ error: "Access Denied" });
-    const { username, email, assignedColleges } = req.body; 
+    const { username, email, assignedColleges } = req.body;
 
     const manager = await User.findByIdAndUpdate(req.params.id, {
         username, email, assignedColleges
@@ -130,7 +129,7 @@ export const getManagers = async (req, res) => {
 
 export const getCollegeRequests = async (req, res) => {
     if (req.user.role !== 'Admin' && req.user.role !== 'Manager') return res.status(403).json({ error: "Access Denied" });
-    
+
     // Admin gets all, Manager can see? The requirement says:
     // "then this data should be shown to admin and manager dashboard"
     const requests = await CollegeRequest.find({ status: "Pending" });
@@ -140,7 +139,7 @@ export const getCollegeRequests = async (req, res) => {
 export const approveCollegeRequest = async (req, res) => {
     if (req.user.role !== 'Admin' && req.user.role !== 'Manager') return res.status(403).json({ error: "Access Denied" });
     const { id } = req.params;
-    
+
     const request = await CollegeRequest.findById(id);
     if (!request) return res.status(404).json({ error: "Request not found" });
 
@@ -179,22 +178,22 @@ export const resetUserPassword = async (req, res) => {
     if (req.user.role !== 'Admin' && req.user.role !== 'Principal' && req.user.role !== 'Manager') {
         return res.status(403).json({ error: "Access Denied" });
     }
-    
+
     const { id } = req.params; // Target user id
     const targetUser = await User.findById(id);
     if (!targetUser) return res.status(404).json({ error: "User not found" });
 
     // Hierarchy validation
     if (req.user.role === 'Admin' && targetUser.role !== 'Manager' && targetUser.role !== 'Principal') {
-         return res.status(403).json({ error: "Admin can only reset Managers and Principals here" });
+        return res.status(403).json({ error: "Admin can only reset Managers and Principals here" });
     }
     if (req.user.role === 'Principal' && targetUser.role !== 'Teacher' && targetUser.role !== 'Student') {
-         return res.status(403).json({ error: "Principal can only reset their own Teachers and Students" });
+        return res.status(403).json({ error: "Principal can only reset their own Teachers and Students" });
     }
-    
+
     // Check if same college for Principal
     if ((req.user.role === 'Principal' || req.user.role === 'Manager') && String(targetUser.collegeId) !== String(req.user.collegeId)) {
-         return res.status(403).json({ error: "User is not in your college" });
+        return res.status(403).json({ error: "User is not in your college" });
     }
 
     const rawPassword = generateRandomString();
@@ -203,12 +202,12 @@ export const resetUserPassword = async (req, res) => {
     targetUser.password = hashedPassword;
     targetUser.tempPassword = rawPassword;
     targetUser.passwordChangedAt = new Date(); // Invalidate existing JWT sessions
-    
+
     await targetUser.save();
 
-    res.status(200).json({ 
-        success: true, 
+    res.status(200).json({
+        success: true,
         message: "Password reset successfully. Existing sessions have been invalidated.",
-        newPassword: rawPassword 
+        newPassword: rawPassword
     });
 };
