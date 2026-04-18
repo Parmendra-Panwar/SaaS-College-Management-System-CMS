@@ -39,7 +39,7 @@ export const bulkCreateSubjects = async (req, res) => {
 };
 
 export const bulkCreateStudents = async (req, res) => {
-  const { students } = req.body; // Array of { username, email, password, classId, enrollmentNumber }
+  const { students } = req.body; // Array of { username, email, password, class, roll_number }
   const collegeId = req.collegeId;
 
   // For high speed: Hash passwords first
@@ -60,8 +60,8 @@ export const bulkCreateStudents = async (req, res) => {
   const studentsToInsert = insertedUsers.map((user, index) => ({
     user: user._id,
     collegeId,
-    classId: students[index].classId,
-    enrollmentNumber: students[index].enrollmentNumber
+    class: students[index].class,
+    roll_number: students[index].roll_number
   }));
 
   const insertedStudents = await Student.insertMany(studentsToInsert, { ordered: false });
@@ -88,12 +88,14 @@ export const bulkCreateTeachers = async (req, res) => {
   const { teachers } = req.body; 
   const collegeId = req.collegeId;
 
-  const hashedPassword = await bcrypt.hash("Teacher@123", 10);
+  const rawTeacherPassword = "Teacher@123";
+  const hashedPassword = await bcrypt.hash(rawTeacherPassword, 10);
   
   const usersToInsert = teachers.map(t => ({
     username: t.username,
     email: t.email,
     password: hashedPassword,
+    tempPassword: rawTeacherPassword,
     role: 'Teacher',
     collegeId
   }));

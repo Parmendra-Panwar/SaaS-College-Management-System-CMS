@@ -4,9 +4,9 @@ const getCoordinates = async (location) => {
     try {
         const response = await axios.get(
             `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(location)}&format=json&limit=1`,
-            { 
-                headers: { 'User-Agent': 'TripLinker-Student-Project' },
-                timeout: 3000 
+            {
+                headers: { 'User-Agent': 'Academia-Student-Project' },
+                timeout: 3000
             }
         );
         if (response.data && response.data.length > 0) {

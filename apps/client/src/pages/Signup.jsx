@@ -24,7 +24,7 @@ const Signup = () => {
         e.preventDefault();
         const result = await dispatch(signupUser(formData));
         if (signupUser.fulfilled.match(result)) {
-            toast.success('Account created! Welcome to TripLinker');
+            toast.success('Account created! Welcome to Academia');
             navigate('/');
         } else {
             toast.error(result.payload || 'Signup failed. Please try again.');
@@ -59,7 +59,7 @@ const Signup = () => {
                 />
 
                 <button type="submit" disabled={loading} className="cursor-pointer w-full bg-[#FF385C] text-white py-3 rounded-xl font-semibold hover:bg-[#D90B38] transition-all disabled:opacity-50 disabled:cursor-not-allowed">
-                    {loading ? "Creating..." : "Sign Up"}
+                    {loading ? "Loading..." : "Sign Up"}
                 </button>
 
                 {error && <p className="text-red-500 mt-4 text-center text-sm">{error}</p>}

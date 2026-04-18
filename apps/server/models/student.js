@@ -4,8 +4,8 @@ const { Schema } = mongoose;
 const studentSchema = new Schema({
   user: { type: Schema.Types.ObjectId, ref: 'User', required: true },
   collegeId: { type: Schema.Types.ObjectId, ref: 'College', required: true },
-  classId: { type: Schema.Types.ObjectId, ref: 'Class' },
-  enrollmentNumber: { type: String },
+  class: { type: Schema.Types.ObjectId, ref: 'Class', required: true },
+  roll_number: { type: String, required: true },
 
   // Step 3: High-Frequency Operational Logic
   // 91 days (13 weeks) x 4 periods. Initialized to false/null.

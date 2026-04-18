@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { logout } from '../store/slices/authSlice';
 
-const Navbar = () => {
+const Navbar = (showLogo = true) => {
     const dispatch = useDispatch();
 
     const { user } = useSelector((state) => state.auth);
@@ -33,21 +33,25 @@ const Navbar = () => {
         `text-[15px] font-[600] tracking-tight transition-all duration-300 ${location.pathname === path ? 'text-indigo-600' : 'text-[#717171] hover:text-indigo-600'
         }`;
 
+    console.log("showLogo>>> ", showLogo)
+
     return (
-        <nav className="bg-white/90 backdrop-blur-xl border-b border-[#EBEBEB] sticky top-0 z-50">
-            <div className="max-w-[1305px] px-6 md:px-10 mx-auto w-full flex justify-between items-center h-[80px]">
+        <nav className="bg-white/90 backdrop-blur-xl border-b border-[#EBEBEB] sticky top-0 z-40">
+            <div className={`px-6 md:px-10 mx-auto w-full flex ${showLogo.showLogo ? 'justify-between' : 'justify-end'} items-center h-[70px]`}>
 
                 {/* Logo */}
-                <Link to="/" className="flex items-center gap-2.5 group">
-                    <div className="w-9 h-9 bg-indigo-600 rounded-xl flex items-center justify-center transform group-hover:-rotate-3 transition-transform duration-300 shadow-md">
-                        <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 14l9-5-9-5-9 5 9 5z"></path>
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"></path>
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14zm-4 6v-7.5l4-2.222"></path>
-                        </svg>
-                    </div>
-                    <span className="text-[22px] font-[800] text-indigo-700 tracking-tighter">SaaS CMS</span>
-                </Link>
+                {showLogo.showLogo && (
+                    <Link to="/" className="flex items-center gap-2.5 group">
+                        <div className="w-9 h-9 bg-indigo-600 rounded-xl flex items-center justify-center transform group-hover:-rotate-3 transition-transform duration-300 shadow-md">
+                            <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 14l9-5-9-5-9 5 9 5z"></path>
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"></path>
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14zm-4 6v-7.5l4-2.222"></path>
+                            </svg>
+                        </div>
+                        <span className="text-[22px] font-[800] text-indigo-700 tracking-tighter">Academia</span>
+                    </Link>
+                )}
 
                 <div className="flex items-center gap-4 sm:gap-6">
                     {user ? (

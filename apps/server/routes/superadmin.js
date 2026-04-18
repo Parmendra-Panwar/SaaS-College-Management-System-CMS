@@ -22,4 +22,7 @@ router.delete("/manager/:id", isloggedIn, wrapAsync(superAdminController.deleteM
 router.get("/college-requests", isloggedIn, wrapAsync(superAdminController.getCollegeRequests));
 router.post("/college-requests/:id/approve", isloggedIn, wrapAsync(superAdminController.approveCollegeRequest));
 
+// Password Reset (Admin / Manager / Principal)
+router.post("/user/:id/reset-password", isloggedIn, wrapAsync(superAdminController.resetUserPassword));
+
 export default router;

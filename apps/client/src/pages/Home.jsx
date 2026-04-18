@@ -15,7 +15,7 @@ const Home = () => {
         e.preventDefault();
         setLoading(true);
         try {
-            await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/v1/onboarding/request-college`, formData);
+            await axios.post(`${import.meta.env.VITE_BACKEND_URL}/onboarding/request-college`, formData);
             alert("Request submitted successfully! Our team will contact you.");
             setIsModalOpen(false);
             setFormData({ collegeName: '', principalName: '', principalEmail: '', contactNumber: '' });
@@ -27,9 +27,11 @@ const Home = () => {
         }
     };
     console.log(">user after > Login > ", user)
-    if (user) {
-        return <DashboardRouter user={user} />;
-    }
+    React.useEffect(() => {
+        if (user) {
+            navigate('/dashboard');
+        }
+    }, [user, navigate]);
 
     return (
         <div className="min-h-screen bg-[#FDFCF0]">

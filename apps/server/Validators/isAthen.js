@@ -17,6 +17,15 @@ export const isloggedIn = async (req, res, next) => {
       return res.status(404).json({ error: "User Not Found" });
     }
 
+    // JWT Invalidation check
+    if (req.user.passwordChangedAt && decoded.iat) {
+       // Convert Date to timestamp in seconds
+       const changedTimestamp = parseInt(req.user.passwordChangedAt.getTime() / 1000, 10);
+       if (decoded.iat < changedTimestamp) {
+           return res.status(401).json({ error: "Password was changed. Please log in again." });
+       }
+    }
+
     // TENANT INTERCEPTOR LOGIC
     // Extract collegeId to enforce strict tenant isolation in subsequent queries
     req.collegeId = req.user.collegeId;

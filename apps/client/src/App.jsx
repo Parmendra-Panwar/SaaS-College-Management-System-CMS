@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { createBrowserRouter, RouterProvider, Outlet } from 'react-router-dom';
+import { createBrowserRouter, RouterProvider, Outlet, useLocation } from 'react-router-dom';
 
 import Navbar from './components/Navbar';
 import ToastContainer from './components/ToastContainer';
@@ -12,31 +12,43 @@ import Signup from './pages/Signup';
 import SuperAdminLogin from './pages/SuperAdminLogin';
 import NotFound from './pages/NotFound';
 import ProfilePage from './pages/ProfilePage';
+import DashboardRouter from './pages/DashboardRouter';
 
 import { getProfile } from './store/slices/authSlice';
 import { useToast } from './hooks/useToast';
 
 // ─── Layout ──────────────────────────────────────────────────────────────────
-const Layout = () => (
-  <div className="min-h-[100dvh] bg-[#FDFCF0] flex flex-col">
-    <Navbar />
-    <main className="flex-1 w-full flex flex-col pt-1">
-      <Outlet />
-    </main>
-  </div>
-);
+const GlobalLayout = () => {
+  const location = useLocation();
+  const isDashboard = location.pathname.startsWith('/dashboard');
+
+  if (isDashboard) {
+    return <Outlet />;
+  }
+
+  return (
+    <div className="min-h-[100dvh] bg-[#FDFCF0] flex flex-col">
+      <Navbar showLogo={true} />
+      <main className="flex-1 w-full flex flex-col pt-1">
+        <Outlet />
+      </main>
+    </div>
+  );
+};
 
 // ─── Router ───────────────────────────────────────────────────────────────────
 const router = createBrowserRouter([
   {
     path: '/',
-    element: <Layout />,
+    element: <GlobalLayout />,
     children: [
       { index: true, element: <Home /> },
       { path: 'login', element: <Login /> },
       { path: 'signup', element: <Signup /> },
       { path: 'superadminlogin', element: <SuperAdminLogin /> },
       { path: 'profile/:username', element: <ProfilePage /> },
+      { path: 'dashboard', element: <DashboardRouter /> },
+      { path: 'dashboard/:section', element: <DashboardRouter /> },
     ],
   },
   { path: '*', element: <NotFound /> },
