@@ -1,11 +1,31 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import DashboardRouter from './DashboardRouter';
+import axios from 'axios';
 
 const Home = () => {
     const navigate = useNavigate();
     const { user } = useSelector((state) => state.auth);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [formData, setFormData] = useState({ collegeName: '', principalName: '', principalEmail: '', contactNumber: '' });
+    const [loading, setLoading] = useState(false);
+
+    const handleRequestDemo = async (e) => {
+        e.preventDefault();
+        setLoading(true);
+        try {
+            await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/v1/onboarding/request-college`, formData);
+            alert("Request submitted successfully! Our team will contact you.");
+            setIsModalOpen(false);
+            setFormData({ collegeName: '', principalName: '', principalEmail: '', contactNumber: '' });
+        } catch (err) {
+            alert("Failed to submit request.");
+            console.error(err);
+        } finally {
+            setLoading(false);
+        }
+    };
     console.log(">user after > Login > ", user)
     if (user) {
         return <DashboardRouter user={user} />;
@@ -35,7 +55,7 @@ const Home = () => {
                                 Enter Dashboard
                             </button>
                             <button
-                                onClick={() => navigate('/signup')}
+                                onClick={() => setIsModalOpen(true)}
                                 className="bg-white border border-gray-200 text-gray-800 px-8 py-4 rounded-full hover:bg-gray-50 transition-all duration-300 font-bold text-[16px]"
                             >
                                 Request Demo
@@ -97,6 +117,38 @@ const Home = () => {
                     </div>
                 </div>
             </div>
+
+            {isModalOpen && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+                    <div className="bg-white rounded-3xl p-8 w-full max-w-md shadow-2xl relative">
+                        <button onClick={() => setIsModalOpen(false)} className="absolute top-4 right-4 text-gray-500 hover:text-gray-800">
+                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                        </button>
+                        <h2 className="text-2xl font-bold mb-6 text-gray-900">Request College Onboarding</h2>
+                        <form onSubmit={handleRequestDemo} className="space-y-4">
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">College Name</label>
+                                <input required type="text" value={formData.collegeName} onChange={e => setFormData({ ...formData, collegeName: e.target.value })} className="w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none" />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Principal Name</label>
+                                <input required type="text" value={formData.principalName} onChange={e => setFormData({ ...formData, principalName: e.target.value })} className="w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none" />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Principal Email</label>
+                                <input required type="email" value={formData.principalEmail} onChange={e => setFormData({ ...formData, principalEmail: e.target.value })} className="w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none" />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Contact Number</label>
+                                <input type="text" value={formData.contactNumber} onChange={e => setFormData({ ...formData, contactNumber: e.target.value })} className="w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none" />
+                            </div>
+                            <button type="submit" disabled={loading} className="w-full bg-indigo-600 text-white font-bold py-3 rounded-xl hover:bg-indigo-700 transition">
+                                {loading ? 'Submitting...' : 'Submit Request'}
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

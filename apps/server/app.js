@@ -12,7 +12,7 @@ import connectDB from "./config/db.js";
 connectDB();
 
 // 2. Security Middlewares
-app.use(helmet()); 
+app.use(helmet());
 
 // Rate Limiting Configuration
 const limiter = rateLimit({
@@ -31,7 +31,7 @@ app.use("/api/", limiter);
 
 // CORS Configuration
 const allowedOrigins = [
-  "https://triplinkers.vercel.app",
+  "https://academia-erp.vercel.app",
   process.env.FRONTEND_URL,
   "http://localhost:5173",
   "http://localhost:3000"

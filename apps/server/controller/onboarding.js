@@ -3,7 +3,21 @@ import Subject from "../models/subject.js";
 import Student from "../models/student.js";
 import Teacher from "../models/teacher.js";
 import User from "../models/user.js";
+import CollegeRequest from "../models/collegeRequest.js";
 import bcrypt from "bcryptjs";
+
+export const requestCollege = async (req, res) => {
+  const { collegeName, principalName, principalEmail, contactNumber } = req.body;
+  if (!collegeName || !principalName || !principalEmail) {
+    return res.status(400).json({ error: "Missing required fields" });
+  }
+
+  const newRequest = await CollegeRequest.create({
+    collegeName, principalName, principalEmail, contactNumber
+  });
+
+  res.status(201).json({ success: true, message: "Request received successfully", data: newRequest });
+};
 
 export const bulkCreateClasses = async (req, res) => {
   const { classes } = req.body; // Array of { name, departmentId }
