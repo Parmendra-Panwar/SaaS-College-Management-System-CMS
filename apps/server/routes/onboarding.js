@@ -9,6 +9,7 @@ import { isloggedIn } from "../Validators/isAthen.js";
 router.post("/bulk-classes", isloggedIn, wrapAsync(onboardingController.bulkCreateClasses));
 router.post("/bulk-subjects", isloggedIn, wrapAsync(onboardingController.bulkCreateSubjects));
 router.post("/bulk-students", isloggedIn, wrapAsync(onboardingController.bulkCreateStudents));
+router.post("/bulk-teachers", isloggedIn, wrapAsync(onboardingController.bulkCreateTeachers));
 router.put("/bulk-students", isloggedIn, wrapAsync(onboardingController.bulkEditStudents));
 
 export default router;

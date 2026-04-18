@@ -1,109 +1,34 @@
-import { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { useParams } from 'react-router-dom';
-import { fetchUserProfile } from '../store/slices/profileSlice';
-
-import ProfileHeader from '../components/ProfileHeader';
-import Modal from '../components/Modal';
-import PostsTab from '../components/PostsTab';
-
-import { PageLoader } from '../components/ui';
+import React from 'react';
+import { useSelector } from 'react-redux';
 
 const ProfilePage = () => {
-    const { username } = useParams();
-    const dispatch = useDispatch();
-    const { userData, stats, loading } = useSelector((state) => state.profile);
-    const [activeTab, setActiveTab] = useState('listings');
-    const [isEditOpen, setIsEditOpen] = useState(false);
-    const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+    const { user } = useSelector((state) => state.auth);
 
-    // Modals States (Restored)
-    const [editAbout, setEditAbout] = useState("");
-    const [selectedRole, setSelectedRole] = useState([]);
-
-    useEffect(() => {
-        if (!userData || userData.username !== username) {
-            dispatch(fetchUserProfile({ username, page: 1 }));
-        }
-    }, [dispatch, username, userData?.username]);
-
-    // Populate Modals Data (Restored)
-    useEffect(() => {
-        if (userData) {
-            setEditAbout(userData.about || "");
-            setSelectedRole(userData.roles || ['NORMAL']);
-        }
-    }, [userData]);
-
-    // Modals Handlers (Restored)
-    const handleUpdateAbout = async () => {
-        setIsEditOpen(false);
-    };
-
-    const handleUpdateRole = async () => {
-        setIsSettingsOpen(false);
-    };
-
-    if (loading && !userData) return <PageLoader />;
-    if (!userData) return <PageLoader />;
-
-    const isNormal = userData.roles.includes('NORMAL');
-    const isBusiness = userData.roles.includes('BUSINESS');
+    if (!user) return <div className="p-10 text-center">Please log in first.</div>;
 
     return (
-        <div className="max-w-[1305px] px-6 md:px-10 mx-auto w-full">
-            <ProfileHeader userData={userData} stats={stats} onEdit={() => setIsEditOpen(true)} onSettings={() => setIsSettingsOpen(true)} />
-
-            <div className="border-b border-slate-100 sticky top-0 bg-white/80 backdrop-blur-md z-20">
-                <div className="flex justify-center gap-12">
-                    <button onClick={() => setActiveTab('listings')} className={`cursor-pointer py-4 text-sm font-bold border-b-2 transition-colors ${activeTab === 'listings' ? 'border-[#FF385C] text-[#FF385C]' : 'border-transparent text-slate-400 hover:text-slate-600'}`}>LISTINGS</button>
+        <div className="max-w-2xl mx-auto px-6 py-20 w-full animate-in fade-in duration-500">
+            <h1 className="text-3xl font-bold text-gray-900 mb-6">User Profile</h1>
+            <div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 flex flex-col gap-4">
+                <div>
+                    <label className="text-xs text-gray-500 uppercase tracking-widest font-bold">Username</label>
+                    <p className="text-lg font-medium text-gray-800">{user.username}</p>
+                </div>
+                <div>
+                    <label className="text-xs text-gray-500 uppercase tracking-widest font-bold">Email</label>
+                    <p className="text-lg font-medium text-gray-800">{user.email}</p>
+                </div>
+                <div>
+                    <label className="text-xs text-gray-500 uppercase tracking-widest font-bold">Role Authority</label>
+                    <div className="mt-1 inline-flex items-center px-3 py-1 bg-indigo-100 text-indigo-700 rounded-full font-bold text-xs uppercase tracking-wider">
+                        {user.role || 'Unspecified'}
+                    </div>
+                </div>
+                {/* Future implementation of updating passwords or personal info */}
+                <div className="mt-6 pt-6 border-t border-gray-100">
+                    <button className="bg-gray-100 px-6 py-2 rounded-xl text-gray-600 font-medium cursor-not-allowed">Edit Profile (Coming Soon)</button>
                 </div>
             </div>
-
-            <main className="p-8">
-                {activeTab === 'listings' && isBusiness && <PostsTab username={username} type="listings" />}
-            </main>
-
-            <Modal isOpen={isEditOpen} onClose={() => setIsEditOpen(false)} title="Edit Profile">
-                <div className="flex flex-col gap-4 p-2">
-                    <p className="text-red-500 text-center">This feature is not available yet, please try again later sometime</p>
-                    <label className="text-sm font-semibold text-slate-700">Bio / About</label>
-                    <textarea
-                        rows="4"
-                        value={editAbout}
-                        onChange={(e) => setEditAbout(e.target.value)}
-                        placeholder="Tell the world about your travels..."
-                        className="w-full border border-slate-200 rounded-xl p-4 focus:outline-none focus:ring-2 focus:ring-[#FF385C] focus:border-transparent transition-all resize-none bg-[#FDFCF0]"
-                    />
-                    <button onClick={handleUpdateAbout} className="cursor-pointer w-full bg-[#222222] text-white py-3 rounded-xl font-bold hover:bg-[#FF385C] transition shadow-lg mt-2">
-                        Save Changes
-                    </button>
-                </div>
-            </Modal>
-
-            <Modal isOpen={isSettingsOpen} onClose={() => setIsSettingsOpen(false)} title="Account Settings">
-                <div className="flex flex-col gap-4 p-2">
-                    <p className="text-red-500 text-center">This feature is not available yet, please try again later sometime</p>
-                    <label className="text-sm font-semibold text-slate-700">Account Type</label>
-                    <div className="grid grid-cols-1 gap-3">
-                        {['NORMAL', 'BUSINESS', 'MIX'].map((role) => (
-                            <button
-                                key={role}
-                                onClick={() => setSelectedRole(role === 'MIX' ? ['NORMAL', 'BUSINESS'] : [role])}
-                                className={`p-4 rounded-xl border-2 text-left transition-all ${(role === 'MIX' ? (selectedRole.includes('BUSINESS') && selectedRole.includes('NORMAL')) : (selectedRole.length === 1 && selectedRole[0] === role))
-                                    ? 'border-[#FF385C] bg-rose-50 text-[#FF385C]'
-                                    : 'border-slate-100 hover:border-slate-200 text-slate-600'
-                                    }`}
-                            >
-                                <p className="font-bold">{role === 'NORMAL' ? 'Traveler' : role === 'BUSINESS' ? 'Business Host' : 'Both'}</p>
-                            </button>
-                        ))}
-                    </div>
-                    <button onClick={handleUpdateRole} className="cursor-pointer w-full bg-[#222222] text-white py-3 rounded-xl font-bold hover:bg-[#FF385C] transition shadow-lg mt-2">
-                        Update Role
-                    </button>
-                </div>
-            </Modal>
         </div>
     );
 };

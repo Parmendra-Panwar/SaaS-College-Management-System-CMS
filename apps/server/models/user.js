@@ -11,10 +11,15 @@ const userSchema = new Schema({
     enum: ['Admin', 'Manager', 'Principal', 'Teacher', 'Student'], 
     default: 'Student' 
   },
-  collegeId: { type: Schema.Types.ObjectId, ref: 'College', required: true },
+  collegeId: { type: Schema.Types.ObjectId, ref: 'College' }, // Made optional for Admin/Manager
+  assignedColleges: [{ type: Schema.Types.ObjectId, ref: 'College' }], // For Manager role
+
   // Optional References for specific role data
   teacherProfile: { type: Schema.Types.ObjectId, ref: 'Teacher' },
-  studentProfile: { type: Schema.Types.ObjectId, ref: 'Student' }
+  studentProfile: { type: Schema.Types.ObjectId, ref: 'Student' },
+  
+  // Track auto-generated pass for principal view by super admin
+  tempPassword: { type: String }
 }, { timestamps: true });
 
 export default mongoose.model("User", userSchema);

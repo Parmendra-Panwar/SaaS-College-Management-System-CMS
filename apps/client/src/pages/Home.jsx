@@ -6,7 +6,7 @@ import DashboardRouter from './DashboardRouter';
 const Home = () => {
     const navigate = useNavigate();
     const { user } = useSelector((state) => state.auth);
-
+    console.log(">user after > Login > ", user)
     if (user) {
         return <DashboardRouter user={user} />;
     }
