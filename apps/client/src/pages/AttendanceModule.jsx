@@ -11,7 +11,7 @@ const AttendanceModule = ({ user }) => {
 
     const dispatch = useDispatch();
     const { classes: globalClasses, accessibleColleges, loaded: lookupsLoaded } = useSelector(state => state.lookup);
-    
+
     const [students, setStudents] = useState([]);
 
     const [selectedCollegeId, setSelectedCollegeId] = useState('');
@@ -35,20 +35,23 @@ const AttendanceModule = ({ user }) => {
     // Handle initial selection once lookups are loaded
     useEffect(() => {
         if (!lookupsLoaded) return;
-        
+
         if (user.role === 'Admin' || user.role === 'Manager') {
-            if (accessibleColleges.length > 0 && !selectedCollegeId) {
-                setSelectedCollegeId(accessibleColleges[0]._id);
+            if (accessibleColleges?.data?.length > 0 && !selectedCollegeId) {
+                setSelectedCollegeId(accessibleColleges.data[0]._id);
             }
         } else {
             setSelectedCollegeId(user.collegeId);
         }
     }, [lookupsLoaded, user, accessibleColleges]);
 
+    console.log("accessibleColleges", accessibleColleges.data);
+    console.log("globalClasses", globalClasses);
+
     // Compute derived classes based on selected college
     const derivedClasses = React.useMemo(() => {
         if (!selectedCollegeId || !globalClasses) return [];
-        return globalClasses.filter(c => String(c.collegeId?._id || c.collegeId) === String(selectedCollegeId));
+        return globalClasses?.data?.filter(c => String(c.collegeId?._id || c.collegeId) === String(selectedCollegeId));
     }, [selectedCollegeId, globalClasses]);
 
     // Auto-select first class when derived classes change
@@ -117,7 +120,6 @@ const AttendanceModule = ({ user }) => {
             setSaving(false);
         }
     };
-    console.log("classes>>>>>>> ", derivedClasses)
 
     return (
         <div className="max-w-[1305px] mx-auto px-6 py-10 w-full animate-in fade-in duration-500 bg-[#FDFCF0] min-h-screen">
@@ -126,7 +128,7 @@ const AttendanceModule = ({ user }) => {
             <div className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 mb-8 grid grid-cols-1 md:grid-cols-4 gap-6">
                 {(user.role === 'Admin' || user.role === 'Manager') && (
                     <SelectField label="Select College" value={selectedCollegeId} onChange={e => setSelectedCollegeId(e.target.value)}>
-                        {accessibleColleges.map(c => <option key={c._id} value={c._id}>{c.name}</option>)}
+                        {accessibleColleges?.data?.map(c => <option key={c._id} value={c._id}>{c.name}</option>)}
                     </SelectField>
                 )}
 

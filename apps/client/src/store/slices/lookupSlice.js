@@ -11,9 +11,9 @@ export const fetchLookups = createAsyncThunk(
                 academicService.getAccessibleColleges()
             ]);
             return {
-                departments: departments.data,
-                classes: classes.data,
-                accessibleColleges: accessibleColleges.data
+                departments: departments?.data,
+                classes: classes?.data,
+                accessibleColleges: accessibleColleges?.data
             };
         } catch (error) {
             return rejectWithValue(error.response?.data?.error || 'Failed to fetch lookups');

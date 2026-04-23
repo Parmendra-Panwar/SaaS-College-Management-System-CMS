@@ -1,6 +1,4 @@
 import User from "../models/user.js";
-import TravelProfile from "../models/travelProfile.js";
-import BusinessProfile from "../models/businessProfile.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { ExpressError } from "../utils/ExpressError.js";
@@ -16,11 +14,11 @@ export const signup = async (req, res, next) => {
 
   // 2. Hash Password
   const hashedPassword = await bcrypt.hash(password, 10);
-  
+
   // 3. Create User Instance
-  const newUser = new User({ 
-    username, 
-    email, 
+  const newUser = new User({
+    username,
+    email,
     password: hashedPassword,
     roles: [] // Array clear karke shuru karein
   });
