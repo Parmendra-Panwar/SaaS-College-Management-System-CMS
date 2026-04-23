@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchLookups } from '../store/slices/lookupSlice';
+import academicService from '../services/academicService';
 import { useToast } from '../hooks/useToast';
+import { InputField, SelectField, PrimaryButton } from '../components/ui';
 
 const CollegeHeadDashboard = ({ activeMainTab }) => {
     const toast = useToast();
@@ -17,32 +20,30 @@ const CollegeHeadDashboard = ({ activeMainTab }) => {
     const [formTeacher, setFormTeacher] = useState({ username: '', email: '', level: '1' });
     const [formStudent, setFormStudent] = useState({ username: '', email: '', roll_number: '', class: '' });
 
-    // Lookup contexts for dropdowns
-    const [departments, setDepartments] = useState([]);
-    const [classes, setClasses] = useState([]);
-    const [colleges, setColleges] = useState([]);
+    const dispatch = useDispatch();
+    const { departments, classes, accessibleColleges: colleges, loaded: lookupsLoaded } = useSelector(state => state.lookup);
     const [selectedCollegeId, setSelectedCollegeId] = useState('');
 
-    const fetchLookups = async () => {
-        try {
-            const [deptRes, clsRes, colRes] = await Promise.all([
-                axios.get(`${import.meta.env.VITE_BACKEND_URL || 'http://localhost:8080/api/v1'}/academic/departments`, authHeader),
-                axios.get(`${import.meta.env.VITE_BACKEND_URL || 'http://localhost:8080/api/v1'}/academic/classes`, authHeader),
-                axios.get(`${import.meta.env.VITE_BACKEND_URL || 'http://localhost:8080/api/v1'}/academic/accessible-colleges`, authHeader),
-            ]);
-            setDepartments(deptRes.data.data);
-            setClasses(clsRes.data.data);
-            setColleges(colRes.data.data);
-            if (colRes.data.data.length > 0 && !selectedCollegeId) {
-                setSelectedCollegeId(colRes.data.data[0]._id);
-            }
-        } catch (e) { console.error("Failed to fetch lookups", e); }
+    useEffect(() => {
+        if (!lookupsLoaded) {
+            dispatch(fetchLookups());
+        }
+    }, [dispatch, lookupsLoaded]);
+
+    useEffect(() => {
+        if (lookupsLoaded && colleges.length > 0 && !selectedCollegeId) {
+            setSelectedCollegeId(colleges[0]._id);
+        }
+    }, [lookupsLoaded, colleges]);
+
+    const handleRefreshLookups = () => {
+        dispatch(fetchLookups());
     };
 
     const fetchData = async () => {
         setLoading(true);
         try {
-            const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL || 'http://localhost:8080/api/v1'}/academic/${activeMainTab}`, authHeader);
+            const res = await academicService.getEntities(activeMainTab);
             setDataList(res.data.data || []);
         } catch (e) {
             toast.error("Failed to fetch data");
@@ -50,9 +51,6 @@ const CollegeHeadDashboard = ({ activeMainTab }) => {
         setLoading(false);
     };
 
-    useEffect(() => {
-        fetchLookups();
-    }, []);
 
     useEffect(() => {
         if (activeMainTab) {
@@ -106,10 +104,10 @@ const CollegeHeadDashboard = ({ activeMainTab }) => {
             else if (activeMainTab === 'students') payload = { ...formStudent, collegeId: selectedCollegeId };
 
             if (pageMode === 'edit') {
-                await axios.put(`${import.meta.env.VITE_BACKEND_URL || 'http://localhost:8080/api/v1'}/academic/${activeMainTab}/${editingId}`, payload, authHeader);
+                await academicService.updateEntity(activeMainTab, editingId, payload);
                 toast.success("Updated successfully");
             } else {
-                await axios.post(`${import.meta.env.VITE_BACKEND_URL || 'http://localhost:8080/api/v1'}/academic/${activeMainTab}`, payload, authHeader);
+                await academicService.createEntity(activeMainTab, payload);
                 toast.success("Created successfully");
             }
             
@@ -123,7 +121,7 @@ const CollegeHeadDashboard = ({ activeMainTab }) => {
             setFormTeacher({ username: '', email: '', level: '1' });
             setFormStudent({ username: '', email: '', roll_number: '', class: '' });
 
-            if (activeMainTab === 'departments' || activeMainTab === 'classes') fetchLookups();
+            if (activeMainTab === 'departments' || activeMainTab === 'classes') handleRefreshLookups();
         } catch (err) {
             toast.error(err.response?.data?.error || "Operation failed");
         }
@@ -133,10 +131,10 @@ const CollegeHeadDashboard = ({ activeMainTab }) => {
     const handleDelete = async (id) => {
         if (!window.confirm("Delete this record?")) return;
         try {
-            await axios.delete(`${import.meta.env.VITE_BACKEND_URL || 'http://localhost:8080/api/v1'}/academic/${activeMainTab}/${id}`, authHeader);
+            await academicService.deleteEntity(activeMainTab, id);
             toast.success("Deleted");
             fetchData();
-            if (activeMainTab === 'departments' || activeMainTab === 'classes') fetchLookups();
+            if (activeMainTab === 'departments' || activeMainTab === 'classes') handleRefreshLookups();
         } catch (e) {
             toast.error("Delete failed");
         }
@@ -198,13 +196,12 @@ const CollegeHeadDashboard = ({ activeMainTab }) => {
 
                     {activeMainTab === 'departments' && (
                         <>
-                            <div className="col-span-1"><label className="block text-sm font-semibold text-gray-700 mb-1">Dept Name</label><input required className="w-full border px-4 py-2 rounded-xl" value={formDept.name} onChange={e => setFormDept({ ...formDept, name: e.target.value })} /></div>
-                            <div className="col-span-1"><label className="block text-sm font-semibold text-gray-700 mb-1">Description</label><input className="w-full border px-4 py-2 rounded-xl" value={formDept.description} onChange={e => setFormDept({ ...formDept, description: e.target.value })} /></div>
+                            <div className="col-span-1"><InputField required label="Dept Name" value={formDept.name} onChange={e => setFormDept({ ...formDept, name: e.target.value })} /></div>
+                            <div className="col-span-1"><InputField label="Description" value={formDept.description} onChange={e => setFormDept({ ...formDept, description: e.target.value })} /></div>
                             <div className="col-span-2">
-                                <label className="block text-sm font-semibold text-gray-700 mb-1">Assign Classes (Multiple)</label>
-                                <select multiple className="w-full border px-4 py-2 rounded-xl h-24" value={formDept.classes} onChange={handleDeptClassChange}>
+                                <SelectField multiple label="Assign Classes (Multiple)" className="w-full border border-gray-200 rounded-xl px-4 py-2 bg-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition outline-none h-24" value={formDept.classes} onChange={handleDeptClassChange}>
                                     {classes.map(c => <option key={c._id} value={c._id}>{c.name}</option>)}
-                                </select>
+                                </SelectField>
                                 <p className="text-xs text-gray-400 mt-1">Hold CTRL/CMD to select multiple classes.</p>
                             </div>
                         </>
@@ -212,49 +209,46 @@ const CollegeHeadDashboard = ({ activeMainTab }) => {
 
                     {activeMainTab === 'classes' && (
                         <>
-                            <div className="col-span-2"><label className="block text-sm font-semibold text-gray-700 mb-1">Class Name</label><input required className="w-full border px-4 py-2 rounded-xl" value={formClass.name} onChange={e => setFormClass({ ...formClass, name: e.target.value })} /></div>
+                            <div className="col-span-2"><InputField required label="Class Name" value={formClass.name} onChange={e => setFormClass({ ...formClass, name: e.target.value })} /></div>
                             <div className="col-span-1">
-                                <label className="block text-sm font-semibold text-gray-700 mb-1">Department (Optional)</label>
-                                <select className="w-full border px-4 py-2 rounded-xl" value={formClass.departmentId} onChange={e => setFormClass({ ...formClass, departmentId: e.target.value })}>
+                                <SelectField label="Department (Optional)" value={formClass.departmentId} onChange={e => setFormClass({ ...formClass, departmentId: e.target.value })}>
                                     <option value="">None</option>
                                     {departments.map(d => <option key={d._id} value={d._id}>{d.name}</option>)}
-                                </select>
+                                </SelectField>
                             </div>
                         </>
                     )}
 
                     {activeMainTab === 'teachers' && (
                         <>
-                            <div className="col-span-1"><label className="block text-sm font-semibold text-gray-700 mb-1">Full Name</label><input required className="w-full border px-4 py-2 rounded-xl" value={formTeacher.username} onChange={e => setFormTeacher({ ...formTeacher, username: e.target.value })} /></div>
-                            <div className="col-span-1"><label className="block text-sm font-semibold text-gray-700 mb-1">Email</label><input required type="email" className="w-full border px-4 py-2 rounded-xl" value={formTeacher.email} onChange={e => setFormTeacher({ ...formTeacher, email: e.target.value })} /></div>
+                            <div className="col-span-1"><InputField required label="Full Name" value={formTeacher.username} onChange={e => setFormTeacher({ ...formTeacher, username: e.target.value })} /></div>
+                            <div className="col-span-1"><InputField required type="email" label="Email" value={formTeacher.email} onChange={e => setFormTeacher({ ...formTeacher, email: e.target.value })} /></div>
                             <div className="col-span-1">
-                                <label className="block text-sm font-semibold text-gray-700 mb-1">Level</label>
-                                <select className="w-full border px-4 py-2 rounded-xl" value={formTeacher.level} onChange={e => setFormTeacher({ ...formTeacher, level: e.target.value })}>
+                                <SelectField label="Level" value={formTeacher.level} onChange={e => setFormTeacher({ ...formTeacher, level: e.target.value })}>
                                     <option value="1">Level 1</option><option value="2">Level 2</option><option value="3">Level 3</option>
-                                </select>
+                                </SelectField>
                             </div>
                         </>
                     )}
 
                     {activeMainTab === 'students' && (
                         <>
-                            <div className="col-span-1"><label className="block text-sm font-semibold text-gray-700 mb-1">Name</label><input required className="w-full border px-4 py-2 rounded-xl" value={formStudent.username} onChange={e => setFormStudent({ ...formStudent, username: e.target.value })} /></div>
-                            <div className="col-span-1"><label className="block text-sm font-semibold text-gray-700 mb-1">Email</label><input required type="email" className="w-full border px-4 py-2 rounded-xl" value={formStudent.email} onChange={e => setFormStudent({ ...formStudent, email: e.target.value })} /></div>
-                            <div className="col-span-1"><label className="block text-sm font-semibold text-gray-700 mb-1">Roll Number</label><input required className="w-full border px-4 py-2 rounded-xl" value={formStudent.roll_number} onChange={e => setFormStudent({ ...formStudent, roll_number: e.target.value })} /></div>
+                            <div className="col-span-1"><InputField required label="Name" value={formStudent.username} onChange={e => setFormStudent({ ...formStudent, username: e.target.value })} /></div>
+                            <div className="col-span-1"><InputField required type="email" label="Email" value={formStudent.email} onChange={e => setFormStudent({ ...formStudent, email: e.target.value })} /></div>
+                            <div className="col-span-1"><InputField required label="Roll Number" value={formStudent.roll_number} onChange={e => setFormStudent({ ...formStudent, roll_number: e.target.value })} /></div>
                             <div className="col-span-1">
-                                <label className="block text-sm font-semibold text-gray-700 mb-1">Class (Must Select)</label>
-                                <select required className="w-full border px-4 py-2 rounded-xl" value={formStudent.class} onChange={e => setFormStudent({ ...formStudent, class: e.target.value })}>
+                                <SelectField required label="Class (Must Select)" value={formStudent.class} onChange={e => setFormStudent({ ...formStudent, class: e.target.value })}>
                                     <option value="">Select Class</option>
                                     {classes.map(c => <option key={c._id} value={c._id}>{c.name}</option>)}
-                                </select>
+                                </SelectField>
                             </div>
                         </>
                     )}
 
                     <div className="col-span-1 md:col-span-4 mt-4 flex gap-3">
-                        <button type="submit" disabled={loading} className="px-8 py-3 bg-indigo-600 text-white font-bold rounded-xl hover:bg-indigo-700 transition w-full md:w-auto shadow-md">
-                            {loading ? 'Processing...' : pageMode === 'edit' ? `Update ${activeMainTab?.slice(0, -1)}` : `Create ${activeMainTab?.slice(0, -1)}`}
-                        </button>
+                        <PrimaryButton type="submit" loading={loading} className="px-8 py-3 bg-indigo-600 text-white font-bold rounded-xl hover:bg-indigo-700 transition w-full md:w-auto shadow-md flex justify-center items-center">
+                            {pageMode === 'edit' ? `Update ${activeMainTab?.slice(0, -1)}` : `Create ${activeMainTab?.slice(0, -1)}`}
+                        </PrimaryButton>
                         {pageMode === 'edit' && (
                             <button type="button" onClick={() => { setPageMode('list'); setEditingId(null); }} className="px-8 py-3 bg-gray-100 text-gray-700 font-bold rounded-xl hover:bg-gray-200 transition">
                                 Cancel

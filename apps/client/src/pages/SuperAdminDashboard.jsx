@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import superAdminService from '../services/superAdminService';
 import { useToast } from '../hooks/useToast';
+import { InputField, PrimaryButton } from '../components/ui';
 
 const SuperAdminDashboard = ({ activeTab }) => {
     const toast = useToast();
@@ -23,21 +24,21 @@ const SuperAdminDashboard = ({ activeTab }) => {
 
     const fetchColleges = async () => {
         try {
-            const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL || 'http://localhost:8080/api/v1'}/base/superadmin/colleges`, authHeader);
+            const res = await superAdminService.getColleges();
             setColleges(res.data.data);
         } catch (error) { toast.error("Failed to load colleges"); }
     };
 
     const fetchManagers = async () => {
         try {
-            const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL || 'http://localhost:8080/api/v1'}/base/superadmin/managers`, authHeader);
+            const res = await superAdminService.getManagers();
             setManagers(res.data.data);
         } catch (error) { toast.error("Failed to load managers"); }
     };
 
     const fetchRequests = async () => {
         try {
-            const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL || 'http://localhost:8080/api/v1'}/base/superadmin/college-requests`, authHeader);
+            const res = await superAdminService.getCollegeRequests();
             setRequests(res.data.data);
         } catch (error) { toast.error("Failed to load requests"); }
     };
@@ -46,7 +47,7 @@ const SuperAdminDashboard = ({ activeTab }) => {
         e.preventDefault();
         setLoading(true);
         try {
-            await axios.post(`${import.meta.env.VITE_BACKEND_URL || 'http://localhost:8080/api/v1'}/base/superadmin/onboard-college`, formData, authHeader);
+            await superAdminService.onboardCollege(formData);
             toast.success("College onboarded and Principle credentials generated!");
             setFormData({ name: '', principalName: '', principalEmail: '' });
             fetchColleges();
@@ -60,10 +61,10 @@ const SuperAdminDashboard = ({ activeTab }) => {
         setLoading(true);
         try {
             if (editingManagerId) {
-                await axios.put(`${import.meta.env.VITE_BACKEND_URL || 'http://localhost:8080/api/v1'}/base/superadmin/manager/${editingManagerId}`, managerForm, authHeader);
+                await superAdminService.updateManager(editingManagerId, managerForm);
                 toast.success("Manager updated successfully!");
             } else {
-                await axios.post(`${import.meta.env.VITE_BACKEND_URL || 'http://localhost:8080/api/v1'}/base/superadmin/create-manager`, managerForm, authHeader);
+                await superAdminService.createManager(managerForm);
                 toast.success("Manager created successfully!");
             }
             setManagerForm({ username: '', email: '', assignedColleges: [] });
@@ -83,7 +84,7 @@ const SuperAdminDashboard = ({ activeTab }) => {
     const handleDeleteManager = async (id) => {
         if (!window.confirm('Are you sure?')) return;
         try {
-            await axios.delete(`${import.meta.env.VITE_BACKEND_URL || 'http://localhost:8080/api/v1'}/base/superadmin/manager/${id}`, authHeader);
+            await superAdminService.deleteManager(id);
             toast.success("Manager deleted");
             fetchManagers();
         } catch (err) { toast.error("Failed to delete"); }
@@ -91,7 +92,7 @@ const SuperAdminDashboard = ({ activeTab }) => {
 
     const handleApproveRequest = async (id) => {
         try {
-            await axios.post(`${import.meta.env.VITE_BACKEND_URL || 'http://localhost:8080/api/v1'}/base/superadmin/college-requests/${id}/approve`, {}, authHeader);
+            await superAdminService.approveCollegeRequest(id);
             toast.success("Request approved and College created!");
             fetchRequests();
         } catch (err) { toast.error("Failed to approve"); }
@@ -106,21 +107,12 @@ const SuperAdminDashboard = ({ activeTab }) => {
                     <div className="bg-white p-8 rounded-3xl shadow-sm border border-gray-100">
                         <h2 className="text-2xl font-bold mb-6 text-gray-800">Onboard Direct Institute</h2>
                         <form onSubmit={handleOnboard} className="space-y-4">
-                            <div>
-                                <label className="block text-sm font-semibold text-gray-700 mb-1">College Name</label>
-                                <input required type="text" className="w-full border border-gray-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-indigo-500" value={formData.name} onChange={e => setFormData({ ...formData, name: e.target.value })} />
-                            </div>
-                            <div>
-                                <label className="block text-sm font-semibold text-gray-700 mb-1">Principal Full Name</label>
-                                <input required type="text" className="w-full border border-gray-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-indigo-500" value={formData.principalName} onChange={e => setFormData({ ...formData, principalName: e.target.value })} />
-                            </div>
-                            <div>
-                                <label className="block text-sm font-semibold text-gray-700 mb-1">Principal Email</label>
-                                <input required type="email" className="w-full border border-gray-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-indigo-500" value={formData.principalEmail} onChange={e => setFormData({ ...formData, principalEmail: e.target.value })} />
-                            </div>
-                            <button disabled={loading} type="submit" className="w-full bg-indigo-600 text-white py-4 rounded-xl font-bold hover:bg-indigo-700 transition shadow-md">
-                                {loading ? "Generating..." : "Onboard Institute & Generate Credentials"}
-                            </button>
+                            <InputField required label="College Name" value={formData.name} onChange={e => setFormData({ ...formData, name: e.target.value })} />
+                            <InputField required label="Principal Full Name" value={formData.principalName} onChange={e => setFormData({ ...formData, principalName: e.target.value })} />
+                            <InputField required type="email" label="Principal Email" value={formData.principalEmail} onChange={e => setFormData({ ...formData, principalEmail: e.target.value })} />
+                            <PrimaryButton type="submit" loading={loading}>
+                                Onboard Institute & Generate Credentials
+                            </PrimaryButton>
                         </form>
                     </div>
 
@@ -157,14 +149,8 @@ const SuperAdminDashboard = ({ activeTab }) => {
                             )}
                         </div>
                         <form onSubmit={handleCreateManager} className="space-y-4">
-                            <div>
-                                <label className="block text-sm font-semibold text-gray-700 mb-1">Manager Name</label>
-                                <input required type="text" className="w-full border border-gray-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-indigo-500" value={managerForm.username} onChange={e => setManagerForm({ ...managerForm, username: e.target.value })} />
-                            </div>
-                            <div>
-                                <label className="block text-sm font-semibold text-gray-700 mb-1">Manager Email</label>
-                                <input required type="email" className="w-full border border-gray-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-indigo-500" value={managerForm.email} onChange={e => setManagerForm({ ...managerForm, email: e.target.value })} />
-                            </div>
+                            <InputField required label="Manager Name" value={managerForm.username} onChange={e => setManagerForm({ ...managerForm, username: e.target.value })} />
+                            <InputField required type="email" label="Manager Email" value={managerForm.email} onChange={e => setManagerForm({ ...managerForm, email: e.target.value })} />
                             <div>
                                 <label className="block text-sm font-semibold text-gray-700 mb-2">Assign Colleges</label>
                                 <div className="border border-gray-200 rounded-xl p-4 max-h-48 overflow-y-auto bg-white grid grid-cols-1 md:grid-cols-2 gap-2">
@@ -187,9 +173,9 @@ const SuperAdminDashboard = ({ activeTab }) => {
                                 </div>
                                 {managerForm.assignedColleges.length === 0 && <span className="text-xs text-rose-500 mt-1">Please select at least one college.</span>}
                             </div>
-                            <button disabled={loading || managerForm.assignedColleges.length === 0} type="submit" className="w-full bg-emerald-600 text-white py-4 rounded-xl font-bold hover:bg-emerald-700 transition shadow-md mt-4 disabled:opacity-50">
+                            <PrimaryButton type="submit" loading={loading} disabled={loading || managerForm.assignedColleges.length === 0} className="w-full bg-emerald-600 text-white py-3 rounded-xl font-bold hover:bg-emerald-700 transition shadow-md mt-4 flex justify-center items-center">
                                 {editingManagerId ? 'Update Manager' : 'Create Manager'}
-                            </button>
+                            </PrimaryButton>
                         </form>
                     </div>
 

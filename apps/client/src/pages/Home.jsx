@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 import DashboardRouter from './DashboardRouter';
-import axios from 'axios';
+import onboardingService from '../services/onboardingService';
+import { InputField, PrimaryButton } from '../components/ui';
 
 const Home = () => {
     const navigate = useNavigate();
@@ -15,7 +16,7 @@ const Home = () => {
         e.preventDefault();
         setLoading(true);
         try {
-            await axios.post(`${import.meta.env.VITE_BACKEND_URL}/onboarding/request-college`, formData);
+            await onboardingService.requestCollege(formData);
             alert("Request submitted successfully! Our team will contact you.");
             setIsModalOpen(false);
             setFormData({ collegeName: '', principalName: '', principalEmail: '', contactNumber: '' });
@@ -127,25 +128,13 @@ const Home = () => {
                         </button>
                         <h2 className="text-2xl font-bold mb-6 text-gray-900">Request College Onboarding</h2>
                         <form onSubmit={handleRequestDemo} className="space-y-4">
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">College Name</label>
-                                <input required type="text" value={formData.collegeName} onChange={e => setFormData({ ...formData, collegeName: e.target.value })} className="w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none" />
-                            </div>
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Principal Name</label>
-                                <input required type="text" value={formData.principalName} onChange={e => setFormData({ ...formData, principalName: e.target.value })} className="w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none" />
-                            </div>
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Principal Email</label>
-                                <input required type="email" value={formData.principalEmail} onChange={e => setFormData({ ...formData, principalEmail: e.target.value })} className="w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none" />
-                            </div>
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Contact Number</label>
-                                <input type="text" value={formData.contactNumber} onChange={e => setFormData({ ...formData, contactNumber: e.target.value })} className="w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none" />
-                            </div>
-                            <button type="submit" disabled={loading} className="w-full bg-indigo-600 text-white font-bold py-3 rounded-xl hover:bg-indigo-700 transition">
-                                {loading ? 'Submitting...' : 'Submit Request'}
-                            </button>
+                            <InputField required label="College Name" value={formData.collegeName} onChange={e => setFormData({ ...formData, collegeName: e.target.value })} />
+                            <InputField required label="Principal Name" value={formData.principalName} onChange={e => setFormData({ ...formData, principalName: e.target.value })} />
+                            <InputField required type="email" label="Principal Email" value={formData.principalEmail} onChange={e => setFormData({ ...formData, principalEmail: e.target.value })} />
+                            <InputField label="Contact Number" value={formData.contactNumber} onChange={e => setFormData({ ...formData, contactNumber: e.target.value })} />
+                            <PrimaryButton type="submit" loading={loading}>
+                                Submit Request
+                            </PrimaryButton>
                         </form>
                     </div>
                 </div>

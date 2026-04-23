@@ -1,13 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import { useDispatch, useSelector } from 'react-redux';
+import academicService from '../services/academicService';
+import { fetchLookups } from '../store/slices/lookupSlice';
 import { useToast } from '../hooks/useToast';
+import { SelectField, InputField } from '../components/ui';
 
 const AttendanceModule = ({ user }) => {
     const toast = useToast();
     const authHeader = { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } };
 
-    const [colleges, setColleges] = useState([]);
-    const [classes, setClasses] = useState([]);
+    const dispatch = useDispatch();
+    const { classes: globalClasses, accessibleColleges, loaded: lookupsLoaded } = useSelector(state => state.lookup);
+    
     const [students, setStudents] = useState([]);
 
     const [selectedCollegeId, setSelectedCollegeId] = useState('');
@@ -21,41 +25,43 @@ const AttendanceModule = ({ user }) => {
     // Format: { [studentId]: true/false }
     const [attendanceMap, setAttendanceMap] = useState({});
 
-    // Fetch initial lookups based on role
+    // Fetch global lookups on load
     useEffect(() => {
-        const init = async () => {
-            try {
-                if (user.role === 'Admin' || user.role === 'Manager') {
-                    const colRes = await axios.get(`${import.meta.env.VITE_BACKEND_URL || 'http://localhost:8080/api/v1'}/academic/accessible-colleges`, authHeader);
-                    setColleges(colRes.data.data);
-                    if (colRes.data.data.length > 0) setSelectedCollegeId(colRes.data.data[0]._id);
-                } else {
-                    // Principal or Teacher: locked to single college
-                    setSelectedCollegeId(user.collegeId);
-                }
-            } catch (err) {
-                toast.error("Failed to load initial data");
-            }
-        };
-        init();
-    }, [user.role, user.collegeId]);
+        if (!lookupsLoaded) {
+            dispatch(fetchLookups());
+        }
+    }, [dispatch, lookupsLoaded]);
 
-    // Fetch Classes whenever college changes
+    // Handle initial selection once lookups are loaded
     useEffect(() => {
-        if (!selectedCollegeId) toast.error("Please select a college");;
-        const fetchClasses = async () => {
-            try {
-                const clsRes = await axios.get(`${import.meta.env.VITE_BACKEND_URL || 'http://localhost:8080/api/v1'}/academic/classes`, authHeader);
-                const filteredClasses = clsRes.data.data.filter(c => String(c.collegeId?._id || c.collegeId) === String(selectedCollegeId));
-                setClasses(filteredClasses);
-                if (filteredClasses.length > 0) setSelectedClassId(filteredClasses[0]._id);
-                else { setSelectedClassId(''); setStudents([]); }
-            } catch (err) {
-                console.error(err);
+        if (!lookupsLoaded) return;
+        
+        if (user.role === 'Admin' || user.role === 'Manager') {
+            if (accessibleColleges.length > 0 && !selectedCollegeId) {
+                setSelectedCollegeId(accessibleColleges[0]._id);
             }
-        };
-        fetchClasses();
-    }, [selectedCollegeId]);
+        } else {
+            setSelectedCollegeId(user.collegeId);
+        }
+    }, [lookupsLoaded, user, accessibleColleges]);
+
+    // Compute derived classes based on selected college
+    const derivedClasses = React.useMemo(() => {
+        if (!selectedCollegeId || !globalClasses) return [];
+        return globalClasses.filter(c => String(c.collegeId?._id || c.collegeId) === String(selectedCollegeId));
+    }, [selectedCollegeId, globalClasses]);
+
+    // Auto-select first class when derived classes change
+    useEffect(() => {
+        if (derivedClasses.length > 0) {
+            if (!derivedClasses.find(c => c._id === selectedClassId)) {
+                setSelectedClassId(derivedClasses[0]._id);
+            }
+        } else {
+            setSelectedClassId('');
+            setStudents([]);
+        }
+    }, [derivedClasses]);
 
     useEffect(() => {
         if (!selectedClassId || !selectedDate) return;
@@ -63,7 +69,7 @@ const AttendanceModule = ({ user }) => {
             setLoading(true);
             try {
                 // Fetch students of this class
-                const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL || 'http://localhost:8080/api/v1'}/academic/students`, authHeader);
+                const res = await academicService.getStudents();
                 const classStudents = res.data.data.filter(s => String(s.class?._id || s.class) === String(selectedClassId));
                 setStudents(classStudents);
 
@@ -72,7 +78,7 @@ const AttendanceModule = ({ user }) => {
                 classStudents.forEach(s => initialMap[s._id] = true);
 
                 // Fetch attendance for the specific date
-                const attRes = await axios.get(`${import.meta.env.VITE_BACKEND_URL || 'http://localhost:8080/api/v1'}/academic/attendance/query?classId=${selectedClassId}&date=${selectedDate}`, authHeader);
+                const attRes = await academicService.getAttendanceQuery(selectedClassId, selectedDate);
                 if (attRes.data.data && attRes.data.data.length > 0) {
                     attRes.data.data.forEach(att => {
                         initialMap[att.studentId] = att.status === 'Present';
@@ -103,7 +109,7 @@ const AttendanceModule = ({ user }) => {
                     status: attendanceMap[s._id] ? 'Present' : 'Absent'
                 }))
             };
-            await axios.post(`${import.meta.env.VITE_BACKEND_URL || 'http://localhost:8080/api/v1'}/academic/attendance/mark`, payload, authHeader);
+            await academicService.markAttendance(payload);
             toast.success("Attendance saved successfully!");
         } catch (error) {
             toast.error(error.response?.data?.error || "Failed to save attendance");
@@ -111,7 +117,7 @@ const AttendanceModule = ({ user }) => {
             setSaving(false);
         }
     };
-    console.log("classes>>>>>>> ", classes)
+    console.log("classes>>>>>>> ", derivedClasses)
 
     return (
         <div className="max-w-[1305px] mx-auto px-6 py-10 w-full animate-in fade-in duration-500 bg-[#FDFCF0] min-h-screen">
@@ -119,26 +125,17 @@ const AttendanceModule = ({ user }) => {
 
             <div className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 mb-8 grid grid-cols-1 md:grid-cols-4 gap-6">
                 {(user.role === 'Admin' || user.role === 'Manager') && (
-                    <div className="flex flex-col gap-2">
-                        <label className="text-sm font-bold text-gray-600">Select College</label>
-                        <select className="border border-gray-200 rounded-xl px-4 py-3 bg-gray-50 focus:ring-2 focus:ring-indigo-500" value={selectedCollegeId} onChange={e => setSelectedCollegeId(e.target.value)}>
-                            {colleges.map(c => <option key={c._id} value={c._id}>{c.name}</option>)}
-                        </select>
-                    </div>
+                    <SelectField label="Select College" value={selectedCollegeId} onChange={e => setSelectedCollegeId(e.target.value)}>
+                        {accessibleColleges.map(c => <option key={c._id} value={c._id}>{c.name}</option>)}
+                    </SelectField>
                 )}
 
-                <div className="flex flex-col gap-2">
-                    <label className="text-sm font-bold text-gray-600">Select Class</label>
-                    <select className="border border-gray-200 rounded-xl px-4 py-3 bg-gray-50 focus:ring-2 focus:ring-indigo-500" value={selectedClassId} onChange={e => setSelectedClassId(e.target.value)}>
-                        {classes.length === 0 && <option value="">No Classes Found</option>}
-                        {classes.map(c => <option key={c._id} value={c._id}>{c.name}</option>)}
-                    </select>
-                </div>
+                <SelectField label="Select Class" value={selectedClassId} onChange={e => setSelectedClassId(e.target.value)}>
+                    {derivedClasses.length === 0 && <option value="">No Classes Found</option>}
+                    {derivedClasses.map(c => <option key={c._id} value={c._id}>{c.name}</option>)}
+                </SelectField>
 
-                <div className="flex flex-col gap-2">
-                    <label className="text-sm font-bold text-gray-600">Select Date</label>
-                    <input type="date" className="border border-gray-200 rounded-xl px-4 py-3 bg-gray-50 focus:ring-2 focus:ring-indigo-500" value={selectedDate} onChange={e => setSelectedDate(e.target.value)} />
-                </div>
+                <InputField type="date" label="Select Date" value={selectedDate} onChange={e => setSelectedDate(e.target.value)} />
             </div>
 
             <div className="bg-white p-8 rounded-3xl shadow-sm border border-gray-100">

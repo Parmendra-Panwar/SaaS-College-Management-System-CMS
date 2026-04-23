@@ -52,11 +52,8 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 // 3. Routes
-import listingsRouter from "./routes/listing.js";
-import reviewsRouter from "./routes/review.js";
 import usersRouter from "./routes/users.js";
 import authRouter from "./routes/authrouter.js";
-import profileRouter from "./routes/profile.js";
 import onboardingRouter from "./routes/onboarding.js";
 import teacherTrackingRouter from "./routes/teacherTracking.js";
 import insightsRouter from "./routes/insights.js";
@@ -72,12 +69,8 @@ app.get("/", (req, res) => {
   res.json({ message: "CMS API is live and secure!" });
 });
 
-app.use("/api/v1/listings", listingsRouter);
-app.use("/api/v1/:type/:id/reviews", reviewsRouter);
 app.use("/api/v1/auth/login", usersRouter);
 app.use("/api/v1/auth/signup", authRouter);
-app.use("/api/v1/profile", profileRouter);
-
 // Set up new SaaS College Management System routes
 app.use("/api/v1/base/superadmin", superAdminRouter);
 app.use("/api/v1/onboarding", onboardingRouter);

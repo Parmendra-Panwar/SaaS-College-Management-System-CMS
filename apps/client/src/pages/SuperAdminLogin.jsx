@@ -3,7 +3,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { loginUser } from '../store/slices/authSlice';
 import { useToast } from '../hooks/useToast';
-import axios from 'axios';
+import superAdminService from '../services/superAdminService';
+import { InputField, PrimaryButton } from '../components/ui';
 
 const SuperAdminLogin = () => {
     const [email, setEmail] = useState('');
@@ -23,7 +24,7 @@ const SuperAdminLogin = () => {
             // we will directly call the endpoint and manually update state or patch Redux thunk.
             // But if our auth slice supports normal login, maybe we just bypass thunk for simplicity.
 
-            const res = await axios.post(`${import.meta.env.VITE_BACKEND_URL || 'http://localhost:8080/api/v1'}/base/superadmin/login`, {
+            const res = await superAdminService.login({
                 email, password
             });
 
@@ -58,35 +59,25 @@ const SuperAdminLogin = () => {
                 </div>
 
                 <form onSubmit={handleSubmit} className="space-y-5">
-                    <div>
-                        <label className="block text-sm font-medium text-zinc-400 mb-1">Root Email</label>
-                        <input
-                            type="email"
-                            className="w-full bg-zinc-950 border border-zinc-800 text-white rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
-                            placeholder="admin@cms.com"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            required
-                        />
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium text-zinc-400 mb-1">Master Password</label>
-                        <input
-                            type="password"
-                            className="w-full bg-zinc-950 border border-zinc-800 text-white rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
-                            placeholder="••••••••"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            required
-                        />
-                    </div>
-                    <button
-                        type="submit"
-                        disabled={loading}
-                        className="w-full bg-indigo-600 text-white py-3 rounded-xl font-bold hover:bg-indigo-700 transition"
-                    >
-                        {loading ? 'Authenticating...' : 'Override Protocol'}
-                    </button>
+                    <InputField
+                        label="Root Email"
+                        type="email"
+                        placeholder="admin@cms.com"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        required
+                    />
+                    <InputField
+                        label="Master Password"
+                        type="password"
+                        placeholder="••••••••"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        required
+                    />
+                    <PrimaryButton type="submit" loading={loading}>
+                        Override Protocol
+                    </PrimaryButton>
                 </form>
             </div>
         </div>
