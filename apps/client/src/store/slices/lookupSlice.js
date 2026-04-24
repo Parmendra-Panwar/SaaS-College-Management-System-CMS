@@ -3,11 +3,11 @@ import academicService from '@services/academicService';
 
 export const fetchLookups = createAsyncThunk(
     'lookup/fetchLookups',
-    async (_, { rejectWithValue }) => {
+    async (collegeId, { rejectWithValue }) => {
         try {
             const [departments, classes, accessibleColleges] = await Promise.all([
-                academicService.getDepartments(),
-                academicService.getClasses(),
+                academicService.getDepartments(collegeId),
+                academicService.getClasses(collegeId),
                 academicService.getAccessibleColleges()
             ]);
             return {

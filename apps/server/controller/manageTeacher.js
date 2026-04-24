@@ -13,7 +13,20 @@ export const getTeacher = async (req, res) => {
 };
 
 export const getTeachers = async (req, res) => {
-    const teachers = await Teacher.find(getCollegeFilter(req))
+    let filter = getCollegeFilter(req);
+    
+    if (req.user.role === 'Admin' || req.user.role === 'Manager') {
+        if (req.query.collegeId) {
+            if (req.user.role === 'Manager' && !req.user.assignedColleges.map(String).includes(String(req.query.collegeId))) {
+                return res.status(403).json({ error: "Access Denied" });
+            }
+            filter.collegeId = req.query.collegeId;
+        } else {
+            return res.status(200).json({ success: true, data: [] });
+        }
+    }
+
+    const teachers = await Teacher.find(filter)
         .populate({ path: 'user', select: '-password' })
         .populate('departments')
         .populate('classes');

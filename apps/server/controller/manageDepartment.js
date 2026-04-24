@@ -3,7 +3,23 @@ import Class from "../models/class.js";
 import { getCollegeFilter, isActionAllowed } from "../utils/helpers.js";
 
 export const getDepartments = async (req, res) => {
-    const departments = await Department.find(getCollegeFilter(req));
+    let filter = getCollegeFilter(req);
+    
+    // For Admin/Manager, enforce specific college fetch
+    if (req.user.role === 'Admin' || req.user.role === 'Manager') {
+        if (req.query.collegeId) {
+            if (req.user.role === 'Manager') {
+                if (!req.user.assignedColleges.map(String).includes(String(req.query.collegeId))) {
+                    return res.status(403).json({ error: "Access Denied" });
+                }
+            }
+            filter.collegeId = req.query.collegeId;
+        } else {
+            return res.status(200).json({ success: true, data: [] });
+        }
+    }
+    
+    const departments = await Department.find(filter);
     res.status(200).json({ success: true, data: departments });
 };
 

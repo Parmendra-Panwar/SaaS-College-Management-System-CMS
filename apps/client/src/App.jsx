@@ -23,20 +23,13 @@ import AccessDenied from '@components/AccessDenied';
 import ShowCollegesAdmin from '@/pages/admin/colleges/ShowCollegesAdmin';
 import ShowManagersAdmin from '@/pages/admin/managers/ShowManagersAdmin';
 import ShowRequestsAdmin from '@/pages/admin/requests/ShowRequestsAdmin';
-import ShowTeachersAdmin from '@/pages/admin/teachers/ShowTeachersAdmin';
-import ShowStudentsAdmin from '@/pages/admin/students/ShowStudentsAdmin';
 
 // ─── Manager Pages ─────────────────────────────────────────────────────────────
-import ShowTeachersManager from '@/pages/manager/teachers/ShowTeachersManager';
-import ShowStudentsManager from '@/pages/manager/students/ShowStudentsManager';
 import ShowCollegesManager from '@/pages/manager/colleges/ShowCollegesManager';
 
 // ─── Principal Pages ──────────────────────────────
-import ShowTeachersPrincipal from '@/pages/principal/teachers/ShowTeachersPrincipal';
-import ShowStudentsPrincipal from '@pages/principal/students/ShowStudents';
 
 // ─── Teacher Pages ──────────────────────────────
-import ShowStudentsTeacher from '@pages/teacher/students/ShowStudentsTeacher';
 
 // ─── Attendance (shared across all management roles + Teacher) ───────────────
 import AttendancePage from '@pages/shared/AttendancePage';
@@ -45,6 +38,8 @@ import { getProfile } from '@store/slices/authSlice';
 import { useToast } from '@hooks/useToast';
 import ManageClasses from './pages/ManageClasses/ManageClasses';
 import ManageDepartment from './pages/ManageDepartment/ManageDepartment';
+import ManageStudent from './pages/ManageStudent/ManageStudent';
+import ManageTeacher from './pages/ManageTeacher/ManageTeacher';
 
 // ─── Public Layout ───────────────────────────────────────────────────────────
 const GlobalLayout = () => {
@@ -93,8 +88,8 @@ const router = createBrowserRouter([
           { path: 'requests', element: <ShowRequestsAdmin /> },
           { path: 'departments', element: <ManageDepartment /> },
           { path: 'classes', element: <ManageClasses /> },
-          { path: 'students', element: <ShowStudentsAdmin /> },
-          { path: 'teachers', element: <ShowTeachersAdmin /> },
+          { path: 'students', element: <ManageStudent /> },
+          { path: 'teachers', element: <ManageTeacher /> },
           { path: 'attendance', element: <AttendancePage /> },
         ],
       },
@@ -112,8 +107,8 @@ const router = createBrowserRouter([
           { path: 'colleges', element: <ShowCollegesManager /> },
           { path: 'departments', element: <ManageDepartment /> },
           { path: 'classes', element: <ManageClasses /> },
-          { path: 'students', element: <ShowStudentsManager /> },
-          { path: 'teachers', element: <ShowTeachersManager /> },
+          { path: 'students', element: <ManageStudent /> },
+          { path: 'teachers', element: <ManageTeacher /> },
           { path: 'attendance', element: <AttendancePage /> },
         ],
       },
@@ -130,8 +125,8 @@ const router = createBrowserRouter([
         children: [
           { path: 'departments', element: <ManageDepartment /> },
           { path: 'classes', element: <ManageClasses /> },
-          { path: 'students', element: <ShowStudentsPrincipal /> },
-          { path: 'teachers', element: <ShowTeachersPrincipal /> },
+          { path: 'students', element: <ManageStudent /> },
+          { path: 'teachers', element: <ManageTeacher /> },
           { path: 'attendance', element: <AttendancePage /> },
         ],
       },
@@ -146,9 +141,8 @@ const router = createBrowserRouter([
       {
         element: <ProtectedRoute allowedRoles={['Teacher']} />,
         children: [
-          { path: 'departments', element: <ManageDepartment /> },
           { path: 'classes', element: <ManageClasses /> },
-          { path: 'students', element: <ShowStudentsTeacher /> },
+          { path: 'students', element: <ManageStudent /> },
           { path: 'attendance', element: <AttendancePage /> },
         ],
       },

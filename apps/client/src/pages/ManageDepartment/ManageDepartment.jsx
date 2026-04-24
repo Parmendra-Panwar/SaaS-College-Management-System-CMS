@@ -42,26 +42,29 @@ const ManageDepartment = () => {
         }
     }, [lookupsLoaded, colleges, isMultiCollegeRole, user, selectedCollegeId]);
 
-    useEffect(() => {
-        fetchDepartments();
-    }, []);
-
-    const fetchDepartments = async () => {
+    const fetchDepartments = async (collegeId) => {
+        if (!collegeId && isMultiCollegeRole) return;
         try {
-            const res = await academicService.getEntities('departments');
+            const res = await academicService.getEntities('departments', collegeId);
             setDepartmentsData(res.data.data || []);
         } catch (e) { 
             toast.error("Failed to fetch data"); 
         }
     };
 
+    useEffect(() => {
+        if (selectedCollegeId) {
+            fetchDepartments(selectedCollegeId);
+        }
+    }, [selectedCollegeId]);
+
     const handleDelete = async (id) => {
         if (!window.confirm("Delete this record?")) return;
         try {
             await academicService.deleteEntity('departments', id);
             toast.success("Deleted");
-            fetchDepartments();
-            dispatch(fetchLookups());
+            fetchDepartments(selectedCollegeId);
+            dispatch(fetchLookups(selectedCollegeId));
         } catch (e) { 
             toast.error("Delete failed"); 
         }
@@ -79,8 +82,8 @@ const ManageDepartment = () => {
                 await academicService.createEntity('departments', payload);
                 toast.success("Created successfully");
             }
-            fetchDepartments();
-            dispatch(fetchLookups());
+            fetchDepartments(selectedCollegeId);
+            dispatch(fetchLookups(selectedCollegeId));
             setFormDept({ name: '', description: '' });
             setEditingItem(null);
             if (!editingItem) {

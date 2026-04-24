@@ -49,26 +49,30 @@ const ManageClasses = () => {
         }
     }, [selectedCollegeId]);
 
-    useEffect(() => {
-        fetchClasses();
-    }, []);
-
-    const fetchClasses = async () => {
+    const fetchClasses = async (collegeId) => {
+        if (!collegeId && isMultiCollegeRole) return;
         try {
-            const res = await academicService.getEntities('classes');
+            const res = await academicService.getEntities('classes', collegeId);
             setClassesData(res.data.data || []);
         } catch (e) { 
             toast.error("Failed to fetch data"); 
         }
     };
 
+    useEffect(() => {
+        if (selectedCollegeId) {
+            fetchClasses(selectedCollegeId);
+            dispatch(fetchLookups(selectedCollegeId));
+        }
+    }, [selectedCollegeId, dispatch]);
+
     const handleDelete = async (id) => {
         if (!window.confirm("Delete this record?")) return;
         try {
             await academicService.deleteEntity('classes', id);
             toast.success("Deleted");
-            fetchClasses();
-            dispatch(fetchLookups());
+            fetchClasses(selectedCollegeId);
+            dispatch(fetchLookups(selectedCollegeId));
         } catch (e) { 
             toast.error("Delete failed"); 
         }
@@ -86,8 +90,8 @@ const ManageClasses = () => {
                 await academicService.createEntity('classes', payload);
                 toast.success("Created successfully");
             }
-            fetchClasses();
-            dispatch(fetchLookups());
+            fetchClasses(selectedCollegeId);
+            dispatch(fetchLookups(selectedCollegeId));
             setFormClass({ name: '', departmentId: '' });
             setEditingItem(null);
             if (!editingItem) {

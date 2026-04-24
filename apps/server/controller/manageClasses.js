@@ -4,7 +4,23 @@ import Subject from "../models/subject.js";
 import { getCollegeFilter, isActionAllowed } from "../utils/helpers.js";
 
 export const getClasses = async (req, res) => {
-    const classes = await Class.find(getCollegeFilter(req)).populate('departmentId');
+    let filter = getCollegeFilter(req);
+    
+    // For Admin/Manager, enforce specific college fetch
+    if (req.user.role === 'Admin' || req.user.role === 'Manager') {
+        if (req.query.collegeId) {
+            if (req.user.role === 'Manager') {
+                if (!req.user.assignedColleges.map(String).includes(String(req.query.collegeId))) {
+                    return res.status(403).json({ error: "Access Denied" });
+                }
+            }
+            filter.collegeId = req.query.collegeId;
+        } else {
+            return res.status(200).json({ success: true, data: [] });
+        }
+    }
+    
+    const classes = await Class.find(filter).populate('departmentId');
     res.status(200).json({ success: true, data: classes });
 };
 

@@ -32,6 +32,21 @@ export const getStudent = async (req, res) => {
 export const getStudents = async (req, res) => {
     let filter = getCollegeFilter(req);
     
+    if (req.user.role === 'Admin' || req.user.role === 'Manager') {
+        if (req.query.collegeId) {
+            if (req.user.role === 'Manager' && !req.user.assignedColleges.map(String).includes(String(req.query.collegeId))) {
+                return res.status(403).json({ error: "Access Denied" });
+            }
+            filter.collegeId = req.query.collegeId;
+        } else {
+            return res.status(200).json({ success: true, data: [] });
+        }
+    }
+    
+    if (req.query.classId) {
+        filter.class = req.query.classId;
+    }
+    
     if (req.user.role === 'Teacher') {
         const teacher = await Teacher.findOne({ user: req.user._id });
         if (teacher) {
@@ -41,7 +56,14 @@ export const getStudents = async (req, res) => {
                 validClassIds.push(...classesInDepts.map(c => c._id));
             }
             if (validClassIds.length > 0) {
-                filter.class = { $in: validClassIds };
+                if (req.query.classId) {
+                    if (!validClassIds.map(String).includes(String(req.query.classId))) {
+                        return res.status(200).json({ success: true, data: [] });
+                    }
+                    filter.class = req.query.classId;
+                } else {
+                    filter.class = { $in: validClassIds };
+                }
             } else {
                 filter.class = null; // Forces empty result
             }
