@@ -1,23 +1,47 @@
-import { useEffect } from 'react';
+import { useEffect, lazy, Suspense } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { createBrowserRouter, RouterProvider, Outlet, useLocation } from 'react-router-dom';
 
-import Navbar from './components/Navbar';
-import ToastContainer from './components/ToastContainer';
-import { SpinnerIcon } from './components/icons';
+import Navbar from '@components/Navbar';
+import ToastContainer from '@components/ToastContainer';
+import { SpinnerIcon } from '@components/icons';
 
-import Home from './pages/Home';
-import Login from './pages/Login';
-import Signup from './pages/Signup';
-import SuperAdminLogin from './pages/SuperAdminLogin';
-import NotFound from './pages/NotFound';
-import ProfilePage from './pages/ProfilePage';
-import DashboardRouter from './pages/DashboardRouter';
+// ─── Public Pages ────────────────────────────────────────────────────────────
+import Home from '@pages/Home';
+import Login from '@pages/Login';
+import Signup from '@pages/Signup';
+import SuperAdminLogin from '@pages/SuperAdminLogin';
+import NotFound from '@pages/NotFound';
+import ProfilePage from '@pages/ProfilePage';
 
-import { getProfile } from './store/slices/authSlice';
-import { useToast } from './hooks/useToast';
+// ─── Dashboard Infrastructure ────────────────────────────────────────────────
+import DashboardLayout from '@components/DashboardLayout';
+import ProtectedRoute from '@components/ProtectedRoute';
+import RoleRedirect from '@components/RoleRedirect';
+import AccessDenied from '@components/AccessDenied';
 
-// ─── Layout ──────────────────────────────────────────────────────────────────
+// ─── Admin Pages ─────────────────────────────────────────────────────────────
+import ShowColleges from '@pages/admin/colleges/ShowColleges';
+import ShowManagers from '@pages/admin/managers/ShowManagers';
+import ShowRequests from '@pages/admin/requests/ShowRequests';
+
+// ─── Shared Pages (Admin + Principal + Manager) ──────────────────────────────
+import ShowDepartments from '@pages/principal/departments/ShowDepartments';
+import ShowClasses from '@pages/principal/classes/ShowClasses';
+import ShowTeachers from '@pages/principal/teachers/ShowTeachers';
+import ShowStudents from '@pages/principal/students/ShowStudents';
+
+// ─── Attendance (shared across all management roles + Teacher) ───────────────
+import AttendancePage from '@pages/shared/AttendancePage';
+
+// ─── Teacher Pages ───────────────────────────────────────────────────────────
+import TeacherGradesPage from '@pages/teacher/grades/TeacherGradesPage';
+import TeacherDisciplinePage from '@pages/teacher/discipline/TeacherDisciplinePage';
+
+import { getProfile } from '@store/slices/authSlice';
+import { useToast } from '@hooks/useToast';
+
+// ─── Public Layout ───────────────────────────────────────────────────────────
 const GlobalLayout = () => {
   const location = useLocation();
   const isDashboard = location.pathname.startsWith('/dashboard');
@@ -36,19 +60,84 @@ const GlobalLayout = () => {
   );
 };
 
-// ─── Router ───────────────────────────────────────────────────────────────────
+// ─── Router ──────────────────────────────────────────────────────────────────
 const router = createBrowserRouter([
   {
     path: '/',
     element: <GlobalLayout />,
     children: [
+      // ── Public routes ──────────────────────────────────────────────────
       { index: true, element: <Home /> },
       { path: 'login', element: <Login /> },
       { path: 'signup', element: <Signup /> },
       { path: 'superadminlogin', element: <SuperAdminLogin /> },
       { path: 'profile/:username', element: <ProfilePage /> },
-      { path: 'dashboard', element: <DashboardRouter /> },
-      { path: 'dashboard/:section', element: <DashboardRouter /> },
+
+      // ── Dashboard (nested routes with persistent layout) ───────────────
+      {
+        path: 'dashboard',
+        element: <DashboardLayout />,
+        children: [
+          // Index redirect → role-appropriate default tab
+          { index: true, element: <RoleRedirect /> },
+
+          // Access Denied page
+          { path: 'access-denied', element: <AccessDenied /> },
+
+          // ── Admin-only routes ────────────────────────────────────────
+          {
+            element: <ProtectedRoute allowedRoles={['Admin']} />,
+            children: [
+              { path: 'colleges', element: <ShowColleges /> },
+              { path: 'managers', element: <ShowManagers /> },
+              { path: 'requests', element: <ShowRequests /> },
+            ],
+          },
+
+          // ── Shared: Admin + Principal + Manager ─────────────────────
+          {
+            element: <ProtectedRoute allowedRoles={['Admin', 'Principal', 'Manager']} />,
+            children: [
+              { path: 'departments', element: <ShowDepartments /> },
+              { path: 'classes',     element: <ShowClasses /> },
+              { path: 'students',    element: <ShowStudents /> },
+              { path: 'teachers',    element: <ShowTeachers /> },
+            ],
+          },
+
+          // ── Attendance: Admin + Principal + Manager + Teacher ───────
+          {
+            element: <ProtectedRoute allowedRoles={['Admin', 'Principal', 'Manager', 'Teacher']} />,
+            children: [
+              { path: 'attendance', element: <AttendancePage /> },
+            ],
+          },
+
+          // ── Teacher-only routes ─────────────────────────────────────
+          {
+            element: <ProtectedRoute allowedRoles={['Teacher']} />,
+            children: [
+              { path: 'grades',     element: <TeacherGradesPage /> },
+              { path: 'discipline', element: <TeacherDisciplinePage /> },
+            ],
+          },
+
+          // ── Student routes (future) ─────────────────────────────────
+          {
+            element: <ProtectedRoute allowedRoles={['Student']} />,
+            children: [
+              {
+                path: 'home',
+                element: (
+                  <div className="p-10 text-center text-xl font-bold text-gray-800">
+                    Student Dashboard (Coming Soon)
+                  </div>
+                ),
+              },
+            ],
+          },
+        ],
+      },
     ],
   },
   { path: '*', element: <NotFound /> },

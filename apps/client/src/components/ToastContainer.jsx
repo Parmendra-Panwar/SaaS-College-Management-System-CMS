@@ -1,6 +1,6 @@
 import { useSelector, useDispatch } from 'react-redux';
-import { beginExit, removeToast } from '../store/slices/toastSlice';
-import { CheckCircleIcon, XCircleIcon, InfoIcon, XIcon } from './icons';
+import { beginExit, removeToast } from '@store/slices/toastSlice';
+import { CheckCircleIcon, XCircleIcon, InfoIcon, XIcon } from '@components/icons';
 
 // Per-type visual config
 const CONFIG = {

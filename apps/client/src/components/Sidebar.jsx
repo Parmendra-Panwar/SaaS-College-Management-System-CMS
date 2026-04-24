@@ -1,5 +1,6 @@
 import React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { useNavigation } from '@hooks/useNavigation';
 
 const NavIcon = ({ name, active }) => {
     const className = `w-5 h-5 ${active ? 'text-indigo-600' : 'text-gray-400'}`;
@@ -12,8 +13,20 @@ const NavIcon = ({ name, active }) => {
     return <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" /></svg>;
 }
 
-const Sidebar = ({ sidebarOpen, setSidebarOpen, navItems, activeTab, user }) => {
+/**
+ * Dashboard Sidebar.
+ *
+ * Active tab is now synced from the current URL via useLocation() — the URL is
+ * the single source of truth instead of props passed down from DashboardRouter.
+ *
+ * navItems come from the useNavigation() hook based on the user's role.
+ */
+const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
     const navigate = useNavigate();
+    const location = useLocation();
+    const { navItems, user } = useNavigation();
+
+    const activeTab = location.pathname.split('/dashboard/')[1]?.split('/')[0] || '';
 
     return (
         <>
@@ -50,29 +63,31 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen, navItems, activeTab, user }) => 
                             <button
                                 key={item.id}
                                 onClick={() => {
-                                    navigate(`/dashboard/${item.id}`);
+                                    navigate(`/dashboard/${item.path}`);
                                     setSidebarOpen(false);
                                 }}
-                                className={`flex items-center gap-3 w-full px-3 py-2.5 rounded-xl font-bold transition-all text-sm ${activeTab === item.id ? 'bg-indigo-50 text-indigo-700 shadow-sm' : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900'}`}
+                                className={`flex items-center gap-3 w-full px-3 py-2.5 rounded-xl font-bold transition-all text-sm ${activeTab === item.path ? 'bg-indigo-50 text-indigo-700 shadow-sm' : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900'}`}
                             >
-                                <NavIcon name={item.id} active={activeTab === item.id} />
+                                <NavIcon name={item.id} active={activeTab === item.path} />
                                 {item.label}
                             </button>
                         ))}
                     </nav>
                 </div>
 
-                <div className="p-4 border-t border-[#EBEBEB] shrink-0 bg-gray-50/50">
-                    <div className="flex items-center gap-3 bg-white p-2 border border-[#EBEBEB] rounded-xl shadow-sm">
-                        <div className="w-10 h-10 bg-indigo-100 rounded-lg flex items-center justify-center text-indigo-700 font-extrabold text-lg uppercase shadow-sm">
-                            {user.username.charAt(0)}
-                        </div>
-                        <div className="text-left overflow-hidden">
-                            <p className="font-bold text-gray-900 text-sm truncate">{user.username}</p>
-                            <p className="font-semibold text-gray-400 text-[11px] uppercase tracking-wider">{user.role}</p>
+                {user && (
+                    <div className="p-4 border-t border-[#EBEBEB] shrink-0 bg-gray-50/50">
+                        <div className="flex items-center gap-3 bg-white p-2 border border-[#EBEBEB] rounded-xl shadow-sm">
+                            <div className="w-10 h-10 bg-indigo-100 rounded-lg flex items-center justify-center text-indigo-700 font-extrabold text-lg uppercase shadow-sm">
+                                {user.username.charAt(0)}
+                            </div>
+                            <div className="text-left overflow-hidden">
+                                <p className="font-bold text-gray-900 text-sm truncate">{user.username}</p>
+                                <p className="font-semibold text-gray-400 text-[11px] uppercase tracking-wider">{user.role}</p>
+                            </div>
                         </div>
                     </div>
-                </div>
+                )}
             </aside>
         </>
     );

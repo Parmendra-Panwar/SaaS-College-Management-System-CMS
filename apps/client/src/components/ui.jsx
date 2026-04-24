@@ -1,4 +1,4 @@
-import { SpinnerIcon } from './icons';
+import { SpinnerIcon } from '@components/icons';
 
 /**
  * Full-page centered loader used while data is fetching.

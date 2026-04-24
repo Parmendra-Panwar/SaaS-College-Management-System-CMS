@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { loginUser, clearError } from '../store/slices/authSlice';
+import { loginUser, clearError } from '@store/slices/authSlice';
 import { useNavigate } from 'react-router-dom';
-import { useToast } from '../hooks/useToast';
+import { useToast } from '@hooks/useToast';
 
 const Login = () => {
     const [email, setEmail] = useState('');

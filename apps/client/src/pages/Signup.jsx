@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { signupUser, clearError } from '../store/slices/authSlice';
+import { signupUser, clearError } from '@store/slices/authSlice';
 import { useNavigate, Link } from 'react-router-dom';
-import { useToast } from '../hooks/useToast';
+import { useToast } from '@hooks/useToast';
 
 const Signup = () => {
     const [formData, setFormData] = useState({

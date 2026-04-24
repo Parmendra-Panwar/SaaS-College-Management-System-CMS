@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import academicService from '../../services/academicService';
+import academicService from '@services/academicService';
 
 export const fetchLookups = createAsyncThunk(
     'lookup/fetchLookups',
@@ -11,9 +11,9 @@ export const fetchLookups = createAsyncThunk(
                 academicService.getAccessibleColleges()
             ]);
             return {
-                departments: departments?.data,
-                classes: classes?.data,
-                accessibleColleges: accessibleColleges?.data
+                departments: departments?.data?.data || [],
+                classes: classes?.data?.data || [],
+                accessibleColleges: accessibleColleges?.data?.data || []
             };
         } catch (error) {
             return rejectWithValue(error.response?.data?.error || 'Failed to fetch lookups');

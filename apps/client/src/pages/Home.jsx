@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
-import DashboardRouter from './DashboardRouter';
-import onboardingService from '../services/onboardingService';
-import { InputField, PrimaryButton } from '../components/ui';
+import onboardingService from '@services/onboardingService';
+import { InputField, PrimaryButton } from '@components/ui';
 
 const Home = () => {
     const navigate = useNavigate();

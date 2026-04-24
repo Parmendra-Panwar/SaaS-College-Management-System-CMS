@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import academicService from '../services/academicService';
-import { fetchLookups } from '../store/slices/lookupSlice';
-import { useToast } from '../hooks/useToast';
-import { SelectField, InputField } from '../components/ui';
+import academicService from '@services/academicService';
+import { fetchLookups } from '@store/slices/lookupSlice';
+import { useToast } from '@hooks/useToast';
+import { SelectField, InputField } from '@components/ui';
+import DataTable from '@components/DataTable';
 
 const AttendanceModule = ({ user }) => {
     const toast = useToast();
@@ -35,23 +36,15 @@ const AttendanceModule = ({ user }) => {
     // Handle initial selection once lookups are loaded
     useEffect(() => {
         if (!lookupsLoaded) return;
-
-        if (user.role === 'Admin' || user.role === 'Manager') {
-            if (accessibleColleges?.data?.length > 0 && !selectedCollegeId) {
-                setSelectedCollegeId(accessibleColleges.data[0]._id);
-            }
-        } else {
-            setSelectedCollegeId(user.collegeId);
+        if (accessibleColleges?.length > 0 && !selectedCollegeId) {
+            setSelectedCollegeId(accessibleColleges[0]._id);
         }
-    }, [lookupsLoaded, user, accessibleColleges]);
-
-    console.log("accessibleColleges", accessibleColleges.data);
-    console.log("globalClasses", globalClasses);
+    }, [lookupsLoaded, accessibleColleges]);
 
     // Compute derived classes based on selected college
     const derivedClasses = React.useMemo(() => {
         if (!selectedCollegeId || !globalClasses) return [];
-        return globalClasses?.data?.filter(c => String(c.collegeId?._id || c.collegeId) === String(selectedCollegeId));
+        return globalClasses?.filter(c => String(c.collegeId?._id || c.collegeId) === String(selectedCollegeId));
     }, [selectedCollegeId, globalClasses]);
 
     // Auto-select first class when derived classes change
@@ -120,6 +113,7 @@ const AttendanceModule = ({ user }) => {
             setSaving(false);
         }
     };
+    // Removed redundant useEffect setting collegeId based on user.role
 
     return (
         <div className="max-w-[1305px] mx-auto px-6 py-10 w-full animate-in fade-in duration-500 bg-[#FDFCF0] min-h-screen">
@@ -128,7 +122,7 @@ const AttendanceModule = ({ user }) => {
             <div className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 mb-8 grid grid-cols-1 md:grid-cols-4 gap-6">
                 {(user.role === 'Admin' || user.role === 'Manager') && (
                     <SelectField label="Select College" value={selectedCollegeId} onChange={e => setSelectedCollegeId(e.target.value)}>
-                        {accessibleColleges?.data?.map(c => <option key={c._id} value={c._id}>{c.name}</option>)}
+                        {accessibleColleges?.map(c => <option key={c._id} value={c._id}>{c.name}</option>)}
                     </SelectField>
                 )}
 
@@ -153,35 +147,22 @@ const AttendanceModule = ({ user }) => {
                 ) : students.length === 0 ? (
                     <div className="py-10 text-center font-semibold text-gray-500">Please select a valid Class and College.</div>
                 ) : (
-                    <div className="overflow-x-auto">
-                        <table className="w-full text-left">
-                            <thead>
-                                <tr className="border-b-2 border-gray-100 bg-gray-50">
-                                    <th className="py-4 px-4 font-bold text-gray-500 rounded-tl-xl border-y border-l">Student Name</th>
-                                    <th className="py-4 px-4 font-bold text-gray-500 border-y">Roll No.</th>
-                                    <th className="py-4 px-4 font-bold text-gray-500 border-y">Email</th>
-                                    <th className="py-4 px-4 font-bold text-gray-500 rounded-tr-xl border-y border-r text-center">Status</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {students.map((s, i) => (
-                                    <tr key={s._id} className="border-b border-gray-50 hover:bg-gray-50">
-                                        <td className="py-4 px-4 font-bold">{s.user?.username || 'Unknown'}</td>
-                                        <td className="py-4 px-4 text-gray-500">{s.roll_number}</td>
-                                        <td className="py-4 px-4 text-gray-500">{s.user?.email || 'N/A'}</td>
-                                        <td className="py-4 px-4 text-center">
-                                            <button
-                                                onClick={() => handleCheckboxToggle(s._id)}
-                                                className={`px-4 py-1.5 rounded-lg font-bold text-sm transition-colors ${attendanceMap[s._id] ? 'bg-emerald-100 text-emerald-700' : 'bg-rose-100 text-rose-700'}`}
-                                            >
-                                                {attendanceMap[s._id] ? 'Present' : 'Absent'}
-                                            </button>
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
+                    <DataTable
+                        columns={[
+                            { header: 'Student Name', accessor: s => s.user?.username || 'Unknown' },
+                            { header: 'Roll No.', accessor: s => s.roll_number },
+                            { header: 'Email', accessor: s => s.user?.email || 'N/A' },
+                            { header: 'Status', accessor: s => (
+                                <button
+                                    onClick={() => handleCheckboxToggle(s._id)}
+                                    className={`px-4 py-1.5 rounded-lg font-bold text-sm transition-colors ${attendanceMap[s._id] ? 'bg-emerald-100 text-emerald-700' : 'bg-rose-100 text-rose-700'}`}
+                                >
+                                    {attendanceMap[s._id] ? 'Present' : 'Absent'}
+                                </button>
+                            )}
+                        ]}
+                        data={students}
+                    />
                 )}
             </div>
         </div>

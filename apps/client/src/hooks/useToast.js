@@ -1,6 +1,6 @@
 import { useDispatch } from 'react-redux';
 import { useCallback } from 'react';
-import { addToast, beginExit, removeToast } from '../store/slices/toastSlice';
+import { addToast, beginExit, removeToast } from '@store/slices/toastSlice';
 
 const DURATIONS = { success: 4000, error: 10000, info: 4000 };
 

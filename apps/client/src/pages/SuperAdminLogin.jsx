@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { loginUser } from '../store/slices/authSlice';
-import { useToast } from '../hooks/useToast';
-import superAdminService from '../services/superAdminService';
-import { InputField, PrimaryButton } from '../components/ui';
+import { loginUser } from '@store/slices/authSlice';
+import { useToast } from '@hooks/useToast';
+import superAdminService from '@services/superAdminService';
+import { InputField, PrimaryButton } from '@components/ui';
 
 const SuperAdminLogin = () => {
     const [email, setEmail] = useState('');
