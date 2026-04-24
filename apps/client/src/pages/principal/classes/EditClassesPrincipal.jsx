@@ -4,7 +4,7 @@ import academicService from '@services/academicService';
 import { useToast } from '@hooks/useToast';
 import { InputField, SelectField, PrimaryButton } from '@components/ui';
 
-const EditClasses = ({ mode, editingItem, onCancel, onSuccess, colleges, defaultCollegeId }) => {
+const EditClassesPrincipal = ({ mode, editingItem, onCancel, onSuccess, colleges, defaultCollegeId }) => {
     const toast = useToast();
     const [loading, setLoading] = useState(false);
     const [formClass, setFormClass] = useState({ name: '', departmentId: '' });
@@ -77,4 +77,4 @@ const EditClasses = ({ mode, editingItem, onCancel, onSuccess, colleges, default
     );
 };
 
-export default EditClasses;
+export default EditClassesPrincipal;

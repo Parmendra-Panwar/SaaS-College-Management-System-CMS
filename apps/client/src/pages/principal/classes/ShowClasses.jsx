@@ -4,10 +4,10 @@ import { fetchLookups } from '@store/slices/lookupSlice';
 import academicService from '@services/academicService';
 import { useToast } from '@hooks/useToast';
 import DataTable from '@components/DataTable';
-import EditClasses from '@pages/principal/classes/EditClasses';
+import EditClassesPrincipal from '@/pages/principal/classes/EditClassesPrincipal';
 import { SelectField } from '@components/ui';
 
-const ShowClasses = ({ userRole, userCollegeId }) => {
+const ShowClassesPrincipal = ({ userRole, userCollegeId }) => {
     const toast = useToast();
     const dispatch = useDispatch();
     const { accessibleColleges: colleges, loaded: lookupsLoaded } = useSelector(state => state.lookup);
@@ -59,7 +59,7 @@ const ShowClasses = ({ userRole, userCollegeId }) => {
     if (pageMode === 'create' || pageMode === 'edit') {
         return (
             <div className="animate-in slide-in-from-bottom-4">
-                <EditClasses
+                <EditClassesPrincipal
                     mode={pageMode}
                     editingItem={editingItem}
                     onCancel={() => { setPageMode('list'); setEditingItem(null); }}
@@ -106,4 +106,4 @@ const ShowClasses = ({ userRole, userCollegeId }) => {
     );
 };
 
-export default ShowClasses;
+export default ShowClassesPrincipal;

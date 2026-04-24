@@ -15,7 +15,7 @@ const RoleRedirect = () => {
         return <Navigate to="/login" replace />;
     }
 
-    return <Navigate to={`/dashboard/${getDefaultPath(user.role)}`} replace />;
+    return <Navigate to={`/${user.role.toLowerCase()}/dashboard/${getDefaultPath(user.role)}`} replace />;
 };
 
 export default RoleRedirect;

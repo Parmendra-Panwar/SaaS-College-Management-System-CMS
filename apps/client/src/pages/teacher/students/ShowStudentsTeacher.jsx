@@ -4,10 +4,10 @@ import { fetchLookups } from '@store/slices/lookupSlice';
 import academicService from '@services/academicService';
 import { useToast } from '@hooks/useToast';
 import DataTable from '@components/DataTable';
-import EditStudentsPrincipal from '@/pages/principal/students/EditStudentsPrincipal';
+import EditStudentsTeacher from '@/pages/principal/students/EditStudentsPrincipal';
 import { SelectField } from '@components/ui';
 
-const ShowStudentsPrincipal = ({ userRole, userCollegeId }) => {
+const ShowStudents = ({ userRole, userCollegeId }) => {
     const toast = useToast();
     const dispatch = useDispatch();
     const { accessibleColleges: colleges, classes, loaded: lookupsLoaded } = useSelector(state => state.lookup);
@@ -74,7 +74,7 @@ const ShowStudentsPrincipal = ({ userRole, userCollegeId }) => {
     if (pageMode === 'create' || pageMode === 'edit') {
         return (
             <div className="animate-in slide-in-from-bottom-4">
-                <EditStudentsPrincipal
+                <EditStudentsTeacher
                     mode={pageMode}
                     editingItem={editingItem}
                     onCancel={() => { setPageMode('list'); setEditingItem(null); }}
@@ -129,4 +129,4 @@ const ShowStudentsPrincipal = ({ userRole, userCollegeId }) => {
     );
 };
 
-export default ShowStudentsPrincipal;
+export default ShowStudents;

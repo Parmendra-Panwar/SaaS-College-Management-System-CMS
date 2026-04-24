@@ -30,7 +30,7 @@ const Navbar = (showLogo = true) => {
     }, []);
 
     const linkStyle = (path) =>
-        `text-[15px] font-[600] tracking-tight transition-all duration-300 ${location.pathname === path ? 'text-indigo-600' : 'text-[#717171] hover:text-indigo-600'
+        `text-[15px] font-[600] tracking-tight transition-all duration-300 ${location.pathname.includes('/dashboard') ? 'text-indigo-600' : 'text-[#717171] hover:text-indigo-600'
         }`;
 
     return (
@@ -57,7 +57,7 @@ const Navbar = (showLogo = true) => {
 
                             {/* Desktop Quick Links */}
                             <div className="hidden md:flex items-center gap-6 pr-2">
-                                <Link to="/" className={linkStyle('/') + " cursor-pointer"}>Dashboard</Link>
+                                <Link to={`/${user.role.toLowerCase()}/dashboard`} className={linkStyle(`/${user.role.toLowerCase()}/dashboard`) + " cursor-pointer"}>Dashboard</Link>
                                 <span className="text-gray-300">|</span>
                                 <span className="text-sm font-semibold text-gray-500 uppercase flex items-center gap-2 tracking-widest"><div className="w-2 h-2 rounded-full bg-green-500"></div>{user.role}</span>
                             </div>
@@ -92,7 +92,7 @@ const Navbar = (showLogo = true) => {
                                         </div>
 
                                         <div className="flex md:hidden flex-col items-center pr-2">
-                                            <button onClick={() => { setShowMenu(false); navigate('/'); }} className="cursor-pointer w-full text-left px-4 py-2.5 text-sm font-semibold text-gray-700 hover:bg-gray-50 transition-colors">Dashboard</button>
+                                            <button onClick={() => { setShowMenu(false); navigate(`/${user.role.toLowerCase()}/dashboard`); }} className="cursor-pointer w-full text-left px-4 py-2.5 text-sm font-semibold text-gray-700 hover:bg-gray-50 transition-colors">Dashboard</button>
                                         </div>
 
                                         <div className="h-[1px] bg-gray-100 my-1"></div>

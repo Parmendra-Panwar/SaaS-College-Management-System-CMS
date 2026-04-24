@@ -4,15 +4,15 @@ import { fetchLookups } from '@store/slices/lookupSlice';
 import academicService from '@services/academicService';
 import { useToast } from '@hooks/useToast';
 import DataTable from '@components/DataTable';
-import EditDepartments from '@pages/principal/departments/EditDepartments';
+import EditTeachersAdmin from '@/pages/admin/teachers/EditTeachersAdmin';
 import { SelectField } from '@components/ui';
 
-const ShowDepartments = ({ userRole, userCollegeId }) => {
+const ShowTeachersAdmin = ({ userRole, userCollegeId }) => {
     const toast = useToast();
     const dispatch = useDispatch();
     const { accessibleColleges: colleges, loaded: lookupsLoaded } = useSelector(state => state.lookup);
 
-    const [departments, setDepartments] = useState([]);
+    const [teachers, setTeachers] = useState([]);
     const [pageMode, setPageMode] = useState('list');
     const [editingItem, setEditingItem] = useState(null);
     const [listCollegeFilter, setListCollegeFilter] = useState('');
@@ -31,39 +31,38 @@ const ShowDepartments = ({ userRole, userCollegeId }) => {
     }, [lookupsLoaded, colleges, userRole, userCollegeId]);
 
     useEffect(() => {
-        fetchDepartments();
+        fetchTeachers();
     }, []);
 
-    const fetchDepartments = async () => {
+    const fetchTeachers = async () => {
         try {
-            const res = await academicService.getEntities('departments');
-            setDepartments(res.data.data || []);
+            const res = await academicService.getEntities('teachers');
+            setTeachers(res.data.data || []);
         } catch (e) { toast.error("Failed to fetch data"); }
     };
 
     const handleDelete = async (id) => {
         if (!window.confirm("Delete this record?")) return;
         try {
-            await academicService.deleteEntity('departments', id);
+            await academicService.deleteEntity('teachers', id);
             toast.success("Deleted");
-            fetchDepartments();
-            dispatch(fetchLookups());
+            fetchTeachers();
         } catch (e) { toast.error("Delete failed"); }
     };
 
     const displayData = React.useMemo(() => {
-        if (!listCollegeFilter) return departments;
-        return departments.filter(item => String(item.collegeId?._id || item.collegeId) === String(listCollegeFilter));
-    }, [departments, listCollegeFilter]);
+        if (!listCollegeFilter) return teachers;
+        return teachers.filter(item => String(item.collegeId?._id || item.collegeId) === String(listCollegeFilter));
+    }, [teachers, listCollegeFilter]);
 
     if (pageMode === 'create' || pageMode === 'edit') {
         return (
             <div className="animate-in slide-in-from-bottom-4">
-                <EditDepartments
+                <EditTeachersAdmin
                     mode={pageMode}
                     editingItem={editingItem}
                     onCancel={() => { setPageMode('list'); setEditingItem(null); }}
-                    onSuccess={() => { setPageMode('list'); setEditingItem(null); fetchDepartments(); dispatch(fetchLookups()); }}
+                    onSuccess={() => { setPageMode('list'); setEditingItem(null); fetchTeachers(); }}
                     colleges={colleges}
                     defaultCollegeId={listCollegeFilter}
                 />
@@ -74,7 +73,7 @@ const ShowDepartments = ({ userRole, userCollegeId }) => {
     return (
         <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-8 animate-in slide-in-from-bottom-4">
             <div className="flex justify-between items-center mb-6">
-                <h2 className="text-xl font-bold capitalize">Departments Directory</h2>
+                <h2 className="text-xl font-bold capitalize">Teachers Directory</h2>
                 <div className="flex gap-4">
                     {(userRole === 'Admin' || userRole === 'Manager') && (
                         <div className="w-64">
@@ -91,8 +90,10 @@ const ShowDepartments = ({ userRole, userCollegeId }) => {
             </div>
             <DataTable
                 columns={[
-                    { header: 'Name', accessor: row => row.name },
-                    { header: 'Description', accessor: row => row.description }
+                    { header: 'Name', accessor: row => row.user?.username || 'N/A' },
+                    { header: 'Email', accessor: row => row.user?.email || 'N/A' },
+                    { header: 'Level', accessor: row => row.level },
+                    { header: 'Password', accessor: row => <span className="font-mono text-sm text-red-600">{row.user?.tempPassword || '***'}</span> }
                 ]}
                 data={displayData}
                 actions={(row) => (
@@ -106,4 +107,4 @@ const ShowDepartments = ({ userRole, userCollegeId }) => {
     );
 };
 
-export default ShowDepartments;
+export default ShowTeachersAdmin;

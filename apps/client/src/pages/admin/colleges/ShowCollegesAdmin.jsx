@@ -2,9 +2,9 @@ import React, { useState, useEffect } from 'react';
 import superAdminService from '@services/superAdminService';
 import { useToast } from '@hooks/useToast';
 import DataTable from '@components/DataTable';
-import EditColleges from '@pages/admin/colleges/EditColleges';
+import EditCollegesAdmin from '@/pages/admin/colleges/EditCollegesAdmin';
 
-const ShowColleges = () => {
+const ShowCollegesAdmin = () => {
     const toast = useToast();
     const [colleges, setColleges] = useState([]);
 
@@ -21,7 +21,7 @@ const ShowColleges = () => {
 
     return (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-            <EditColleges refreshList={fetchColleges} />
+            <EditCollegesAdmin refreshList={fetchColleges} />
             <div className="bg-white p-8 rounded-3xl shadow-sm border border-gray-100 overflow-x-auto">
                 <h2 className="text-2xl font-bold mb-6 text-gray-800">Institutes Index</h2>
                 <DataTable
@@ -38,4 +38,4 @@ const ShowColleges = () => {
     );
 };
 
-export default ShowColleges;
+export default ShowCollegesAdmin;

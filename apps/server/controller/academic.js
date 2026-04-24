@@ -132,18 +132,24 @@ export const deleteClass = async (req, res) => {
 
 // TEACHERS
 export const getTeacher = async (req, res) => {
-    const teacher = await Teacher.findOne({ _id: req.params.id, ...getCollegeFilter(req) }).populate({ path: 'user', select: '-password' });
+    const teacher = await Teacher.findOne({ _id: req.params.id, ...getCollegeFilter(req) })
+        .populate({ path: 'user', select: '-password' })
+        .populate('departments')
+        .populate('classes');
     if (!teacher) return res.status(404).json({ error: "Not found" });
     res.status(200).json({ success: true, data: teacher });
 };
 
 export const getTeachers = async (req, res) => {
-    const teachers = await Teacher.find(getCollegeFilter(req)).populate({ path: 'user', select: '-password' });
+    const teachers = await Teacher.find(getCollegeFilter(req))
+        .populate({ path: 'user', select: '-password' })
+        .populate('departments')
+        .populate('classes');
     res.status(200).json({ success: true, data: teachers });
 };
 
 export const createTeacher = async (req, res) => {
-    const { username, email, level, collegeId } = req.body;
+    const { username, email, level, collegeId, departments, classes } = req.body;
     const targetCollegeId = req.user.role === 'Principal' ? req.user.collegeId : collegeId;
     if (!isActionAllowed(req, targetCollegeId)) return res.status(403).json({ error: "Access Denied" });
 
@@ -151,17 +157,25 @@ export const createTeacher = async (req, res) => {
     const hashedPassword = await bcrypt.hash(rawPassword, 10);
     
     const user = await User.create({ username, email, password: hashedPassword, tempPassword: rawPassword, role: 'Teacher', collegeId: targetCollegeId });
-    const teacher = await Teacher.create({ user: user._id, collegeId: targetCollegeId, level: level || 1 });
+    const teacher = await Teacher.create({ 
+        user: user._id, 
+        collegeId: targetCollegeId, 
+        level: level || 1,
+        departments: departments || [],
+        classes: classes || []
+    });
     
-    res.status(201).json({ success: true, data: await teacher.populate({ path: 'user', select: '-password' }) });
+    res.status(201).json({ success: true, data: await teacher.populate([{ path: 'user', select: '-password' }, { path: 'departments' }, { path: 'classes' }]) });
 };
 
 export const updateTeacher = async (req, res) => {
-    const { username, email, level } = req.body;
+    const { username, email, level, departments, classes } = req.body;
     const teacher = await Teacher.findOne({ _id: req.params.id, ...getCollegeFilter(req) });
     if (!teacher) return res.status(404).json({ error: "Teacher not found" });
     
     if (level) teacher.level = level;
+    if (departments) teacher.departments = departments;
+    if (classes) teacher.classes = classes;
     await teacher.save();
 
     if (username || email) {
@@ -179,13 +193,49 @@ export const deleteTeacher = async (req, res) => {
 
 // STUDENTS
 export const getStudent = async (req, res) => {
-    const student = await Student.findOne({ _id: req.params.id, ...getCollegeFilter(req) }).populate({ path: 'user', select: '-password' }).populate('class');
+    let filter = { _id: req.params.id, ...getCollegeFilter(req) };
+    
+    if (req.user.role === 'Teacher') {
+        const teacher = await Teacher.findOne({ user: req.user._id });
+        if (teacher) {
+            let validClassIds = [...(teacher.classes || [])];
+            if (teacher.departments && teacher.departments.length > 0) {
+                const classesInDepts = await Class.find({ departmentId: { $in: teacher.departments } }).select('_id');
+                validClassIds.push(...classesInDepts.map(c => c._id));
+            }
+            if (validClassIds.length > 0) {
+                filter.class = { $in: validClassIds };
+            } else {
+                filter.class = null; // Forces empty result if no classes/departments
+            }
+        }
+    }
+
+    const student = await Student.findOne(filter).populate({ path: 'user', select: '-password' }).populate('class');
     if (!student) return res.status(404).json({ error: "Not found" });
     res.status(200).json({ success: true, data: student });
 };
 
 export const getStudents = async (req, res) => {
-    const students = await Student.find(getCollegeFilter(req)).populate({ path: 'user', select: '-password' }).populate('class');
+    let filter = getCollegeFilter(req);
+    
+    if (req.user.role === 'Teacher') {
+        const teacher = await Teacher.findOne({ user: req.user._id });
+        if (teacher) {
+            let validClassIds = [...(teacher.classes || [])];
+            if (teacher.departments && teacher.departments.length > 0) {
+                const classesInDepts = await Class.find({ departmentId: { $in: teacher.departments } }).select('_id');
+                validClassIds.push(...classesInDepts.map(c => c._id));
+            }
+            if (validClassIds.length > 0) {
+                filter.class = { $in: validClassIds };
+            } else {
+                filter.class = null; // Forces empty result
+            }
+        }
+    }
+
+    const students = await Student.find(filter).populate({ path: 'user', select: '-password' }).populate('class');
     res.status(200).json({ success: true, data: students });
 };
 
@@ -242,6 +292,20 @@ export const markAttendance = async (req, res) => {
             : String(req.user.collegeId) === targetCollegeId;
             
         if (!hasAccess) return res.status(403).json({ error: "Access Denied" });
+    }
+
+    if (req.user.role === 'Teacher') {
+        const teacher = await Teacher.findOne({ user: req.user._id });
+        if (teacher) {
+            let validClassIds = teacher.classes.map(id => String(id));
+            if (teacher.departments && teacher.departments.length > 0) {
+                const classesInDepts = await Class.find({ departmentId: { $in: teacher.departments } }).select('_id');
+                validClassIds.push(...classesInDepts.map(c => String(c._id)));
+            }
+            if (!validClassIds.includes(String(classId))) {
+                return res.status(403).json({ error: "Access Denied: You are not assigned to this class" });
+            }
+        }
     }
 
     const operations = records.map(record => ({

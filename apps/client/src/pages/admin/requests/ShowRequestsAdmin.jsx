@@ -3,7 +3,7 @@ import superAdminService from '@services/superAdminService';
 import { useToast } from '@hooks/useToast';
 import DataTable from '@components/DataTable';
 
-const ShowRequests = () => {
+const ShowRequestsAdmin = () => {
     const toast = useToast();
     const [requests, setRequests] = useState([]);
 
@@ -48,4 +48,4 @@ const ShowRequests = () => {
     );
 };
 
-export default ShowRequests;
+export default ShowRequestsAdmin;

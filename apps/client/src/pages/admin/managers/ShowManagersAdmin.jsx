@@ -2,9 +2,9 @@ import React, { useState, useEffect } from 'react';
 import superAdminService from '@services/superAdminService';
 import { useToast } from '@hooks/useToast';
 import DataTable from '@components/DataTable';
-import EditManagers from '@pages/admin/managers/EditManagers';
+import EditManagersAdmin from '@/pages/admin/managers/EditManagersAdmin';
 
-const ShowManagers = () => {
+const ShowManagersAdmin = () => {
     const toast = useToast();
     const [managers, setManagers] = useState([]);
     const [colleges, setColleges] = useState([]);
@@ -40,7 +40,7 @@ const ShowManagers = () => {
 
     return (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
-            <EditManagers
+            <EditManagersAdmin
                 refreshList={fetchManagers}
                 colleges={colleges}
                 editingManager={editingManager}
@@ -68,4 +68,4 @@ const ShowManagers = () => {
     );
 };
 
-export default ShowManagers;
+export default ShowManagersAdmin;

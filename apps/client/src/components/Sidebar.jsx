@@ -63,7 +63,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
                             <button
                                 key={item.id}
                                 onClick={() => {
-                                    navigate(`/dashboard/${item.path}`);
+                                    navigate(`/${user.role.toLowerCase()}/dashboard/${item.path}`);
                                     setSidebarOpen(false);
                                 }}
                                 className={`flex items-center gap-3 w-full px-3 py-2.5 rounded-xl font-bold transition-all text-sm ${activeTab === item.path ? 'bg-indigo-50 text-indigo-700 shadow-sm' : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900'}`}

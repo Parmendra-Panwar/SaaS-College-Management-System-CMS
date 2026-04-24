@@ -28,7 +28,7 @@ const Home = () => {
     };
     React.useEffect(() => {
         if (user) {
-            navigate('/dashboard');
+            navigate(`/${user.role.toLowerCase()}/dashboard`);
         }
     }, [user, navigate]);
 

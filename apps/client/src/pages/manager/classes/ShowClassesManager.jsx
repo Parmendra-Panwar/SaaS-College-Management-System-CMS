@@ -4,19 +4,18 @@ import { fetchLookups } from '@store/slices/lookupSlice';
 import academicService from '@services/academicService';
 import { useToast } from '@hooks/useToast';
 import DataTable from '@components/DataTable';
-import EditStudentsPrincipal from '@/pages/principal/students/EditStudentsPrincipal';
+import EditClassesManager from '@/pages/manager/classes/EditClassesManager';
 import { SelectField } from '@components/ui';
 
-const ShowStudentsPrincipal = ({ userRole, userCollegeId }) => {
+const ShowClassesManager = ({ userRole, userCollegeId }) => {
     const toast = useToast();
     const dispatch = useDispatch();
-    const { accessibleColleges: colleges, classes, loaded: lookupsLoaded } = useSelector(state => state.lookup);
+    const { accessibleColleges: colleges, loaded: lookupsLoaded } = useSelector(state => state.lookup);
 
-    const [students, setStudents] = useState([]);
+    const [classesData, setClassesData] = useState([]);
     const [pageMode, setPageMode] = useState('list');
     const [editingItem, setEditingItem] = useState(null);
     const [listCollegeFilter, setListCollegeFilter] = useState('');
-    const [listClassFilter, setListClassFilter] = useState('');
 
     useEffect(() => {
         if (!lookupsLoaded) dispatch(fetchLookups());
@@ -32,53 +31,39 @@ const ShowStudentsPrincipal = ({ userRole, userCollegeId }) => {
     }, [lookupsLoaded, colleges, userRole, userCollegeId]);
 
     useEffect(() => {
-        setListClassFilter('');
-    }, [listCollegeFilter]);
-
-    useEffect(() => {
-        fetchStudents();
+        fetchClasses();
     }, []);
 
-    const fetchStudents = async () => {
+    const fetchClasses = async () => {
         try {
-            const res = await academicService.getEntities('students');
-            setStudents(res.data.data || []);
+            const res = await academicService.getEntities('classes');
+            setClassesData(res.data.data || []);
         } catch (e) { toast.error("Failed to fetch data"); }
     };
 
     const handleDelete = async (id) => {
         if (!window.confirm("Delete this record?")) return;
         try {
-            await academicService.deleteEntity('students', id);
+            await academicService.deleteEntity('classes', id);
             toast.success("Deleted");
-            fetchStudents();
+            fetchClasses();
+            dispatch(fetchLookups());
         } catch (e) { toast.error("Delete failed"); }
     };
 
-    const derivedClassesForFilter = React.useMemo(() => {
-        if (!listCollegeFilter || !classes) return [];
-        return classes.filter(c => String(c.collegeId?._id || c.collegeId) === String(listCollegeFilter));
-    }, [listCollegeFilter, classes]);
-
     const displayData = React.useMemo(() => {
-        let filtered = students;
-        if (listCollegeFilter) {
-            filtered = filtered.filter(item => String(item.collegeId?._id || item.collegeId) === String(listCollegeFilter));
-        }
-        if (listClassFilter) {
-            filtered = filtered.filter(item => String(item.class?._id || item.class) === String(listClassFilter));
-        }
-        return filtered;
-    }, [students, listCollegeFilter, listClassFilter]);
+        if (!listCollegeFilter) return classesData;
+        return classesData.filter(item => String(item.collegeId?._id || item.collegeId) === String(listCollegeFilter));
+    }, [classesData, listCollegeFilter]);
 
     if (pageMode === 'create' || pageMode === 'edit') {
         return (
             <div className="animate-in slide-in-from-bottom-4">
-                <EditStudentsPrincipal
+                <EditClassesManager
                     mode={pageMode}
                     editingItem={editingItem}
                     onCancel={() => { setPageMode('list'); setEditingItem(null); }}
-                    onSuccess={() => { setPageMode('list'); setEditingItem(null); fetchStudents(); }}
+                    onSuccess={() => { setPageMode('list'); setEditingItem(null); fetchClasses(); dispatch(fetchLookups()); }}
                     colleges={colleges}
                     defaultCollegeId={listCollegeFilter}
                 />
@@ -89,7 +74,7 @@ const ShowStudentsPrincipal = ({ userRole, userCollegeId }) => {
     return (
         <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-8 animate-in slide-in-from-bottom-4">
             <div className="flex justify-between items-center mb-6">
-                <h2 className="text-xl font-bold capitalize">Students Directory</h2>
+                <h2 className="text-xl font-bold capitalize">Classes Directory</h2>
                 <div className="flex gap-4">
                     {(userRole === 'Admin' || userRole === 'Manager') && (
                         <div className="w-64">
@@ -99,12 +84,6 @@ const ShowStudentsPrincipal = ({ userRole, userCollegeId }) => {
                             </SelectField>
                         </div>
                     )}
-                    <div className="w-64">
-                        <SelectField value={listClassFilter} onChange={e => setListClassFilter(e.target.value)}>
-                            <option value="">All Classes</option>
-                            {derivedClassesForFilter.map(c => <option key={c._id} value={c._id}>{c.name}</option>)}
-                        </SelectField>
-                    </div>
                     <button onClick={() => { setPageMode('create'); setEditingItem(null); }} className="px-5 py-2 font-bold rounded-xl bg-indigo-600 text-white shadow-md hover:bg-indigo-700 transition">
                         + Create New
                     </button>
@@ -112,10 +91,8 @@ const ShowStudentsPrincipal = ({ userRole, userCollegeId }) => {
             </div>
             <DataTable
                 columns={[
-                    { header: 'Name', accessor: row => row.user?.username || 'N/A' },
-                    { header: 'Roll Number', accessor: row => row.roll_number },
-                    { header: 'Email', accessor: row => row.user?.email || 'N/A' },
-                    { header: 'Class', accessor: row => row.class?.name || 'N/A' }
+                    { header: 'Name', accessor: row => row.name },
+                    { header: 'Department', accessor: row => row.departmentId?.name || 'N/A' }
                 ]}
                 data={displayData}
                 actions={(row) => (
@@ -129,4 +106,4 @@ const ShowStudentsPrincipal = ({ userRole, userCollegeId }) => {
     );
 };
 
-export default ShowStudentsPrincipal;
+export default ShowClassesManager;

@@ -1,7 +1,9 @@
 import React from 'react';
+import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 
 const AccessDenied = () => {
+    const { user } = useSelector(state => state.auth);
     return (
         <div className="flex flex-col items-center justify-center min-h-[60vh] text-center px-6">
             <div className="w-20 h-20 bg-rose-100 rounded-2xl flex items-center justify-center mb-6">
@@ -14,7 +16,7 @@ const AccessDenied = () => {
                 You don't have permission to view this page. Please contact your administrator if you believe this is an error.
             </p>
             <Link
-                to="/dashboard"
+                to={`/${user?.role?.toLowerCase()}/dashboard`}
                 className="bg-indigo-600 text-white px-8 py-3 rounded-xl font-bold shadow-lg hover:bg-indigo-700 hover:shadow-xl transition-all"
             >
                 Back to Dashboard

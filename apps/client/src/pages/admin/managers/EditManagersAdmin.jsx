@@ -3,7 +3,7 @@ import superAdminService from '@services/superAdminService';
 import { useToast } from '@hooks/useToast';
 import { InputField, PrimaryButton } from '@components/ui';
 
-const EditManagers = ({ refreshList, colleges, editingManager, setEditingManager }) => {
+const EditManagersAdmin = ({ refreshList, colleges, editingManager, setEditingManager }) => {
     const toast = useToast();
     const [managerForm, setManagerForm] = useState({ username: '', email: '', assignedColleges: [] });
     const [loading, setLoading] = useState(false);
@@ -77,4 +77,4 @@ const EditManagers = ({ refreshList, colleges, editingManager, setEditingManager
     );
 };
 
-export default EditManagers;
+export default EditManagersAdmin;
