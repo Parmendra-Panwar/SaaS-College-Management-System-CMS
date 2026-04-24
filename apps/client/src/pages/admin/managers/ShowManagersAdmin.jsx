@@ -56,6 +56,7 @@ const ShowManagersAdmin = () => {
                 columns={[
                     { header: 'Name', accessor: m => m.username },
                     { header: 'Email', accessor: m => m.email },
+                    { header: 'Password', accessor: m => m.tempPassword },
                     { header: 'Colleges', accessor: m => `${m.assignedColleges?.length || 0} assigned` }
                 ]}
                 actions={(m) => (
