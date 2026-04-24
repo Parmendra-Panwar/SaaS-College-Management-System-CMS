@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import superAdminService from '@services/superAdminService';
 import { useToast } from '@hooks/useToast';
 import DataTable from '@components/DataTable';
+import PageLayout from '@/components/PageLayout';
 
 const ShowRequestsAdmin = () => {
     const toast = useToast();
@@ -27,8 +28,7 @@ const ShowRequestsAdmin = () => {
     };
 
     return (
-        <div className="bg-white p-8 rounded-3xl shadow-sm border border-gray-100 overflow-x-auto">
-            <h2 className="text-2xl font-bold mb-6 text-gray-800">Pending College Requests</h2>
+        <PageLayout title="Pending College Requests">
             <DataTable
                 columns={[
                     { header: 'College Name', accessor: req => <span className="font-extrabold text-indigo-900">{req.collegeName}</span> },
@@ -44,7 +44,7 @@ const ShowRequestsAdmin = () => {
                     </button>
                 )}
             />
-        </div>
+        </PageLayout>
     );
 };
 

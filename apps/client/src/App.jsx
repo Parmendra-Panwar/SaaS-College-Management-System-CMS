@@ -9,7 +9,6 @@ import { SpinnerIcon } from '@components/icons';
 // ─── Public Pages ────────────────────────────────────────────────────────────
 import Home from '@pages/Home';
 import Login from '@pages/Login';
-import Signup from '@pages/Signup';
 import SuperAdminLogin from '@pages/SuperAdminLogin';
 import NotFound from '@pages/NotFound';
 import ProfilePage from '@pages/ProfilePage';
@@ -51,6 +50,8 @@ import AttendancePage from '@pages/shared/AttendancePage';
 
 import { getProfile } from '@store/slices/authSlice';
 import { useToast } from '@hooks/useToast';
+import ManageClasses from './pages/ManageClasses/ManageClasses';
+import CreateClassesAdmin from './pages/admin/classes/CreateClassesAdmin';
 
 // ─── Public Layout ───────────────────────────────────────────────────────────
 const GlobalLayout = () => {
@@ -80,7 +81,6 @@ const router = createBrowserRouter([
       // ── Public routes ──────────────────────────────────────────────────
       { index: true, element: <Home /> },
       { path: 'login', element: <Login /> },
-      { path: 'signup', element: <Signup /> },
       { path: 'superadminlogin', element: <SuperAdminLogin /> },
       { path: 'profile/:username', element: <ProfilePage /> },
     ],
@@ -99,7 +99,14 @@ const router = createBrowserRouter([
           { path: 'managers', element: <ShowManagersAdmin /> },
           { path: 'requests', element: <ShowRequestsAdmin /> },
           { path: 'departments', element: <ShowDepartmentsAdmin /> },
-          { path: 'classes', element: <ShowClassesAdmin /> },
+          {
+            path: 'classes',
+            children: [
+              { index: true, element: <ManageClasses /> },
+              { path: 'create', element: <CreateClassesAdmin /> },
+              { path: 'show', element: <ShowClassesAdmin /> },
+            ]
+          },
           { path: 'students', element: <ShowStudentsAdmin /> },
           { path: 'teachers', element: <ShowTeachersAdmin /> },
           { path: 'attendance', element: <AttendancePage /> },

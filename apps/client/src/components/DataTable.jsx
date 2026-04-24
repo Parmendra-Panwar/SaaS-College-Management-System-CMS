@@ -69,47 +69,31 @@ const DataTable = ({ columns, data, actions }) => {
 
     return (
         <div className="w-full flex flex-col gap-4">
-            <div className="flex justify-between items-center bg-white p-4 rounded-2xl shadow-sm border border-gray-100">
-                <input
-                    type="text"
-                    placeholder="Search..."
-                    className="border border-gray-200 rounded-xl px-4 py-2 w-full max-w-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition outline-none"
-                    value={searchTerm}
-                    onChange={(e) => {
-                        setSearchTerm(e.target.value);
-                        setCurrentPage(1);
-                    }}
-                />
-                <div className="text-sm text-gray-500 font-semibold">
-                    Total: {processedData.length} records
-                </div>
-            </div>
-
             <div className="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
                 <div className="overflow-x-auto">
-                    <table className="w-full text-left border-collapse">
+                    <table className="w-full text-left border-collapse table-fixed">
                         <thead className="bg-gray-50 border-b border-gray-100">
                             <tr>
                                 {columns.map((col, index) => (
                                     <th
                                         key={index}
-                                        className="py-4 px-6 font-bold text-gray-600 border-b border-gray-100 bg-gray-50 align-top relative w-48"
+                                        className="py-4 px-6 font-bold text-gray-600 border-b border-gray-100 bg-gray-50 align-top relative"
                                     >
                                         <div className="flex flex-col gap-2">
                                             <div className="flex items-center justify-between group">
                                                 {activeSearchCol === col.header ? (
-                                                    <input 
+                                                    <input
                                                         autoFocus
-                                                        type="text" 
+                                                        type="text"
                                                         className="border border-indigo-300 rounded px-2 py-1 text-sm outline-none w-full font-normal"
                                                         value={columnFilters[col.header] || ''}
-                                                        onChange={(e) => setColumnFilters({...columnFilters, [col.header]: e.target.value})}
+                                                        onChange={(e) => setColumnFilters({ ...columnFilters, [col.header]: e.target.value })}
                                                         onBlur={() => setActiveSearchCol(null)}
                                                         placeholder={`Search ${col.header}...`}
-                                                        onKeyDown={(e) => { if(e.key === 'Enter') setActiveSearchCol(null); }}
+                                                        onKeyDown={(e) => { if (e.key === 'Enter') setActiveSearchCol(null); }}
                                                     />
                                                 ) : (
-                                                    <span 
+                                                    <span
                                                         className="cursor-pointer hover:text-indigo-600 border-b border-transparent hover:border-indigo-600 transition"
                                                         onClick={() => setActiveSearchCol(col.header)}
                                                         title="Click to search this column"
@@ -117,8 +101,8 @@ const DataTable = ({ columns, data, actions }) => {
                                                         {col.header}
                                                     </span>
                                                 )}
-                                                
-                                                <button 
+
+                                                <button
                                                     onClick={() => handleSort(col.header)}
                                                     title="Sort column"
                                                     className={`p-1 rounded hover:bg-gray-200 transition ${sortConfig.key === col.header ? 'text-indigo-600' : 'text-gray-400 opacity-0 group-hover:opacity-100'}`}
@@ -130,7 +114,7 @@ const DataTable = ({ columns, data, actions }) => {
                                                 <div className="text-xs font-normal text-indigo-600 bg-indigo-50 px-2 py-1 rounded w-max flex gap-2 items-center">
                                                     "{columnFilters[col.header]}"
                                                     <button onClick={() => {
-                                                        const newFilters = {...columnFilters};
+                                                        const newFilters = { ...columnFilters };
                                                         delete newFilters[col.header];
                                                         setColumnFilters(newFilters);
                                                     }} className="font-bold text-indigo-400 hover:text-indigo-800">×</button>
@@ -169,6 +153,9 @@ const DataTable = ({ columns, data, actions }) => {
                             )}
                         </tbody>
                     </table>
+                </div>
+                <div className="mt-3 p-5 text-sm text-gray-500 font-semibold">
+                    Total: {processedData.length} records
                 </div>
             </div>
 

@@ -103,8 +103,7 @@ const Navbar = (showLogo = true) => {
                         </div>
                     ) : (
                         <div className="flex items-center gap-4">
-                            <Link to="/login" className="px-5 py-2 text-[15px] font-[600] text-gray-700 hover:text-indigo-600 transition-colors">Log in</Link>
-                            <Link to="/signup" className="bg-indigo-600 text-white px-6 py-2.5 rounded-xl text-[15px] font-[600] shadow-sm hover:bg-indigo-700 hover:shadow-md transition-all">Get Started</Link>
+                            <Link to="/login" className="bg-indigo-600 text-white px-6 py-2.5 rounded-xl text-[15px] font-[600] shadow-sm hover:bg-indigo-700 hover:shadow-md transition-all">Log in</Link>
                         </div>
                     )}
                 </div>

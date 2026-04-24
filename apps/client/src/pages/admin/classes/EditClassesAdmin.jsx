@@ -6,11 +6,17 @@ import { InputField, SelectField, PrimaryButton } from '@components/ui';
 
 const EditClassesAdmin = ({ mode, editingItem, onCancel, onSuccess, colleges, defaultCollegeId }) => {
     const toast = useToast();
+    const { user } = useSelector(state => state.auth); // Access user from auth slice
     const [loading, setLoading] = useState(false);
     const [formClass, setFormClass] = useState({ name: '', departmentId: '' });
     const [selectedCollegeId, setSelectedCollegeId] = useState(defaultCollegeId || '');
 
     const { departments } = useSelector(state => state.lookup);
+
+    // Guard clause: Only allow Admin access
+    if (user?.role !== 'Admin') {
+        return <div className="p-4 text-red-600 font-bold">Access Denied: Admin only.</div>;
+    }
 
     useEffect(() => {
         if (mode === 'edit' && editingItem) {
