@@ -12,26 +12,26 @@ import connectDB from "./config/db.js";
 connectDB();
 
 // 2. Security Middlewares
-app.use(helmet()); 
+app.use(helmet());
 
 // Rate Limiting Configuration
-const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // Har IP se max 100 requests per 15 mins
-  standardHeaders: true, // Rate limit info 'RateLimit-*' headers mein bheje
-  legacyHeaders: false, // 'X-RateLimit-*' headers disable kare
-  message: {
-    success: false,
-    error: "Too many requests, please try again after 15 minutes.",
-  },
-});
+// const limiter = rateLimit({
+//   windowMs: 15 * 60 * 1000, // 15 minutes
+//   max: 100, // Har IP se max 100 requests per 15 mins
+//   standardHeaders: true, // Rate limit info 'RateLimit-*' headers mein bheje
+//   legacyHeaders: false, // 'X-RateLimit-*' headers disable kare
+//   message: {
+//     success: false,
+//     error: "Too many requests, please try again after 15 minutes.",
+//   },
+// });
 
 // Saare routes par limiter apply karein
-app.use("/api/", limiter);
+// app.use("/api/", limiter);
 
 // CORS Configuration
 const allowedOrigins = [
-  "https://triplinkers.vercel.app",
+  "https://academia-erp.vercel.app",
   process.env.FRONTEND_URL,
   "http://localhost:5173",
   "http://localhost:3000"
@@ -52,16 +52,14 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 // 3. Routes
-import listingsRouter from "./routes/listing.js";
-import reviewsRouter from "./routes/review.js";
 import usersRouter from "./routes/users.js";
 import authRouter from "./routes/authrouter.js";
-import profileRouter from "./routes/profile.js";
 import onboardingRouter from "./routes/onboarding.js";
 import teacherTrackingRouter from "./routes/teacherTracking.js";
 import insightsRouter from "./routes/insights.js";
 import examRouter from "./routes/exam.js";
 import superAdminRouter from "./routes/superadmin.js";
+import academicRouter from "./routes/academic.js";
 import { initCronJobs } from "./services/kMeansAnalytics.js";
 
 // Initialize AI Cron Jobs
@@ -71,18 +69,15 @@ app.get("/", (req, res) => {
   res.json({ message: "CMS API is live and secure!" });
 });
 
-app.use("/api/v1/listings", listingsRouter);
-app.use("/api/v1/:type/:id/reviews", reviewsRouter);
 app.use("/api/v1/auth/login", usersRouter);
 app.use("/api/v1/auth/signup", authRouter);
-app.use("/api/v1/profile", profileRouter);
-
 // Set up new SaaS College Management System routes
 app.use("/api/v1/base/superadmin", superAdminRouter);
 app.use("/api/v1/onboarding", onboardingRouter);
 app.use("/api/v1/teacher", teacherTrackingRouter);
 app.use("/api/v1/insights", insightsRouter);
 app.use("/api/v1/exam", examRouter);
+app.use("/api/v1/academic", academicRouter);
 
 // 4. Error Handlers
 app.all("*", (req, res, next) => {

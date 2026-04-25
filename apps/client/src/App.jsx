@@ -1,45 +1,155 @@
-import { useEffect } from 'react';
+import { useEffect, lazy, Suspense } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { createBrowserRouter, RouterProvider, Outlet } from 'react-router-dom';
+import { createBrowserRouter, RouterProvider, Outlet, useLocation } from 'react-router-dom';
 
-import Navbar from './components/Navbar';
-import ToastContainer from './components/ToastContainer';
-import { SpinnerIcon } from './components/icons';
+import Navbar from '@components/Navbar';
+import ToastContainer from '@components/ToastContainer';
+import { SpinnerIcon } from '@components/icons';
 
-import Home from './pages/Home';
-import Login from './pages/Login';
-import Signup from './pages/Signup';
-import SuperAdminLogin from './pages/SuperAdminLogin';
-import NotFound from './pages/NotFound';
-import ProfilePage from './pages/ProfilePage';
+// ─── Public Pages ────────────────────────────────────────────────────────────
+import Home from '@pages/Home';
+import Login from '@pages/Login';
+import SuperAdminLogin from '@pages/SuperAdminLogin';
+import NotFound from '@pages/NotFound';
+import ProfilePage from '@pages/ProfilePage';
 
-import { getProfile } from './store/slices/authSlice';
-import { useToast } from './hooks/useToast';
+// ─── Dashboard Infrastructure ────────────────────────────────────────────────
+import DashboardLayout from '@components/DashboardLayout';
+import ProtectedRoute from '@components/ProtectedRoute';
+import RoleRedirect from '@components/RoleRedirect';
+import AccessDenied from '@components/AccessDenied';
 
-// ─── Layout ──────────────────────────────────────────────────────────────────
-const Layout = () => (
-  <div className="min-h-[100dvh] bg-[#FDFCF0] flex flex-col">
-    <Navbar />
-    <main className="flex-1 w-full flex flex-col pt-1">
-      <Outlet />
-    </main>
-  </div>
-);
+// ─── Admin Pages ─────────────────────────────────────────────────────────────
+import ShowCollegesAdmin from '@/pages/admin/colleges/ShowCollegesAdmin';
+import ShowManagersAdmin from '@/pages/admin/managers/ShowManagersAdmin';
+import ShowRequestsAdmin from '@/pages/admin/requests/ShowRequestsAdmin';
 
-// ─── Router ───────────────────────────────────────────────────────────────────
+// ─── Manager Pages ─────────────────────────────────────────────────────────────
+import ShowCollegesManager from '@/pages/manager/colleges/ShowCollegesManager';
+
+// ─── Principal Pages ──────────────────────────────
+
+// ─── Teacher Pages ──────────────────────────────
+
+// ─── Attendance (shared across all management roles + Teacher) ───────────────
+import AttendancePage from '@pages/shared/AttendancePage';
+
+import { getProfile } from '@store/slices/authSlice';
+import { useToast } from '@hooks/useToast';
+import ManageClasses from './pages/ManageClasses/ManageClasses';
+import ManageDepartment from './pages/ManageDepartment/ManageDepartment';
+import ManageStudent from './pages/ManageStudent/ManageStudent';
+import ManageTeacher from './pages/ManageTeacher/ManageTeacher';
+
+// ─── Public Layout ───────────────────────────────────────────────────────────
+const GlobalLayout = () => {
+  const location = useLocation();
+  const isDashboard = location.pathname.includes('/dashboard'); // FIXED
+
+  if (isDashboard) {
+    return <Outlet />;
+  }
+
+  return (
+    <div className="min-h-[100dvh] bg-[#FDFCF0] flex flex-col">
+      <Navbar showLogo={true} />
+      <main className="flex-1 w-full flex flex-col pt-1">
+        <Outlet />
+      </main>
+    </div>
+  );
+};
+
+// ─── Router ──────────────────────────────────────────────────────────────────
 const router = createBrowserRouter([
   {
     path: '/',
-    element: <Layout />,
+    element: <GlobalLayout />,
     children: [
+      // ── Public routes ──────────────────────────────────────────────────
       { index: true, element: <Home /> },
       { path: 'login', element: <Login /> },
-      { path: 'signup', element: <Signup /> },
       { path: 'superadminlogin', element: <SuperAdminLogin /> },
       { path: 'profile/:username', element: <ProfilePage /> },
     ],
   },
-  { path: '*', element: <NotFound /> },
+  // FIXED: Removed invalid wrapping object
+  {
+    path: 'admin/dashboard',
+    element: <DashboardLayout />,
+    children: [
+      { index: true, element: <RoleRedirect /> },
+      { path: 'access-denied', element: <AccessDenied /> },
+      {
+        element: <ProtectedRoute allowedRoles={['Admin']} />,
+        children: [
+          { path: 'colleges', element: <ShowCollegesAdmin /> },
+          { path: 'managers', element: <ShowManagersAdmin /> },
+          { path: 'requests', element: <ShowRequestsAdmin /> },
+          { path: 'departments', element: <ManageDepartment /> },
+          { path: 'classes', element: <ManageClasses /> },
+          { path: 'students', element: <ManageStudent /> },
+          { path: 'teachers', element: <ManageTeacher /> },
+          { path: 'attendance', element: <AttendancePage /> },
+        ],
+      },
+    ],
+  },
+  {
+    path: 'manager/dashboard',
+    element: <DashboardLayout />,
+    children: [
+      { index: true, element: <RoleRedirect /> },
+      { path: 'access-denied', element: <AccessDenied /> },
+      {
+        element: <ProtectedRoute allowedRoles={['Manager']} />,
+        children: [
+          { path: 'colleges', element: <ShowCollegesManager /> },
+          { path: 'departments', element: <ManageDepartment /> },
+          { path: 'classes', element: <ManageClasses /> },
+          { path: 'students', element: <ManageStudent /> },
+          { path: 'teachers', element: <ManageTeacher /> },
+          { path: 'attendance', element: <AttendancePage /> },
+        ],
+      },
+    ],
+  },
+  {
+    path: 'principal/dashboard',
+    element: <DashboardLayout />,
+    children: [
+      { index: true, element: <RoleRedirect /> },
+      { path: 'access-denied', element: <AccessDenied /> },
+      {
+        element: <ProtectedRoute allowedRoles={['Principal']} />,
+        children: [
+          { path: 'departments', element: <ManageDepartment /> },
+          { path: 'classes', element: <ManageClasses /> },
+          { path: 'students', element: <ManageStudent /> },
+          { path: 'teachers', element: <ManageTeacher /> },
+          { path: 'attendance', element: <AttendancePage /> },
+        ],
+      },
+    ],
+  },
+  {
+    path: 'teacher/dashboard',
+    element: <DashboardLayout />,
+    children: [
+      { index: true, element: <RoleRedirect /> },
+      { path: 'access-denied', element: <AccessDenied /> },
+      {
+        element: <ProtectedRoute allowedRoles={['Teacher']} />,
+        children: [
+          { path: 'classes', element: <ManageClasses /> },
+          { path: 'students', element: <ManageStudent /> },
+          { path: 'attendance', element: <AttendancePage /> },
+        ],
+      },
+    ],
+  },
+  // FIXED: Added missing comma above and removed invalid closing brace
+  { path: '*', element: <NotFound /> }
 ]);
 
 // ─── App ─────────────────────────────────────────────────────────────────────
@@ -49,24 +159,18 @@ export default function App() {
 
   const { token, user, loading: authLoading } = useSelector(s => s.auth);
 
-  // ── Auth: fetch profile on cold load when token exists but user isn't loaded
   useEffect(() => {
     if (token && !user) dispatch(getProfile());
   }, [token, user, dispatch]);
 
-
   return (
     <>
-      {/* Full-screen auth spinner — only while bootstrapping session */}
       {authLoading && token && !user && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#FDFCF0]">
           <SpinnerIcon className="w-10 h-10 text-blue-600" />
         </div>
       )}
-
-      {/* Global toasts — reads from Redux state, no Provider needed */}
       <ToastContainer />
-
       <RouterProvider router={router} />
     </>
   );

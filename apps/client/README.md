@@ -1,15 +1,15 @@
 # SaaS College Management System (MONOREPO)
 
-SaaS College Management System
+A robust, Multi-Tenant SaaS platform designed to streamline administrative and academic workflows for multiple educational institutions under a single ecosystem. Built with the MERN Stack, this project replaces fragmented systems with a unified, high-impact software solution featuring strict data isolation and predictive analytics.
 
-Live URL -> https://saascms.vercel.app
+Live URL -> [https://academia-erp.vercel.app](https://academia-erp.vercel.app)
 
 ## Features
-- **Dual-Account System:** Specialized logic for **Business accounts** (Property/Activity owners) and **Standard Travelers** (Social "Trips" posts). [Sign Up](https://SaaS College Management Systems.vercel.app/signup)
-- **Stateless Authentication:** Secure JWT-based auth with custom middleware for role-based access control (RBAC).
-- **Data Integrity:** Global error handling with `wrapAsync` wrappers and automated Cloudinary/Review cleanup upon data deletion.
-- **Robust Review System:** Integrated feedback loops for listings, activities, and trips.
-- **Optimized CRUD Engine:** High-performance MongoDB schemas designed for efficient image handling and data cleanup.
+- **Multi-Tenant Architecture:** Engineered with a custom "Tenant Interceptor" middleware to ensure 100% data isolation across independent institutions using a single database.
+- **Granular RBAC:** Specialized access control for 5+ distinct roles including Admin, Manager, Principal, Teacher, and Student.
+- **High-Velocity Onboarding:** "ticBased" creation engine using bulk operations (`insertMany`) to onboard entire semesters and student cohorts in seconds.
+- **Student Productivity Engine:** An integrated K-Means clustering service that categorizes students into performance cohorts based on real-time academic metrics.
+- **Optimized Data Structures:** Uses fixed-size nested arrays and MongoDB positional operators (`$set`) for high-frequency updates like attendance and bi-weekly reports without database bloat.
 
 ---
 
@@ -19,19 +19,40 @@ Live URL -> https://saascms.vercel.app
 | :--- | :--- |
 | **Runtime** | Node.js |
 | **Framework** | Express.js |
+| **Frontend** | React, Redux Toolkit (RTK), Tailwind CSS |
 | **Database** | MongoDB (Mongoose ODM) |
-| **Storage** | Cloudinary (via Multer) |
-| **Auth** | JWT & BcryptJS |
+| **Auth** | JWT (Tenant-Aware) & BcryptJS |
 | **Validation** | Joi |
+| **Analytics** | Custom K-Means Implementation |
 
 ---
 
 ## Deep Dive into Features
 
-### 1. AI-Driven Itinerary Generator 
-When the API is triggered, the system converts Source and Destination strings into Latitude/Longitude coordinates. 
-* **Fetch & Memory Load:** Uses a Bounding Box /
+### 1. Multi-Tenant Schema & Identity Management
+The system functions via a "Gatekeeper" logic. Every request is processed through a Tenant Interceptor middleware that extracts the `collegeId` from the JWT.
+* **Strict Isolation:** Automatically injects the `collegeId` into every Mongoose query, preventing any possibility of data leakage between different schools.
+* **Identity Mapping:** Centralized Auth system manages different permission levels, ensuring a Principal from "College A" can never access data from "College B."
 
+<div align="center">
+  <img src="https://res.cloudinary.com/dvvnxb5ow/image/upload/v1775206305/Screenshot_2026-04-03_141443_e65s6n.png" width="48%" />
+  <img src="https://res.cloudinary.com/dvvnxb5ow/image/upload/v1775205665/Screenshot_2026-04-03_140858_i7vj5z.png" width="48%" />
+</div>
+
+### 2. High-Frequency Operational Logic
+To maintain high performance under heavy load, the system utilizes specialized data structures for daily operations.
+* **Efficient Storage:** Instead of creating new documents daily, attendance is managed via a 91x4 nested array (13 weeks x 4 periods), significantly reducing document overhead.
+* **Teacher Performance:** Every update to a student's record increments a `workCount` on the Teacher model, creating a built-in metric for staff engagement and accountability.
+
+<div align="center">
+  <img src="https://res.cloudinary.com/dvvnxb5ow/image/upload/v1775206305/Screenshot_2026-04-03_141443_e65s6n.png" width="48%" />
+  <img src="https://res.cloudinary.com/dvvnxb5ow/image/upload/v1775205665/Screenshot_2026-04-03_140858_i7vj5z.png" width="48%" />
+</div>
+
+### 3. Student Productivity Engine (K-Means)
+A bi-weekly analytical service that moves beyond simple grade-tracking to understand student behavior patterns.
+* **Feature Vector Analysis:** The engine processes two primary metrics: **Attendance Rate** and **Work Score** (from bi-weekly reports).
+* **Clustering Logic:** Runs a K-Means algorithm to group students into three performance cohorts: *High Achievers*, *Consistent*, and *At-Risk*. This allows administrators to track "Cluster Movement" and intervene before a student's performance drops significantly.
 
 <div align="center">
   <img src="https://res.cloudinary.com/dvvnxb5ow/image/upload/v1775206305/Screenshot_2026-04-03_141443_e65s6n.png" width="48%" />
@@ -40,6 +61,4 @@ When the API is triggered, the system converts Source and Destination strings in
 
 ---
 
-**Developed by Parmendra (Paras) Pawar** *Pre-final year B-Tech (AI & ML) | Ex-SDE Intern at Medorn Venture | NCC Cadet*
-
-```
+**Developed by Parmendra (Paras) Pawar** *Pre-final year B-Tech (AI & ML) | Ex-SDE Intern | NCC Cadet*

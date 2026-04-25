@@ -9,11 +9,11 @@ function kMeans(data, k = 3, maxIterations = 100) {
   // Initialize centroids randomly from data points
   let centroids = [];
   for (let i = 0; i < k; i++) {
-    centroids.push([ ...data[Math.floor(Math.random() * data.length)].features ]);
+    centroids.push([...data[Math.floor(Math.random() * data.length)].features]);
   }
 
   let clusters = [];
-  
+
   for (let iter = 0; iter < maxIterations; iter++) {
     clusters = Array.from({ length: k }, () => []);
 
@@ -26,7 +26,7 @@ function kMeans(data, k = 3, maxIterations = 100) {
         const c = centroids[j];
         // || x_i - c_j ||^2
         const distance = point.features.reduce((sum, val, idx) => sum + Math.pow(val - c[idx], 2), 0);
-        
+
         if (distance < minDistance) {
           minDistance = distance;
           closestCentroidParams = j;
@@ -90,8 +90,7 @@ function kMeans(data, k = 3, maxIterations = 100) {
 }
 
 export const runKMeansClustering = async (collegeId) => {
-  console.log(`Running AI K-Means clustering for college: ${collegeId}`);
-  
+
   const students = await Student.find({ collegeId });
   if (!students.length) return;
 
@@ -140,7 +139,6 @@ export const runKMeansClustering = async (collegeId) => {
   }));
 
   await Student.bulkWrite(bulkOps);
-  console.log(`Clustering completed. Updated ${clusteredData.length} students.`);
 };
 
 // Start Bi-Weekly Cron Job (Runs every 14 days)

@@ -1,0 +1,16 @@
+export { default as AttendanceModule } from '@pages/AttendanceModule';
+export * from '@pages/AttendanceModule';
+export { default as Home } from '@pages/Home';
+export * from '@pages/Home';
+export { default as Login } from '@pages/Login';
+export * from '@pages/Login';
+export { default as NotFound } from '@pages/NotFound';
+export * from '@pages/NotFound';
+export { default as ProfilePage } from '@pages/ProfilePage';
+export * from '@pages/ProfilePage';
+export { default as Signup } from '@pages/Signup';
+export * from '@pages/Signup';
+export { default as SuperAdminLogin } from '@pages/SuperAdminLogin';
+export * from '@pages/SuperAdminLogin';
+export { default as TeacherDashboard } from '@pages/TeacherDashboard';
+export * from '@pages/TeacherDashboard';

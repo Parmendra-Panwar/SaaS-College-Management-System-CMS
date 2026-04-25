@@ -2,7 +2,7 @@ import Student from "../models/student.js";
 import Teacher from "../models/teacher.js";
 
 export const updateBiWeeklyReport = async (req, res) => {
-  const { studentId, biWeekIndex, score } = req.body; 
+  const { studentId, biWeekIndex, score } = req.body;
   // biWeekIndex: 0 to 25 mapping to the 26-size array
   const collegeId = req.collegeId;
 

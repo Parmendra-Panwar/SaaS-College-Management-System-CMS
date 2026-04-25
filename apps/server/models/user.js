@@ -11,6 +11,7 @@ const userSchema = new Schema({
     enum: ['Admin', 'Manager', 'Principal', 'Teacher', 'Student'], 
     default: 'Student' 
   },
+  passwordChangedAt: { type: Date },
   collegeId: { type: Schema.Types.ObjectId, ref: 'College' }, // Made optional for Admin/Manager
   assignedColleges: [{ type: Schema.Types.ObjectId, ref: 'College' }], // For Manager role
 

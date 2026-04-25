@@ -41,9 +41,9 @@ export const getTopStudents = async (req, res) => {
   }
 
   const students = await Student.find({ collegeId, clusterId: 'High Achiever' })
-                                 .populate('user', 'username email')
-                                 .limit(50);
-  
+    .populate('user', 'username email')
+    .limit(50);
+
   await redisClient.set(cacheKey, JSON.stringify(students), "EX", 14 * 24 * 60 * 60);
 
   res.status(200).json({ success: true, source: 'db', data: students });
@@ -52,5 +52,4 @@ export const getTopStudents = async (req, res) => {
 export const invalidateInsightsCache = async (collegeId) => {
   await redisClient.del(`dashboard_insights_${collegeId}`);
   await redisClient.del(`top_students_${collegeId}`);
-  console.log(`Cache invalidated for college: ${collegeId}`);
 };
