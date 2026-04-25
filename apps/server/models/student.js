@@ -14,10 +14,11 @@ const studentSchema = new Schema({
     default: () => Array.from({ length: 91 }, () => Array(4).fill(false))
   },
 
-  // 26 bi-weekly reports for a year. 
-  workReport: {
-    type: [Number],
-    default: () => Array(26).fill(0)
+  // 26 bi-weekly periods for a year.
+  // true = a Report document has been submitted for that period.
+  reportStatus: {
+    type: [Boolean],
+    default: () => Array(26).fill(false)
   },
 
   // Step 5: AI Intelligence Service

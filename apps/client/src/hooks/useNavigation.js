@@ -15,6 +15,7 @@ const NAV_CONFIG = {
         { id: 'students',    label: 'Manage Students',   path: 'students' },
         { id: 'teachers',    label: 'Manage Teachers',   path: 'teachers' },
         { id: 'attendance',  label: 'Attendance',        path: 'attendance' },
+        { id: 'reports',     label: 'Bi-Weekly Reports',  path: 'reports' },
     ],
     Principal: [
         { id: 'departments', label: 'Departments',     path: 'departments' },
@@ -22,6 +23,7 @@ const NAV_CONFIG = {
         { id: 'students',    label: 'Manage Students',  path: 'students' },
         { id: 'teachers',    label: 'Manage Teachers',  path: 'teachers' },
         { id: 'attendance',  label: 'Attendance',       path: 'attendance' },
+        { id: 'reports',     label: 'Bi-Weekly Reports', path: 'reports' },
     ],
     // Manager shares the same nav as Principal
     Manager: [
@@ -30,9 +32,11 @@ const NAV_CONFIG = {
         { id: 'students',    label: 'Manage Students',  path: 'students' },
         { id: 'teachers',    label: 'Manage Teachers',  path: 'teachers' },
         { id: 'attendance',  label: 'Attendance',       path: 'attendance' },
+        { id: 'reports',     label: 'Bi-Weekly Reports', path: 'reports' },
     ],
     Teacher: [
         { id: 'attendance',  label: 'Attendance',       path: 'attendance' },
+        { id: 'reports',     label: 'Bi-Weekly Reports', path: 'reports' },
         { id: 'grades',      label: 'Input Grades',     path: 'grades' },
         { id: 'discipline',  label: 'Discipline / Notes', path: 'discipline' },
     ],
