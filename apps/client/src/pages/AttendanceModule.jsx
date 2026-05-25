@@ -65,7 +65,7 @@ const AttendanceModule = ({ user }) => {
             setLoading(true);
             try {
                 // Fetch students of this class
-                const res = await academicService.getStudents();
+                const res = await academicService.getStudents(selectedCollegeId, selectedClassId);
                 const classStudents = res.data.data.filter(s => String(s.class?._id || s.class) === String(selectedClassId));
                 setStudents(classStudents);
 
@@ -152,14 +152,16 @@ const AttendanceModule = ({ user }) => {
                             { header: 'Student Name', accessor: s => s.user?.username || 'Unknown' },
                             { header: 'Roll No.', accessor: s => s.roll_number },
                             { header: 'Email', accessor: s => s.user?.email || 'N/A' },
-                            { header: 'Status', accessor: s => (
-                                <button
-                                    onClick={() => handleCheckboxToggle(s._id)}
-                                    className={`px-4 py-1.5 rounded-lg font-bold text-sm transition-colors ${attendanceMap[s._id] ? 'bg-emerald-100 text-emerald-700' : 'bg-rose-100 text-rose-700'}`}
-                                >
-                                    {attendanceMap[s._id] ? 'Present' : 'Absent'}
-                                </button>
-                            )}
+                            {
+                                header: 'Status', accessor: s => (
+                                    <button
+                                        onClick={() => handleCheckboxToggle(s._id)}
+                                        className={`px-4 py-1.5 rounded-lg font-bold text-sm transition-colors ${attendanceMap[s._id] ? 'bg-emerald-100 text-emerald-700' : 'bg-rose-100 text-rose-700'}`}
+                                    >
+                                        {attendanceMap[s._id] ? 'Present' : 'Absent'}
+                                    </button>
+                                )
+                            }
                         ]}
                         data={students}
                     />
