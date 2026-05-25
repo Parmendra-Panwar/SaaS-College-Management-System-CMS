@@ -34,6 +34,7 @@ import ShowCollegesManager from '@/pages/manager/colleges/ShowCollegesManager';
 // ─── Attendance (shared across all management roles + Teacher) ───────────────
 import AttendancePage from '@pages/shared/AttendancePage';
 import ReportPage from '@pages/shared/ReportPage';
+import FeesPage from '@pages/shared/FeesPage';
 
 import { getProfile } from '@store/slices/authSlice';
 import { useToast } from '@hooks/useToast';
@@ -92,6 +93,7 @@ const router = createBrowserRouter([
           { path: 'students', element: <ManageStudent /> },
           { path: 'teachers', element: <ManageTeacher /> },
           { path: 'attendance', element: <AttendancePage /> },
+          { path: 'fees',       element: <FeesPage /> },
           { path: 'reports',    element: <ReportPage /> },
         ],
       },
@@ -112,6 +114,7 @@ const router = createBrowserRouter([
           { path: 'students', element: <ManageStudent /> },
           { path: 'teachers', element: <ManageTeacher /> },
           { path: 'attendance', element: <AttendancePage /> },
+          { path: 'fees',       element: <FeesPage /> },
           { path: 'reports',    element: <ReportPage /> },
         ],
       },
@@ -131,6 +134,7 @@ const router = createBrowserRouter([
           { path: 'students', element: <ManageStudent /> },
           { path: 'teachers', element: <ManageTeacher /> },
           { path: 'attendance', element: <AttendancePage /> },
+          { path: 'fees',       element: <FeesPage /> },
           { path: 'reports',    element: <ReportPage /> },
         ],
       },
@@ -148,6 +152,7 @@ const router = createBrowserRouter([
           { path: 'classes', element: <ManageClasses /> },
           { path: 'students', element: <ManageStudent /> },
           { path: 'attendance', element: <AttendancePage /> },
+          { path: 'fees',       element: <FeesPage /> },
           { path: 'reports',    element: <ReportPage /> },
         ],
       },

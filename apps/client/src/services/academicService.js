@@ -20,6 +20,12 @@ const academicService = {
     getTeachers: (collegeId) => apiClient.get(`/academic/teachers${collegeId ? `?collegeId=${collegeId}` : ''}`),
     getAttendanceQuery: (classId, date) => apiClient.get(`/academic/attendance/query?classId=${classId}&date=${date}`),
     markAttendance: (payload) => apiClient.post('/academic/attendance/mark', payload),
+
+    // Fees
+    getClassFee: (classId) => apiClient.get(`/academic/fees/class/${classId}`),
+    setClassFee: (payload) => apiClient.post('/academic/fees/class', payload),
+    getStudentFees: (classId) => apiClient.get(`/academic/fees/students?classId=${classId}`),
+    addFeeTransaction: (studentId, payload) => apiClient.post(`/academic/fees/student/${studentId}/transaction`, payload),
 };
 
 export default academicService;

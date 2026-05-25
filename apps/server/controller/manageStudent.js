@@ -2,6 +2,8 @@ import Student from "../models/student.js";
 import User from "../models/user.js";
 import Teacher from "../models/teacher.js";
 import Class from "../models/class.js";
+import ClassFee from "../models/classFee.js";
+import StudentFee from "../models/studentFee.js";
 import bcrypt from "bcryptjs";
 import { getCollegeFilter, isActionAllowed } from "../utils/helpers.js";
 
@@ -87,6 +89,17 @@ export const createStudent = async (req, res) => {
     const user = await User.create({ username, email, password: hashedPassword, tempPassword: rawPassword, role: 'Student', collegeId: targetCollegeId });
     const student = await Student.create({ user: user._id, collegeId: targetCollegeId, class: classId, roll_number });
     
+    const classFee = await ClassFee.findOne({ classId });
+    if (classFee) {
+        await StudentFee.create({
+            collegeId: targetCollegeId,
+            classId: classId,
+            studentId: student._id,
+            feeTypes: classFee.feeTypes,
+            totalAmount: classFee.totalAmount
+        });
+    }
+    
     res.status(201).json({ success: true, data: await student.populate([{ path: 'user', select: '-password' }, { path: 'class' }]) });
 };
 
@@ -139,6 +152,34 @@ export const bulkCreateStudents = async (req, res) => {
   }));
 
   const insertedStudents = await Student.insertMany(studentsToInsert, { ordered: false });
+
+  const classIds = [...new Set(studentsToInsert.map(s => String(s.class)))];
+  const classFees = await ClassFee.find({ classId: { $in: classIds } });
+  
+  if (classFees.length > 0) {
+    const classFeeMap = classFees.reduce((map, cf) => {
+        map[String(cf.classId)] = cf;
+        return map;
+    }, {});
+    
+    const feeRecordsToInsert = insertedStudents.map(student => {
+        const cf = classFeeMap[String(student.class)];
+        if (cf) {
+            return {
+                collegeId: student.collegeId,
+                classId: student.class,
+                studentId: student._id,
+                feeTypes: cf.feeTypes,
+                totalAmount: cf.totalAmount
+            };
+        }
+        return null;
+    }).filter(Boolean);
+    
+    if (feeRecordsToInsert.length > 0) {
+        await StudentFee.insertMany(feeRecordsToInsert, { ordered: false });
+    }
+  }
 
   res.status(201).json({ success: true, count: insertedStudents.length, data: insertedStudents });
 };

@@ -11,6 +11,7 @@ import * as manageClassesController from "../controller/manageClasses.js";
 import * as manageTeacherController from "../controller/manageTeacher.js";
 import * as manageStudentController from "../controller/manageStudent.js";
 import * as manageAttendanceController from "../controller/manageAttendance.js";
+import * as manageFeesController from "../controller/manageFees.js";
 import * as manageReportController from "../controller/manageReport.js";
 
 const upload = multer({ storage });
@@ -51,6 +52,12 @@ router.delete("/students/:id", isloggedIn, wrapAsync(manageStudentController.del
 // Attendance
 router.post("/attendance/mark", isloggedIn, wrapAsync(manageAttendanceController.markAttendance));
 router.get("/attendance/query", isloggedIn, wrapAsync(manageAttendanceController.queryAttendance));
+
+// Fees
+router.get("/fees/class/:classId", isloggedIn, wrapAsync(manageFeesController.getClassFee));
+router.post("/fees/class", isloggedIn, wrapAsync(manageFeesController.setClassFee));
+router.get("/fees/students", isloggedIn, wrapAsync(manageFeesController.getStudentFees));
+router.post("/fees/student/:studentId/transaction", isloggedIn, wrapAsync(manageFeesController.addFeeTransaction));
 
 // Bi-Weekly Reports
 router.get("/reports",     isloggedIn, wrapAsync(manageReportController.getReports));
