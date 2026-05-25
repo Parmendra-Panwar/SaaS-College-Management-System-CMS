@@ -36,6 +36,10 @@ const checkAccess = async (user, classId) => {
 };
 
 export const setClassFee = async (req, res) => {
+    if (req.user.role === 'Teacher') {
+        return res.status(403).json({ error: "Access Denied: Teachers cannot modify global class fees" });
+    }
+
     const { classId, feeTypes } = req.body;
     if (!classId || !feeTypes) return res.status(400).json({ error: "Missing required fields" });
 
