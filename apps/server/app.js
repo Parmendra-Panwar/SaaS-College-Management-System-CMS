@@ -15,19 +15,18 @@ connectDB();
 app.use(helmet());
 
 // Rate Limiting Configuration
-// const limiter = rateLimit({
-//   windowMs: 15 * 60 * 1000, // 15 minutes
-//   max: 100, // Har IP se max 100 requests per 15 mins
-//   standardHeaders: true, // Rate limit info 'RateLimit-*' headers mein bheje
-//   legacyHeaders: false, // 'X-RateLimit-*' headers disable kare
-//   message: {
-//     success: false,
-//     error: "Too many requests, please try again after 15 minutes.",
-//   },
-// });
+const limiter = rateLimit({
+  windowMs: 10 * 60 * 1000, // 10 minutes
+  max: 60, // each IP max 60 requests per 10 mins
+  standardHeaders: true, // Rate limit info 'RateLimit-*' headers mein bheje
+  legacyHeaders: false, // 'X-RateLimit-*' headers disable kare
+  message: {
+    success: false,
+    error: "Too many requests, please try again after 15 minutes.",
+  },
+});
 
-// Saare routes par limiter apply karein
-// app.use("/api/", limiter);
+app.use("/api/", limiter);
 
 // CORS Configuration
 const allowedOrigins = [

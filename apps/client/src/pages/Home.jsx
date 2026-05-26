@@ -10,6 +10,7 @@ const Home = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [formData, setFormData] = useState({ collegeName: '', principalName: '', principalEmail: '', contactNumber: '' });
     const [loading, setLoading] = useState(false);
+    const [copiedLabel, setCopiedLabel] = useState('');
 
     const handleRequestDemo = async (e) => {
         e.preventDefault();
@@ -26,6 +27,40 @@ const Home = () => {
             setLoading(false);
         }
     };
+
+    const copyToClipboard = (text, label) => {
+        navigator.clipboard.writeText(text);
+        setCopiedLabel(label);
+        setTimeout(() => setCopiedLabel(''), 2000);
+    };
+
+    const demoAccounts = [
+        {
+            role: "Super Admin",
+            email: "admin@cms.com",
+            pass: "cms@superAdmin45",
+            path: "/superadminlogin",
+            desc: "Full system control. Manages college onboarding and global configurations.",
+            color: "indigo"
+        },
+        {
+            role: "Principal",
+            email: "math@math.com",
+            pass: "8wyxhil8",
+            path: "/login",
+            desc: "Institutional head. Manages departments, staff, and student analytics.",
+            color: "rose"
+        },
+        {
+            role: "Teacher",
+            email: "geo@teacher.com",
+            pass: "Teacher@123",
+            path: "/login",
+            desc: "Academic facilitator. Handles attendance, marks, and classroom logs.",
+            color: "emerald"
+        }
+    ];
+
     React.useEffect(() => {
         if (user) {
             navigate(`/${user.role.toLowerCase()}/dashboard`);
@@ -51,15 +86,22 @@ const Home = () => {
                         <div className="flex gap-4">
                             <button
                                 onClick={() => navigate('/login')}
-                                className="bg-indigo-600 text-white px-8 py-4 rounded-full shadow-[0_6px_16px_rgba(79,70,229,0.3)] hover:shadow-[0_6px_20px_rgba(79,70,229,0.5)] transition-all duration-300 font-bold text-[16px]"
+                                className="bg-indigo-600 text-white px-4 py-4 rounded-full shadow-[0_6px_16px_rgba(79,70,229,0.3)] hover:shadow-[0_6px_20px_rgba(79,70,229,0.5)] transition-all duration-300 font-bold text-[16px]"
                             >
                                 Enter Dashboard
                             </button>
                             <button
                                 onClick={() => setIsModalOpen(true)}
-                                className="bg-white border border-gray-200 text-gray-800 px-8 py-4 rounded-full hover:bg-gray-50 transition-all duration-300 font-bold text-[16px]"
+                                className="bg-white border border-gray-200 text-gray-800 px-4 py-4 rounded-full hover:bg-gray-50 transition-all duration-300 font-bold text-[16px]"
                             >
                                 Request Demo
+                            </button>
+
+                            <button
+                                onClick={() => document.getElementById('demoAccounts').scrollIntoView({ behavior: 'smooth' })}
+                                className="bg-rose-500 text-white px-4 py-4 rounded-full shadow-[0_6px_16px_rgba(79,70,229,0.3)] hover:shadow-[0_6px_20px_rgba(79,70,229,0.5)] transition-all duration-300 font-bold text-[16px]"
+                            >
+                                View Demo Accounts
                             </button>
                         </div>
                     </div>
@@ -77,9 +119,66 @@ const Home = () => {
                                 </p>
                             </div>
                         </div>
-                        {/* Abstract Decorators */}
                         <div className="absolute -bottom-10 -left-10 w-64 h-64 bg-indigo-500/20 rounded-full blur-3xl -z-10"></div>
                         <div className="absolute -top-10 -right-10 w-72 h-72 bg-blue-500/20 rounded-full blur-3xl -z-10"></div>
+                    </div>
+                </div>
+            </div>
+
+            {/* NEW: Sandbox / Login Explorer Section */}
+            <div className="bg-[#f7f6e8] py-24 border-y border-gray-200/50">
+                <div className="max-w-[1305px] mx-auto px-6" id='demoAccounts'>
+                    <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
+                        <div className="max-w-2xl text-left">
+                            <h2 className="text-3xl font-[900] text-gray-900 tracking-tight mb-4">Hierarchical Role-Based Access</h2>
+                            <p className="text-gray-600 text-lg">Experience the multi-tenant architecture by exploring the platform through different stakeholder perspectives.</p>
+                        </div>
+                        <div className="hidden md:block">
+                            <span className="bg-indigo-100 text-indigo-700 px-4 py-2 rounded-full text-sm font-bold border border-indigo-200">
+                                Engineer-Friendly Demo accounts
+                            </span>
+                        </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        {demoAccounts.map((account) => (
+                            <div key={account.role} className="bg-white rounded-[32px] p-8 shadow-sm hover:shadow-xl transition-all duration-500 group border border-gray-100 relative overflow-hidden">
+                                <div className={`absolute top-0 right-0 w-32 h-32 bg-${account.color}-50 rounded-full -mr-16 -mt-16 group-hover:scale-110 transition-transform duration-500`}></div>
+
+                                <div className="relative z-10">
+                                    <div className={`text-${account.color}-600 font-black text-xs uppercase tracking-widest mb-2`}>Role: {account.role}</div>
+                                    <h3 className="text-2xl font-bold text-gray-900 mb-4">{account.role} View</h3>
+                                    <p className="text-gray-500 text-sm mb-8 leading-relaxed">{account.desc}</p>
+
+                                    <div className="space-y-3 mb-8">
+                                        <div
+                                            onClick={() => copyToClipboard(account.email, `${account.role}-email`)}
+                                            className="flex flex-col p-3 bg-gray-50 rounded-2xl border border-gray-100 cursor-pointer hover:bg-gray-100 transition relative"
+                                        >
+                                            <span className="text-[10px] text-gray-400 font-bold uppercase">ID / Email</span>
+                                            <span className="text-gray-800 font-medium truncate">{account.email}</span>
+                                            {copiedLabel === `${account.role}-email` && <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-bold text-indigo-600 animate-bounce">COPIED!</span>}
+                                        </div>
+                                        <div
+                                            onClick={() => copyToClipboard(account.pass, `${account.role}-pass`)}
+                                            className="flex flex-col p-3 bg-gray-50 rounded-2xl border border-gray-100 cursor-pointer hover:bg-gray-100 transition relative"
+                                        >
+                                            <span className="text-[10px] text-gray-400 font-bold uppercase">Password</span>
+                                            <span className="text-gray-800 font-medium">{account.pass}</span>
+                                            {copiedLabel === `${account.role}-pass` && <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-bold text-indigo-600 animate-bounce">COPIED!</span>}
+                                        </div>
+                                    </div>
+
+                                    <button
+                                        onClick={() => navigate(account.path)}
+                                        className={`w-full py-4 rounded-2xl font-bold text-sm bg-${account.color === 'rose' ? 'rose-500' : account.color + '-600'} text-white shadow-lg transition-transform active:scale-95`}
+                                    >
+                                        Go to {account.role} Login
+                                    </button>
+                                    <p className="text-center mt-3 text-[10px] text-gray-400 font-mono tracking-tighter">Path: {account.path}</p>
+                                </div>
+                            </div>
+                        ))}
                     </div>
                 </div>
             </div>
