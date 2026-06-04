@@ -9,7 +9,7 @@ import { SpinnerIcon } from '@components/icons';
 // ─── Public Pages ────────────────────────────────────────────────────────────
 import Home from '@pages/Home';
 import Login from '@pages/Login';
-import SuperAdminLogin from '@pages/SuperAdminLogin';
+// import SuperAdminLogin from '@pages/SuperAdminLogin';
 import NotFound from '@pages/NotFound';
 import ProfilePage from '@pages/ProfilePage';
 
@@ -71,7 +71,7 @@ const router = createBrowserRouter([
       // ── Public routes ──────────────────────────────────────────────────
       { index: true, element: <Home /> },
       { path: 'login', element: <Login /> },
-      { path: 'superadminlogin', element: <SuperAdminLogin /> },
+      // { path: 'superadminlogin', element: <SuperAdminLogin /> },
       { path: 'profile/:username', element: <ProfilePage /> },
     ],
   },
@@ -93,8 +93,8 @@ const router = createBrowserRouter([
           { path: 'students', element: <ManageStudent /> },
           { path: 'teachers', element: <ManageTeacher /> },
           { path: 'attendance', element: <AttendancePage /> },
-          { path: 'fees',       element: <FeesPage /> },
-          { path: 'reports',    element: <ReportPage /> },
+          { path: 'fees', element: <FeesPage /> },
+          { path: 'reports', element: <ReportPage /> },
         ],
       },
     ],
@@ -114,8 +114,8 @@ const router = createBrowserRouter([
           { path: 'students', element: <ManageStudent /> },
           { path: 'teachers', element: <ManageTeacher /> },
           { path: 'attendance', element: <AttendancePage /> },
-          { path: 'fees',       element: <FeesPage /> },
-          { path: 'reports',    element: <ReportPage /> },
+          { path: 'fees', element: <FeesPage /> },
+          { path: 'reports', element: <ReportPage /> },
         ],
       },
     ],
@@ -134,8 +134,8 @@ const router = createBrowserRouter([
           { path: 'students', element: <ManageStudent /> },
           { path: 'teachers', element: <ManageTeacher /> },
           { path: 'attendance', element: <AttendancePage /> },
-          { path: 'fees',       element: <FeesPage /> },
-          { path: 'reports',    element: <ReportPage /> },
+          { path: 'fees', element: <FeesPage /> },
+          { path: 'reports', element: <ReportPage /> },
         ],
       },
     ],
@@ -152,8 +152,8 @@ const router = createBrowserRouter([
           { path: 'classes', element: <ManageClasses /> },
           { path: 'students', element: <ManageStudent /> },
           { path: 'attendance', element: <AttendancePage /> },
-          { path: 'fees',       element: <FeesPage /> },
-          { path: 'reports',    element: <ReportPage /> },
+          { path: 'fees', element: <FeesPage /> },
+          { path: 'reports', element: <ReportPage /> },
         ],
       },
     ],
