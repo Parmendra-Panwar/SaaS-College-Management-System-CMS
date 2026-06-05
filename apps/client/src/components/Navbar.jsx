@@ -47,7 +47,9 @@ const Navbar = (showLogo = true) => {
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14zm-4 6v-7.5l4-2.222"></path>
                             </svg>
                         </div>
-                        <span className="text-[22px] font-[800] text-indigo-700 tracking-tighter">Academia</span>
+                        <div className="font-black text-2xl tracking-tighter text-gray-900">
+                            Academia<span className="text-blue-600">.</span>
+                        </div>
                     </Link>
                 )}
 

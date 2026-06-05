@@ -7,42 +7,43 @@ import { useSelector } from 'react-redux';
  */
 const NAV_CONFIG = {
     Admin: [
-        { id: 'colleges',    label: 'Colleges',         path: 'colleges' },
-        { id: 'managers',    label: 'Managers',          path: 'managers' },
-        { id: 'requests',    label: 'College Requests',  path: 'requests' },
-        { id: 'departments', label: 'Departments',       path: 'departments' },
-        { id: 'classes',     label: 'Classes',           path: 'classes' },
-        { id: 'students',    label: 'Manage Students',   path: 'students' },
-        { id: 'teachers',    label: 'Manage Teachers',   path: 'teachers' },
-        { id: 'attendance',  label: 'Attendance',        path: 'attendance' },
-        { id: 'fees',        label: 'Fees Management',   path: 'fees' },
-        { id: 'reports',     label: 'Bi-Weekly Reports',  path: 'reports' },
+        { id: 'colleges', label: 'Colleges', path: 'colleges' },
+        { id: 'managers', label: 'Managers', path: 'managers' },
+        { id: 'requests', label: 'College Requests', path: 'requests' },
+        { id: 'departments', label: 'Departments', path: 'departments' },
+        { id: 'classes', label: 'Classes', path: 'classes' },
+        { id: 'students', label: 'Manage Students', path: 'students' },
+        { id: 'teachers', label: 'Manage Teachers', path: 'teachers' },
+        { id: 'attendance', label: 'Attendance', path: 'attendance' },
+        { id: 'fees', label: 'Fees Management', path: 'fees' },
+        { id: 'reports', label: 'Bi-Weekly Reports', path: 'reports' },
     ],
     Principal: [
-        { id: 'departments', label: 'Departments',     path: 'departments' },
-        { id: 'classes',     label: 'Classes',          path: 'classes' },
-        { id: 'students',    label: 'Manage Students',  path: 'students' },
-        { id: 'teachers',    label: 'Manage Teachers',  path: 'teachers' },
-        { id: 'attendance',  label: 'Attendance',       path: 'attendance' },
-        { id: 'fees',        label: 'Fees Management',  path: 'fees' },
-        { id: 'reports',     label: 'Bi-Weekly Reports', path: 'reports' },
+        { id: 'departments', label: 'Departments', path: 'departments' },
+        { id: 'classes', label: 'Classes', path: 'classes' },
+        { id: 'students', label: 'Manage Students', path: 'students' },
+        { id: 'teachers', label: 'Manage Teachers', path: 'teachers' },
+        { id: 'attendance', label: 'Attendance', path: 'attendance' },
+        { id: 'fees', label: 'Fees Management', path: 'fees' },
+        { id: 'reports', label: 'Bi-Weekly Reports', path: 'reports' },
     ],
     // Manager shares the same nav as Principal
     Manager: [
-        { id: 'departments', label: 'Departments',     path: 'departments' },
-        { id: 'classes',     label: 'Classes',          path: 'classes' },
-        { id: 'students',    label: 'Manage Students',  path: 'students' },
-        { id: 'teachers',    label: 'Manage Teachers',  path: 'teachers' },
-        { id: 'attendance',  label: 'Attendance',       path: 'attendance' },
-        { id: 'fees',        label: 'Fees Management',  path: 'fees' },
-        { id: 'reports',     label: 'Bi-Weekly Reports', path: 'reports' },
+        { id: 'colleges', label: 'Colleges', path: 'colleges' },
+        { id: 'departments', label: 'Departments', path: 'departments' },
+        { id: 'classes', label: 'Classes', path: 'classes' },
+        { id: 'students', label: 'Manage Students', path: 'students' },
+        { id: 'teachers', label: 'Manage Teachers', path: 'teachers' },
+        { id: 'attendance', label: 'Attendance', path: 'attendance' },
+        { id: 'fees', label: 'Fees Management', path: 'fees' },
+        { id: 'reports', label: 'Bi-Weekly Reports', path: 'reports' },
     ],
     Teacher: [
-        { id: 'attendance',  label: 'Attendance',       path: 'attendance' },
-        { id: 'fees',        label: 'Fees Management',  path: 'fees' },
-        { id: 'reports',     label: 'Bi-Weekly Reports', path: 'reports' },
-        { id: 'grades',      label: 'Input Grades',     path: 'grades' },
-        { id: 'discipline',  label: 'Discipline / Notes', path: 'discipline' },
+        { id: 'attendance', label: 'Attendance', path: 'attendance' },
+        { id: 'fees', label: 'Fees Management', path: 'fees' },
+        { id: 'reports', label: 'Bi-Weekly Reports', path: 'reports' },
+        { id: 'grades', label: 'Input Grades', path: 'grades' },
+        { id: 'discipline', label: 'Discipline / Notes', path: 'discipline' },
     ],
     Student: [
         { id: 'dashboard', label: 'Dashboard', path: 'home' },
@@ -55,11 +56,11 @@ const NAV_CONFIG = {
  */
 export const getDefaultPath = (role) => {
     switch (role) {
-        case 'Admin':                   return 'colleges';
+        case 'Admin': return 'colleges';
         case 'Principal': case 'Manager': return 'departments';
-        case 'Teacher':                 return 'attendance';
-        case 'Student':                 return 'home';
-        default:                        return 'home';
+        case 'Teacher': return 'attendance';
+        case 'Student': return 'home';
+        default: return 'home';
     }
 };
 
