@@ -71,6 +71,9 @@ const ReportModule = ({ user }) => {
     const [deleteConfirm, setDeleteConfirm] = useState(null); // reportId to confirm delete
 
     // ─── Load lookups ──────────────────────────────────────────────────────────
+    useEffect(() => {
+        if (!lookupsLoaded) dispatch(fetchLookups());
+    }, [dispatch, lookupsLoaded]);
 
     useEffect(() => {
         if (selectedCollegeId) {

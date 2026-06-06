@@ -28,10 +28,14 @@ const AttendanceModule = ({ user }) => {
 
     // Fetch global lookups on load
     useEffect(() => {
-        if (!lookupsLoaded) {
-            dispatch(fetchLookups());
-        }
+        if (!lookupsLoaded) dispatch(fetchLookups());
     }, [dispatch, lookupsLoaded]);
+
+    useEffect(() => {
+        if (selectedCollegeId) {
+            dispatch(fetchLookups(selectedCollegeId));
+        }
+    }, [dispatch, selectedCollegeId]);
 
     // Handle initial selection once lookups are loaded
     useEffect(() => {
