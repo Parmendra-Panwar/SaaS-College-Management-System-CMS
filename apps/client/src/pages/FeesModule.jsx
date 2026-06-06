@@ -13,11 +13,11 @@ const FeesModule = ({ user }) => {
 
     const [selectedCollegeId, setSelectedCollegeId] = useState('');
     const [selectedClassId, setSelectedClassId] = useState('');
-    
+
     const [loading, setLoading] = useState(false);
     const [classFee, setClassFee] = useState(null);
     const [studentFees, setStudentFees] = useState([]);
-    
+
     // Class Fee Setup State
     const [feeTypes, setFeeTypes] = useState([{ type: 'Tuition Fee', amount: '' }]);
     const [savingClassFee, setSavingClassFee] = useState(false);
@@ -38,6 +38,12 @@ const FeesModule = ({ user }) => {
     useEffect(() => {
         if (!lookupsLoaded) dispatch(fetchLookups());
     }, [dispatch, lookupsLoaded]);
+
+    useEffect(() => {
+        if (selectedCollegeId) {
+            dispatch(fetchLookups(selectedCollegeId));
+        }
+    }, [dispatch, selectedCollegeId]);
 
     useEffect(() => {
         if (!lookupsLoaded) return;
@@ -75,7 +81,7 @@ const FeesModule = ({ user }) => {
             if (fetchedClassFee) {
                 // Populate the form in case they decide to edit
                 setFeeTypes(fetchedClassFee.feeTypes.map(f => ({ type: f.type, amount: String(f.amount) })));
-                
+
                 const studentRes = await academicService.getStudentFees(selectedClassId);
                 setStudentFees(studentRes.data.data || []);
             } else {
@@ -112,7 +118,7 @@ const FeesModule = ({ user }) => {
     const handleSaveClassFee = async () => {
         const validFees = feeTypes.filter(f => f.type && f.amount);
         if (validFees.length === 0) return toast.error("Please add at least one fee type with amount.");
-        
+
         setSavingClassFee(true);
         try {
             await academicService.setClassFee({
@@ -139,7 +145,7 @@ const FeesModule = ({ user }) => {
 
     const handleSaveTransaction = async () => {
         if (!transactionAmount || Number(transactionAmount) <= 0) return toast.error("Valid amount required");
-        
+
         setSavingTransaction(true);
         try {
             await academicService.addFeeTransaction(selectedStudentFee.studentId._id, {
@@ -185,7 +191,7 @@ const FeesModule = ({ user }) => {
                     <h2 className="text-xl font-bold text-gray-800 mb-6">
                         {classFee ? 'Edit Global Fees for this Class' : 'Setup Global Fees for this Class'}
                     </h2>
-                    
+
                     {user.role === 'Teacher' ? (
                         <div className="py-10 text-center font-semibold text-rose-500 bg-rose-50 rounded-xl p-6 border border-rose-100">
                             The global fee structure has not been set for this class. Please contact the Administrator to configure the fees before you can manage individual students.
@@ -193,7 +199,7 @@ const FeesModule = ({ user }) => {
                     ) : (
                         <>
                             <p className="text-gray-500 mb-6">This will automatically apply to individual fee records for all enrolled students.</p>
-                            
+
                             <div className="space-y-4 mb-6">
                                 {feeTypes.map((fee, index) => (
                                     <div key={index} className="flex gap-4 items-end">
@@ -209,7 +215,7 @@ const FeesModule = ({ user }) => {
                                     </div>
                                 ))}
                             </div>
-                            
+
                             <div className="flex gap-4">
                                 <button onClick={handleAddFeeType} className="font-bold text-indigo-600 hover:bg-indigo-50 px-4 py-2 rounded-xl transition">
                                     + Add Fee Type
@@ -250,8 +256,8 @@ const FeesModule = ({ user }) => {
                             { header: 'Roll No.', accessor: s => s.studentId?.roll_number || 'N/A' },
                             { header: 'Total Fee', accessor: s => `₹${s.totalAmount}` },
                             { header: 'Total Paid', accessor: s => `₹${s.totalPaid}` },
-                            { 
-                                header: 'Balance', 
+                            {
+                                header: 'Balance',
                                 accessor: s => {
                                     const balance = s.totalAmount - s.totalPaid;
                                     return <span className={balance > 0 ? "text-rose-600 font-bold" : "text-emerald-600 font-bold"}>₹{balance}</span>;
@@ -345,11 +351,10 @@ const FeesModule = ({ user }) => {
                                                     {new Date(receipt.date).toLocaleDateString()}
                                                 </td>
                                                 <td className="p-4">
-                                                    <span className={`inline-flex px-2.5 py-1 rounded-md text-xs font-bold ${
-                                                        receipt.type === 'Payment' 
-                                                            ? 'bg-emerald-100 text-emerald-700' 
-                                                            : 'bg-amber-100 text-amber-700'
-                                                    }`}>
+                                                    <span className={`inline-flex px-2.5 py-1 rounded-md text-xs font-bold ${receipt.type === 'Payment'
+                                                        ? 'bg-emerald-100 text-emerald-700'
+                                                        : 'bg-amber-100 text-amber-700'
+                                                        }`}>
                                                         {receipt.type}
                                                     </span>
                                                 </td>
