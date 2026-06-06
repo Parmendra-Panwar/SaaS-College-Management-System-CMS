@@ -108,7 +108,7 @@ const router = createBrowserRouter([
       {
         element: <ProtectedRoute allowedRoles={['Manager']} />,
         children: [
-          { path: 'colleges', element: <ShowCollegesManager /> },
+          // { path: 'colleges', element: <ShowCollegesManager /> },
           { path: 'departments', element: <ManageDepartment /> },
           { path: 'classes', element: <ManageClasses /> },
           { path: 'students', element: <ManageStudent /> },
