@@ -62,6 +62,11 @@ const Home = () => {
             icon: <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
         },
         {
+            title: "Fees Management",
+            description: "Automate dynamic fee structures, track outstanding balances, and generate instant clearance invoices across departments.",
+            icon: <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+        },
+        {
             title: "Role-Based Access",
             description: "Ensures secure data handling and limited access between Admins, Principals, and Teachers.",
             icon: <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
@@ -83,7 +88,7 @@ const Home = () => {
             <header className="relative pt-12 pb-16 flex flex-col items-center text-center px-6 overflow-hidden">
                 <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-3xl h-[300px] bg-gradient-to-b from-blue-100/60 to-transparent blur-3xl -z-10 rounded-full"></div>
 
-                <div className="max-w-3xl mx-auto z-10 flex flex-col items-center">
+                <div className="max-w-5xl mx-auto z-10 flex flex-col items-center">
                     <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white border border-gray-200 text-gray-800 text-[10px] font-bold uppercase tracking-widest shadow-sm mb-6 cursor-default">
                         <span className="flex h-2 w-2 relative">
                             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
@@ -93,11 +98,11 @@ const Home = () => {
                     </div>
 
                     <h1 className="text-4xl md:text-6xl font-[900] text-gray-900 leading-[1.1] tracking-tighter mb-4">
-                        The Operating System <br className="hidden md:block" /> for modern <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600">Institutions.</span>
+                        The Multi-Tenant <br className="hidden md:block" /> SaaS Platform for <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600">College Campuses.</span>
                     </h1>
 
-                    <p className="text-base md:text-lg text-gray-500 max-w-xl font-medium leading-relaxed mb-8">
-                        Handle thousands of students, distinct departments, and complex hierarchies from a single, unified dashboard. Built for scale.
+                    <p className="text-base md:text-lg text-gray-500 max-w-3xl font-medium leading-relaxed mb-8">
+                        Streamline distinct departments, hierarchical role isolation, and high-volume student tracking through a unified cloud infrastructure engineered for academic scale.
                     </p>
 
                     <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
@@ -127,7 +132,7 @@ const Home = () => {
                             </div>
                         </div>
                         <div className="relative bg-gray-100 h-[300px] md:h-[400px]">
-                            <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=2070&auto=format&fit=crop" alt="Dashboard" className="w-full h-full object-cover opacity-90" />
+                            <img src="./dashboard.png" alt="Dashboard" className="w-full h-full object-cover opacity-90" />
                         </div>
                     </div>
                 </div>
@@ -140,7 +145,7 @@ const Home = () => {
                         <h2 className="text-[10px] font-bold text-blue-400 uppercase tracking-widest mb-1">Architecture</h2>
                         <h3 className="text-2xl font-bold mb-2">Engineered for High Throughput</h3>
                         <p className="text-sm text-gray-400 leading-relaxed">
-                            Built on a scalable MERN/PERN stack utilizing tenant isolation to ensure data security across multiple institutions.
+                            Built on a scalable MERN stack utilizing tenant isolation to ensure data security across multiple institutions.
                         </p>
                     </div>
                     <div className="flex flex-wrap gap-2 max-w-sm justify-start md:justify-end">
@@ -154,16 +159,43 @@ const Home = () => {
             </section>
 
             {/* Features Section - Tighter Grid */}
-            <section className="py-16 bg-white">
-                <div className="max-w-6xl mx-auto px-6">
-                    <div className="text-center mb-10 max-w-xl mx-auto">
-                        <h2 className="text-3xl font-black text-gray-900 mb-2 tracking-tight">Complete Control</h2>
-                        <p className="text-sm text-gray-500">Every tool your faculty needs to run a data-driven campus.</p>
+            <section className="py-20 bg-gray-50/50">
+                <div className="max-w-7xl mx-auto px-6">
+                    {/* Header */}
+                    <div className="text-center mb-16 max-w-2xl mx-auto">
+                        <h2 className="text-4xl font-black text-gray-900 mb-4 tracking-tight sm:text-5xl">
+                            Complete Control
+                        </h2>
+                        <p className="text-base text-gray-600">
+                            Every tool your faculty needs to run a data-driven campus.
+                        </p>
                     </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {coreFeatures.map((feature, idx) => (
-                            <FeatureCard key={idx} {...feature} />
-                        ))}
+
+                    {/* Layout Wrapper */}
+                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+                        {/* Left Side: Media & Context */}
+                        <div className="lg:col-span-5 space-y-6">
+                            <div className="overflow-hidden rounded-2xl bg-gray-100 border border-gray-200/80 shadow-sm aspect-[4/3] group">
+                                <img
+                                    src="./feature.jpg"
+                                    alt="College Management Platform Interface"
+                                    className="w-full h-full object-cover opacity-95 group-hover:scale-[1.02] transition-transform duration-300 ease-out"
+                                />
+                            </div>
+                            <div className="space-y-3 px-2">
+                                <h3 className="text-xl font-bold text-gray-900">Engineered for Academic Scale</h3>
+                                <p className="text-gray-600 text-sm leading-relaxed">
+                                    Our multi-tenant campus management ecosystem bridges administrative silos by integrating real-time student tracking, automated compliance reporting, and cross-department routing. Designed to sustain high-volume institutional workflows with rock-solid reliability and strict data isolation across every node.
+                                </p>
+                            </div>
+                        </div>
+
+                        {/* Right Side: Features Grid */}
+                        <div className="lg:col-span-7 grid grid-cols-1 sm:grid-cols-2 gap-6">
+                            {coreFeatures.map((feature, idx) => (
+                                <FeatureCard key={idx} {...feature} />
+                            ))}
+                        </div>
                     </div>
                 </div>
             </section>
