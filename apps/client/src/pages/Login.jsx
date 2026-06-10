@@ -46,7 +46,7 @@ const Login = () => {
                     placeholder="Email"
                     required
                     value={email} // Controlled component
-                    className="w-full p-3 mb-4 rounded-xl border border-slate-200 focus:ring-2 focus:ring-[#FF385C] outline-none transition"
+                    className="w-full p-3 mb-4 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-700 outline-none transition"
                     onChange={(e) => setEmail(e.target.value)}
                 />
 
@@ -55,14 +55,14 @@ const Login = () => {
                     placeholder="Password"
                     required
                     value={password} // Controlled component
-                    className="w-full p-3 mb-6 rounded-xl border border-slate-200 focus:ring-2 focus:ring-[#FF385C] outline-none transition"
+                    className="w-full p-3 mb-6 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-700 outline-none transition"
                     onChange={(e) => setPassword(e.target.value)}
                 />
 
                 <button
                     type="submit"
                     disabled={loading}
-                    className="cursor-pointer w-full bg-[#FF385C] text-white py-3 rounded-xl font-semibold hover:bg-[#D90B38] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="cursor-pointer w-full  bg-blue-700 hover:bg-blue-800 text-white py-3 rounded-xl font-semibold transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                     {loading ? "Verifying..." : "Login"}
                 </button>
