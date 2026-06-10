@@ -7,16 +7,19 @@ import PageLayout from '@/components/PageLayout';
 const ShowRequestsAdmin = () => {
     const toast = useToast();
     const [requests, setRequests] = useState([]);
+    const [isFetchingData, setIsFetchingData] = useState(true);
 
     useEffect(() => {
         fetchRequests();
     }, []);
 
     const fetchRequests = async () => {
+        setIsFetchingData(true);
         try {
             const res = await superAdminService.getCollegeRequests();
             setRequests(res.data.data);
         } catch (error) { toast.error("Failed to load requests"); }
+        finally { setIsFetchingData(false); }
     };
 
     const handleApproveRequest = async (id) => {
@@ -30,6 +33,7 @@ const ShowRequestsAdmin = () => {
     return (
         <PageLayout title="Pending College Requests">
             <DataTable
+                isLoading={isFetchingData}
                 columns={[
                     { header: 'College Name', accessor: req => <span className="font-extrabold text-indigo-900">{req.collegeName}</span> },
                     { header: 'Status', accessor: req => <span className="bg-amber-100 text-amber-700 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide">{req.status}</span> },

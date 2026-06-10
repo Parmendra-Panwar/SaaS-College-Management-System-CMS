@@ -147,7 +147,7 @@ const AttendanceModule = ({ user }) => {
                 </div>
 
                 {loading ? (
-                    <div className="py-10 text-center font-semibold text-gray-500">Loading student roster...</div>
+                    <div className="py-10 text-center font-semibold text-gray-500">Loading student...</div>
                 ) : students.length === 0 ? (
                     <div className="py-10 text-center font-semibold text-gray-500">Please select a valid Class and College.</div>
                 ) : (

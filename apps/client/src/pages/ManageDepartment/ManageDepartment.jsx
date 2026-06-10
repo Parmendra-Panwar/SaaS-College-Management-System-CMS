@@ -21,6 +21,7 @@ const ManageDepartment = () => {
     // Form state
     const [formDept, setFormDept] = useState({ name: '', description: '' });
     const [loading, setLoading] = useState(false);
+    const [isFetchingData, setIsFetchingData] = useState(true);
     const [editingItem, setEditingItem] = useState(null);
 
     const userRole = user?.role || '';
@@ -44,11 +45,14 @@ const ManageDepartment = () => {
 
     const fetchDepartments = async (collegeId) => {
         if (!collegeId && isMultiCollegeRole) return;
+        setIsFetchingData(true);
         try {
             const res = await academicService.getEntities('departments', collegeId);
             setDepartmentsData(res.data.data || []);
         } catch (e) { 
             toast.error("Failed to fetch data"); 
+        } finally {
+            setIsFetchingData(false);
         }
     };
 
@@ -216,6 +220,7 @@ const ManageDepartment = () => {
                     </div>
                     
                     <DataTable
+                        isLoading={isFetchingData}
                         columns={[
                             { header: 'Department Name', accessor: row => row.name },
                             { header: 'Description', accessor: row => row.description || 'N/A' },
