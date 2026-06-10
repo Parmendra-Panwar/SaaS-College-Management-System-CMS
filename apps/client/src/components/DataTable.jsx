@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 
-const DataTable = ({ columns, data, actions }) => {
+const DataTable = ({ columns, data, actions, isLoading }) => {
     const [searchTerm, setSearchTerm] = useState('');
     const [columnFilters, setColumnFilters] = useState({});
     const [activeSearchCol, setActiveSearchCol] = useState(null);
@@ -127,7 +127,13 @@ const DataTable = ({ columns, data, actions }) => {
                             </tr>
                         </thead>
                         <tbody>
-                            {paginatedData.length > 0 ? (
+                            {isLoading ? (
+                                <tr>
+                                    <td colSpan={columns.length + (actions ? 1 : 0)} className="py-8 text-center text-gray-500 font-medium">
+                                        Loading data...
+                                    </td>
+                                </tr>
+                            ) : paginatedData.length > 0 ? (
                                 paginatedData.map((row, rowIndex) => (
                                     <tr key={row._id || rowIndex} className="border-b border-gray-50 hover:bg-gray-50/50 transition">
                                         {columns.map((col, colIndex) => (

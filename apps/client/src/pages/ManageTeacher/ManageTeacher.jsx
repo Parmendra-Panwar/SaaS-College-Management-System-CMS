@@ -21,6 +21,7 @@ const ManageTeacher = () => {
     // Form state
     const [formTeacher, setFormTeacher] = useState({ username: '', email: '', level: '1', departments: [], classes: [] });
     const [loading, setLoading] = useState(false);
+    const [isFetchingData, setIsFetchingData] = useState(true);
     const [editingItem, setEditingItem] = useState(null);
 
     const userRole = user?.role || '';
@@ -64,11 +65,14 @@ const ManageTeacher = () => {
 
     const fetchTeachers = async (colId) => {
         if (!colId && isMultiCollegeRole) return;
+        setIsFetchingData(true);
         try {
             const res = await academicService.getTeachers(colId);
             setTeachersData(res.data.data || []);
         } catch (e) { 
             toast.error("Failed to fetch data"); 
+        } finally {
+            setIsFetchingData(false);
         }
     };
 
@@ -280,6 +284,7 @@ const ManageTeacher = () => {
                     </div>
                     
                     <DataTable
+                        isLoading={isFetchingData}
                         columns={[
                             { header: 'Name', accessor: row => row.user?.username || 'N/A' },
                             { header: 'Email', accessor: row => row.user?.email || 'N/A' },

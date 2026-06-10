@@ -7,16 +7,19 @@ import EditCollegesManager from '@/pages/manager/colleges/EditCollegesManager';
 const ShowCollegesManager = () => {
     const toast = useToast();
     const [colleges, setColleges] = useState([]);
+    const [isFetchingData, setIsFetchingData] = useState(true);
 
     useEffect(() => {
         fetchColleges();
     }, []);
 
     const fetchColleges = async () => {
+        setIsFetchingData(true);
         try {
             const res = await superAdminService.getColleges();
             setColleges(res.data.data);
         } catch (error) { toast.error("Failed to load colleges"); }
+        finally { setIsFetchingData(false); }
     };
 
     return (
@@ -25,6 +28,7 @@ const ShowCollegesManager = () => {
             <div className="bg-white p-8 rounded-3xl shadow-sm border border-gray-100 overflow-x-auto">
                 <h2 className="text-2xl font-bold mb-6 text-gray-800">Institutes Index</h2>
                 <DataTable
+                    isLoading={isFetchingData}
                     columns={[
                         { header: 'College Name', accessor: c => c.name },
                         { header: 'Principal', accessor: c => c.principalAuth?.username || 'N/A' },

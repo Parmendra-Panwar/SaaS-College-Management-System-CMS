@@ -12,12 +12,15 @@ const ShowManagersAdmin = () => {
     const [colleges, setColleges] = useState([]);
     const [editingManager, setEditingManager] = useState(null);
     const [isPopupOpen, setIsPopupOpen] = useState(false);
+    const [isFetchingData, setIsFetchingData] = useState(true);
 
     useEffect(() => { fetchManagers(); fetchColleges(); }, []);
 
     const fetchManagers = async () => {
+        setIsFetchingData(true);
         try { const res = await superAdminService.getManagers(); setManagers(res.data.data); }
         catch (error) { toast.error("Failed to load"); }
+        finally { setIsFetchingData(false); }
     };
 
     const fetchColleges = async () => {
@@ -52,6 +55,7 @@ const ShowManagersAdmin = () => {
             </Popup>
 
             <DataTable
+                isLoading={isFetchingData}
                 data={managers}
                 columns={[
                     { header: 'Name', accessor: m => m.username },

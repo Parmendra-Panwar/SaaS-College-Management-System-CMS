@@ -11,12 +11,15 @@ const ShowCollegesAdmin = () => {
     const [colleges, setColleges] = useState([]);
     const [editingCollege, setEditingCollege] = useState(null);
     const [isPopupOpen, setIsPopupOpen] = useState(false);
+    const [isFetchingData, setIsFetchingData] = useState(true);
 
     useEffect(() => { fetchColleges(); }, []);
 
     const fetchColleges = async () => {
+        setIsFetchingData(true);
         try { const res = await superAdminService.getColleges(); setColleges(res.data.data); }
         catch (error) { toast.error("Failed to load"); }
+        finally { setIsFetchingData(false); }
     };
 
     return (
@@ -36,6 +39,7 @@ const ShowCollegesAdmin = () => {
             </Popup>
 
             <DataTable
+                isLoading={isFetchingData}
                 data={colleges}
                 columns={[
                     { header: 'College Name', accessor: c => c.name },

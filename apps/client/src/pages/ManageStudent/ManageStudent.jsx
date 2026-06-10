@@ -18,10 +18,11 @@ const ManageStudent = () => {
     const [selectedCollegeId, setSelectedCollegeId] = useState('');
     const [selectedClassId, setSelectedClassId] = useState('');
     const [isFormOpen, setIsFormOpen] = useState(false);
-    
+
     // Form state
     const [formStudent, setFormStudent] = useState({ username: '', email: '', roll_number: '' });
     const [loading, setLoading] = useState(false);
+    const [isFetchingData, setIsFetchingData] = useState(true);
     const [editingItem, setEditingItem] = useState(null);
 
     const userRole = user?.role || '';
@@ -76,11 +77,14 @@ const ManageStudent = () => {
 
     const fetchStudents = async (colId, clsId) => {
         if (!colId && isMultiCollegeRole) return;
+        setIsFetchingData(true);
         try {
             const res = await academicService.getStudents(colId, clsId);
             setStudentsData(res.data.data || []);
-        } catch (e) { 
-            toast.error("Failed to fetch data"); 
+        } catch (e) {
+            toast.error("Failed to fetch data");
+        } finally {
+            setIsFetchingData(false);
         }
     };
 
@@ -90,8 +94,8 @@ const ManageStudent = () => {
             await academicService.deleteEntity('students', id);
             toast.success("Deleted successfully");
             fetchStudents(selectedCollegeId, selectedClassId);
-        } catch (e) { 
-            toast.error("Delete failed"); 
+        } catch (e) {
+            toast.error("Delete failed");
         }
     };
 
@@ -151,10 +155,10 @@ const ManageStudent = () => {
     return (
         <PageLayout title="Manage Students" description="Create and view students for your academic institutions.">
             <div className="flex flex-col gap-6 animate-in slide-in-from-bottom-4">
-                
+
                 {/* Form Section */}
                 <div className="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
-                    <div 
+                    <div
                         className="flex justify-between items-center cursor-pointer select-none p-6 bg-gray-50/50 hover:bg-gray-50 transition-colors"
                         onClick={() => setIsFormOpen(!isFormOpen)}
                     >
@@ -178,9 +182,9 @@ const ManageStudent = () => {
                             <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-4 gap-5 items-end">
                                 {isMultiCollegeRole && (
                                     <div className="col-span-1 md:col-span-2">
-                                        <SelectField 
-                                            label="College" 
-                                            value={selectedCollegeId} 
+                                        <SelectField
+                                            label="College"
+                                            value={selectedCollegeId}
                                             onChange={e => setSelectedCollegeId(e.target.value)}
                                             required
                                             disabled={!!editingItem} // Disable changing college while editing
@@ -190,11 +194,11 @@ const ManageStudent = () => {
                                         </SelectField>
                                     </div>
                                 )}
-                                
+
                                 <div className={`col-span-1 ${isMultiCollegeRole ? 'md:col-span-2' : 'md:col-span-4'}`}>
-                                    <SelectField 
-                                        label="Class" 
-                                        value={selectedClassId} 
+                                    <SelectField
+                                        label="Class"
+                                        value={selectedClassId}
                                         onChange={e => setSelectedClassId(e.target.value)}
                                         required
                                     >
@@ -204,32 +208,32 @@ const ManageStudent = () => {
                                 </div>
 
                                 <div className="col-span-1 md:col-span-2">
-                                    <InputField 
-                                        required 
-                                        label="Username / Full Name" 
-                                        value={formStudent.username} 
-                                        onChange={e => setFormStudent({ ...formStudent, username: e.target.value })} 
+                                    <InputField
+                                        required
+                                        label="Username / Full Name"
+                                        value={formStudent.username}
+                                        onChange={e => setFormStudent({ ...formStudent, username: e.target.value })}
                                         placeholder="e.g. John Doe"
                                     />
                                 </div>
-                                
+
                                 <div className="col-span-1 md:col-span-1">
-                                    <InputField 
+                                    <InputField
                                         type="email"
-                                        required 
-                                        label="Email" 
-                                        value={formStudent.email} 
-                                        onChange={e => setFormStudent({ ...formStudent, email: e.target.value })} 
+                                        required
+                                        label="Email"
+                                        value={formStudent.email}
+                                        onChange={e => setFormStudent({ ...formStudent, email: e.target.value })}
                                         placeholder="john@example.com"
                                     />
                                 </div>
 
                                 <div className="col-span-1 md:col-span-1">
-                                    <InputField 
-                                        required 
-                                        label="Roll Number" 
-                                        value={formStudent.roll_number} 
-                                        onChange={e => setFormStudent({ ...formStudent, roll_number: e.target.value })} 
+                                    <InputField
+                                        required
+                                        label="Roll Number"
+                                        value={formStudent.roll_number}
+                                        onChange={e => setFormStudent({ ...formStudent, roll_number: e.target.value })}
                                         placeholder="e.g. 101"
                                     />
                                 </div>
@@ -256,8 +260,8 @@ const ManageStudent = () => {
                         <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
                             {isMultiCollegeRole && (
                                 <div className="w-full sm:w-64">
-                                    <SelectField 
-                                        value={selectedCollegeId} 
+                                    <SelectField
+                                        value={selectedCollegeId}
                                         onChange={e => setSelectedCollegeId(e.target.value)}
                                     >
                                         <option value="">All Colleges</option>
@@ -266,8 +270,8 @@ const ManageStudent = () => {
                                 </div>
                             )}
                             <div className="w-full sm:w-64">
-                                <SelectField 
-                                    value={selectedClassId} 
+                                <SelectField
+                                    value={selectedClassId}
                                     onChange={e => setSelectedClassId(e.target.value)}
                                 >
                                     <option value="">All Classes</option>
@@ -276,8 +280,9 @@ const ManageStudent = () => {
                             </div>
                         </div>
                     </div>
-                    
+
                     <DataTable
+                        isLoading={isFetchingData}
                         columns={[
                             { header: 'Name', accessor: row => row.user?.username || 'N/A' },
                             { header: 'Email', accessor: row => row.user?.email || 'N/A' },
