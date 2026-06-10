@@ -245,14 +245,14 @@ const Home = () => {
                         <button onClick={() => setIsModalOpen(false)} className="absolute top-4 right-4 text-gray-400 hover:text-gray-900">
                             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                         </button>
-                        <h2 className="text-xl font-black mb-1 text-gray-900">Provision Tenant</h2>
+                        <h2 className="text-xl font-black mb-1 text-gray-900">Request Demo.</h2>
                         <p className="text-xs text-gray-500 mb-5">Register a new college instance in the database.</p>
                         <form onSubmit={handleRequestDemo} className="space-y-3">
                             <InputField required label="Institution Name" value={formData.collegeName} onChange={e => setFormData({ ...formData, collegeName: e.target.value })} />
                             <InputField required label="Administrator Name" value={formData.principalName} onChange={e => setFormData({ ...formData, principalName: e.target.value })} />
                             <InputField required type="email" label="Admin Email" value={formData.principalEmail} onChange={e => setFormData({ ...formData, principalEmail: e.target.value })} />
                             <PrimaryButton type="submit" loading={loading} className="w-full mt-2 bg-blue-600 hover:bg-blue-700 text-white py-2.5 rounded-lg text-sm font-bold">
-                                Execute Provisioning
+                                Submit
                             </PrimaryButton>
                         </form>
                     </div>
