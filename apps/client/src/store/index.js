@@ -12,5 +12,3 @@ export const store = configureStore({
         apiCache: apiCacheReducer,
     },
 });
-
-export default store;

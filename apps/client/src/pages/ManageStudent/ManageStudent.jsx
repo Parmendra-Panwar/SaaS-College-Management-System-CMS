@@ -81,7 +81,7 @@ const ManageStudent = () => {
         try {
             const res = await academicService.getStudents(colId, clsId);
             setStudentsData(res.data.data || []);
-        } catch (e) {
+        } catch {
             toast.error("Failed to fetch data");
         } finally {
             setIsFetchingData(false);
@@ -94,7 +94,7 @@ const ManageStudent = () => {
             await academicService.deleteEntity('students', id);
             toast.success("Deleted successfully");
             fetchStudents(selectedCollegeId, selectedClassId);
-        } catch (e) {
+        } catch {
             toast.error("Delete failed");
         }
     };

@@ -56,7 +56,7 @@ const ManageClasses = () => {
         try {
             const res = await academicService.getEntities('classes', collegeId);
             setClassesData(res.data.data || []);
-        } catch (e) { 
+        } catch { 
             toast.error("Failed to fetch data"); 
         } finally {
             setIsFetchingData(false);
@@ -77,7 +77,7 @@ const ManageClasses = () => {
             toast.success("Deleted");
             fetchClasses(selectedCollegeId);
             dispatch(fetchLookups(selectedCollegeId));
-        } catch (e) { 
+        } catch { 
             toast.error("Delete failed"); 
         }
     };

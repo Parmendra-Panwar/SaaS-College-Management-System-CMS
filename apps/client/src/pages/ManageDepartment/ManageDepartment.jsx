@@ -49,7 +49,7 @@ const ManageDepartment = () => {
         try {
             const res = await academicService.getEntities('departments', collegeId);
             setDepartmentsData(res.data.data || []);
-        } catch (e) { 
+        } catch { 
             toast.error("Failed to fetch data"); 
         } finally {
             setIsFetchingData(false);
@@ -69,7 +69,7 @@ const ManageDepartment = () => {
             toast.success("Deleted");
             fetchDepartments(selectedCollegeId);
             dispatch(fetchLookups(selectedCollegeId));
-        } catch (e) { 
+        } catch { 
             toast.error("Delete failed"); 
         }
     };

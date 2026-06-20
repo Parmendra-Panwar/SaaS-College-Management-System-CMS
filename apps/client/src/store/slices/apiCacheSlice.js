@@ -18,13 +18,11 @@ const apiCacheSlice = createSlice({
                     delete state[key];
                 }
             });
-        },
-        clearCache: () => {
-            return {};
         }
     }
-});
+}
+);
 
-export const { setCache, invalidateGroup, clearCache } = apiCacheSlice.actions;
+export const { setCache, invalidateGroup } = apiCacheSlice.actions;
 
 export default apiCacheSlice.reducer;

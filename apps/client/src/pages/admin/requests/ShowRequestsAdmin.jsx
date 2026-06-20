@@ -27,7 +27,7 @@ const ShowRequestsAdmin = () => {
             await superAdminService.approveCollegeRequest(id);
             toast.success("Request approved and College created!");
             fetchRequests();
-        } catch (err) { toast.error("Failed to approve"); }
+        } catch { toast.error("Failed to approve"); }
     };
 
     return (
