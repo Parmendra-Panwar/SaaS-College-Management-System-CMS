@@ -1,15 +1,38 @@
 import apiClient from '@services/apiClient';
+import { withCache, invalidateCache } from '@services/cacheUtils';
 
 const superAdminService = {
     login: (credentials) => apiClient.post('/base/superadmin/login', credentials),
-    getColleges: () => apiClient.get('/base/superadmin/colleges'),
-    getManagers: () => apiClient.get('/base/superadmin/managers'),
-    getCollegeRequests: () => apiClient.get('/base/superadmin/college-requests'),
-    onboardCollege: (formData) => apiClient.post('/base/superadmin/onboard-college', formData),
-    createManager: (managerForm) => apiClient.post('/base/superadmin/create-manager', managerForm),
-    updateManager: (id, managerForm) => apiClient.put(`/base/superadmin/manager/${id}`, managerForm),
-    deleteManager: (id) => apiClient.delete(`/base/superadmin/manager/${id}`),
-    approveCollegeRequest: (id) => apiClient.post(`/base/superadmin/college-requests/${id}/approve`, {}),
+    getColleges: () => withCache('sa_colleges', () => apiClient.get('/base/superadmin/colleges')),
+    getManagers: () => withCache('sa_managers', () => apiClient.get('/base/superadmin/managers')),
+    getCollegeRequests: () => withCache('sa_requests', () => apiClient.get('/base/superadmin/college-requests')),
+    
+    onboardCollege: async (formData) => {
+        const res = await apiClient.post('/base/superadmin/onboard-college', formData);
+        invalidateCache('sa_colleges');
+        return res;
+    },
+    createManager: async (managerForm) => {
+        const res = await apiClient.post('/base/superadmin/create-manager', managerForm);
+        invalidateCache('sa_managers');
+        return res;
+    },
+    updateManager: async (id, managerForm) => {
+        const res = await apiClient.put(`/base/superadmin/manager/${id}`, managerForm);
+        invalidateCache('sa_managers');
+        return res;
+    },
+    deleteManager: async (id) => {
+        const res = await apiClient.delete(`/base/superadmin/manager/${id}`);
+        invalidateCache('sa_managers');
+        return res;
+    },
+    approveCollegeRequest: async (id) => {
+        const res = await apiClient.post(`/base/superadmin/college-requests/${id}/approve`, {});
+        invalidateCache('sa_requests');
+        invalidateCache('sa_colleges');
+        return res;
+    },
 };
 
 export default superAdminService;
