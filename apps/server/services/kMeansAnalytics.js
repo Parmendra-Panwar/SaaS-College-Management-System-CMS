@@ -89,7 +89,7 @@ function kMeans(data, k = 3, maxIterations = 100) {
   return data;
 }
 
-export const runKMeansClustering = async (collegeId) => {
+const runKMeansClustering = async (collegeId) => {
 
   const students = await Student.find({ collegeId });
   if (!students.length) return;

@@ -16,8 +16,8 @@ app.use(helmet());
 
 // Rate Limiting Configuration
 const limiter = rateLimit({
-  windowMs: 10 * 60 * 1000, // 10 minutes
-  max: 60, // each IP max 60 requests per 10 mins
+  windowMs: 5 * 60 * 1000, // 10 minutes
+  max: 800, // each IP max 60 requests per 10 mins
   standardHeaders: true, // Rate limit info 'RateLimit-*' headers mein bheje
   legacyHeaders: false, // 'X-RateLimit-*' headers disable kare
   message: {

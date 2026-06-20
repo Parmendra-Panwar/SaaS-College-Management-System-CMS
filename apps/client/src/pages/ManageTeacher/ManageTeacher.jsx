@@ -69,7 +69,7 @@ const ManageTeacher = () => {
         try {
             const res = await academicService.getTeachers(colId);
             setTeachersData(res.data.data || []);
-        } catch (e) { 
+        } catch { 
             toast.error("Failed to fetch data"); 
         } finally {
             setIsFetchingData(false);
@@ -82,7 +82,7 @@ const ManageTeacher = () => {
             await academicService.deleteEntity('teachers', id);
             toast.success("Deleted successfully");
             fetchTeachers(selectedCollegeId);
-        } catch (e) { 
+        } catch { 
             toast.error("Delete failed"); 
         }
     };

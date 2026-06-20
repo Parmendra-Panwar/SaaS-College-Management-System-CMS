@@ -38,7 +38,7 @@ const Home = () => {
             await onboardingService.requestCollege(formData);
             alert("Demo request logged. Our team will provision your tenant.");
             setIsModalOpen(false);
-        } catch (err) {
+        } catch {
             alert("Failed to submit request.");
         } finally {
             setLoading(false);

@@ -1,0 +1,3 @@
+{
+  "entry": ["app.js", "seed.js"]
+}
