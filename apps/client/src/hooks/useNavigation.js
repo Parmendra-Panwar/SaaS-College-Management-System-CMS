@@ -12,6 +12,7 @@ const NAV_CONFIG = {
         { id: 'requests', label: 'College Requests', path: 'requests' },
         { id: 'departments', label: 'Departments', path: 'departments' },
         { id: 'classes', label: 'Classes', path: 'classes' },
+        { id: 'subjects', label: 'Subjects', path: 'subjects' },
         { id: 'students', label: 'Manage Students', path: 'students' },
         { id: 'teachers', label: 'Manage Teachers', path: 'teachers' },
         { id: 'attendance', label: 'Attendance', path: 'attendance' },
@@ -22,6 +23,7 @@ const NAV_CONFIG = {
     Principal: [
         { id: 'departments', label: 'Departments', path: 'departments' },
         { id: 'classes', label: 'Classes', path: 'classes' },
+        { id: 'subjects', label: 'Subjects', path: 'subjects' },
         { id: 'students', label: 'Manage Students', path: 'students' },
         { id: 'teachers', label: 'Manage Teachers', path: 'teachers' },
         { id: 'attendance', label: 'Attendance', path: 'attendance' },
@@ -34,6 +36,7 @@ const NAV_CONFIG = {
         { id: 'colleges', label: 'Colleges', path: 'colleges' },
         { id: 'departments', label: 'Departments', path: 'departments' },
         { id: 'classes', label: 'Classes', path: 'classes' },
+        { id: 'subjects', label: 'Subjects', path: 'subjects' },
         { id: 'students', label: 'Manage Students', path: 'students' },
         { id: 'teachers', label: 'Manage Teachers', path: 'teachers' },
         { id: 'attendance', label: 'Attendance', path: 'attendance' },

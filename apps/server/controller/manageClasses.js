@@ -20,12 +20,12 @@ export const getClasses = async (req, res) => {
         }
     }
     
-    const classes = await Class.find(filter).populate('departmentId');
+    const classes = await Class.find(filter).populate('departmentId').populate('subjects');
     res.status(200).json({ success: true, data: classes });
 };
 
 export const getClass = async (req, res) => {
-    const c = await Class.findOne({ _id: req.params.id, ...getCollegeFilter(req) }).populate('departmentId');
+    const c = await Class.findOne({ _id: req.params.id, ...getCollegeFilter(req) }).populate('departmentId').populate('subjects');
     if (!c) return res.status(404).json({ error: "Not found" });
     res.status(200).json({ success: true, data: c });
 };

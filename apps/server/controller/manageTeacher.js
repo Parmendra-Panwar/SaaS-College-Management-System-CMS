@@ -11,7 +11,8 @@ export const getTeacher = async (req, res) => {
     const teacher = await Teacher.findOne({ _id: req.params.id, ...getCollegeFilter(req) })
         .populate({ path: 'user', select: '-password' })
         .populate('departments')
-        .populate('classes');
+        .populate('classes')
+        .populate('subjects');
     if (!teacher) return res.status(404).json({ error: "Not found" });
     res.status(200).json({ success: true, data: teacher });
 };
@@ -33,12 +34,13 @@ export const getTeachers = async (req, res) => {
     const teachers = await Teacher.find(filter)
         .populate({ path: 'user', select: '-password' })
         .populate('departments')
-        .populate('classes');
+        .populate('classes')
+        .populate('subjects');
     res.status(200).json({ success: true, data: teachers });
 };
 
 export const createTeacher = async (req, res) => {
-    const { username, email, level, collegeId, departments, classes } = req.body;
+    const { username, email, level, collegeId, departments, classes, subjects } = req.body;
     const targetCollegeId = req.user.role === 'Principal' ? req.user.collegeId : collegeId;
     if (!isActionAllowed(req, targetCollegeId)) return res.status(403).json({ error: "Access Denied" });
 
@@ -51,20 +53,22 @@ export const createTeacher = async (req, res) => {
         collegeId: targetCollegeId,
         level: level || 1,
         departments: departments || [],
-        classes: classes || []
+        classes: classes || [],
+        subjects: subjects || []
     });
 
-    res.status(201).json({ success: true, data: await teacher.populate([{ path: 'user', select: '-password' }, { path: 'departments' }, { path: 'classes' }]) });
+    res.status(201).json({ success: true, data: await teacher.populate([{ path: 'user', select: '-password' }, { path: 'departments' }, { path: 'classes' }, { path: 'subjects' }]) });
 };
 
 export const updateTeacher = async (req, res) => {
-    const { username, email, level, departments, classes } = req.body;
+    const { username, email, level, departments, classes, subjects } = req.body;
     const teacher = await Teacher.findOne({ _id: req.params.id, ...getCollegeFilter(req) });
     if (!teacher) return res.status(404).json({ error: "Teacher not found" });
 
     if (level) teacher.level = level;
     if (departments) teacher.departments = departments;
     if (classes) teacher.classes = classes;
+    if (subjects) teacher.subjects = subjects;
     await teacher.save();
 
     if (username || email) {

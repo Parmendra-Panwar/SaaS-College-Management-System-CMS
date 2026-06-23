@@ -5,14 +5,16 @@ export const fetchLookups = createAsyncThunk(
     'lookup/fetchLookups',
     async (collegeId, { rejectWithValue }) => {
         try {
-            const [departments, classes, accessibleColleges] = await Promise.all([
+            const [departments, classes, subjects, accessibleColleges] = await Promise.all([
                 academicService.getDepartments(collegeId),
                 academicService.getClasses(collegeId),
+                academicService.getEntities('subjects', collegeId),
                 academicService.getAccessibleColleges()
             ]);
             return {
                 departments: departments?.data?.data || [],
                 classes: classes?.data?.data || [],
+                subjects: subjects?.data?.data || [],
                 accessibleColleges: accessibleColleges?.data?.data || []
             };
         } catch (error) {
@@ -26,6 +28,7 @@ const lookupSlice = createSlice({
     initialState: {
         departments: [],
         classes: [],
+        subjects: [],
         accessibleColleges: [],
         loading: false,
         error: null,
@@ -42,6 +45,7 @@ const lookupSlice = createSlice({
                 state.loading = false;
                 state.departments = action.payload.departments;
                 state.classes = action.payload.classes;
+                state.subjects = action.payload.subjects;
                 state.accessibleColleges = action.payload.accessibleColleges;
                 state.loaded = true;
             })

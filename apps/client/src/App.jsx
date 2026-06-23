@@ -40,6 +40,7 @@ import ProductivityPage from '@pages/shared/ProductivityPage';
 import { getProfile } from '@store/slices/authSlice';
 import { useToast } from '@hooks/useToast';
 import ManageClasses from './pages/ManageClasses/ManageClasses';
+import ManageSubject from './pages/ManageSubject/ManageSubject';
 import ManageDepartment from './pages/ManageDepartment/ManageDepartment';
 import ManageStudent from './pages/ManageStudent/ManageStudent';
 import ManageTeacher from './pages/ManageTeacher/ManageTeacher';
@@ -91,6 +92,7 @@ const router = createBrowserRouter([
           { path: 'requests', element: <ShowRequestsAdmin /> },
           { path: 'departments', element: <ManageDepartment /> },
           { path: 'classes', element: <ManageClasses /> },
+          { path: 'subjects', element: <ManageSubject /> },
           { path: 'students', element: <ManageStudent /> },
           { path: 'teachers', element: <ManageTeacher /> },
           { path: 'attendance', element: <AttendancePage /> },
@@ -113,6 +115,7 @@ const router = createBrowserRouter([
           // { path: 'colleges', element: <ShowCollegesManager /> },
           { path: 'departments', element: <ManageDepartment /> },
           { path: 'classes', element: <ManageClasses /> },
+          { path: 'subjects', element: <ManageSubject /> },
           { path: 'students', element: <ManageStudent /> },
           { path: 'teachers', element: <ManageTeacher /> },
           { path: 'attendance', element: <AttendancePage /> },
@@ -134,6 +137,7 @@ const router = createBrowserRouter([
         children: [
           { path: 'departments', element: <ManageDepartment /> },
           { path: 'classes', element: <ManageClasses /> },
+          { path: 'subjects', element: <ManageSubject /> },
           { path: 'students', element: <ManageStudent /> },
           { path: 'teachers', element: <ManageTeacher /> },
           { path: 'attendance', element: <AttendancePage /> },
