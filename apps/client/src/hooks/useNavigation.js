@@ -17,6 +17,7 @@ const NAV_CONFIG = {
         { id: 'attendance', label: 'Attendance', path: 'attendance' },
         { id: 'fees', label: 'Fees Management', path: 'fees' },
         { id: 'reports', label: 'Bi-Weekly Reports', path: 'reports' },
+        { id: 'productivity', label: 'Student Productivity', path: 'productivity' },
     ],
     Principal: [
         { id: 'departments', label: 'Departments', path: 'departments' },
@@ -26,6 +27,7 @@ const NAV_CONFIG = {
         { id: 'attendance', label: 'Attendance', path: 'attendance' },
         { id: 'fees', label: 'Fees Management', path: 'fees' },
         { id: 'reports', label: 'Bi-Weekly Reports', path: 'reports' },
+        { id: 'productivity', label: 'Student Productivity', path: 'productivity' },
     ],
     // Manager shares the same nav as Principal
     Manager: [
@@ -37,11 +39,13 @@ const NAV_CONFIG = {
         { id: 'attendance', label: 'Attendance', path: 'attendance' },
         { id: 'fees', label: 'Fees Management', path: 'fees' },
         { id: 'reports', label: 'Bi-Weekly Reports', path: 'reports' },
+        { id: 'productivity', label: 'Student Productivity', path: 'productivity' },
     ],
     Teacher: [
         { id: 'attendance', label: 'Attendance', path: 'attendance' },
         { id: 'fees', label: 'Fees Management', path: 'fees' },
         { id: 'reports', label: 'Bi-Weekly Reports', path: 'reports' },
+        { id: 'productivity', label: 'Student Productivity', path: 'productivity' },
         { id: 'grades', label: 'Input Grades', path: 'grades' },
         { id: 'discipline', label: 'Discipline / Notes', path: 'discipline' },
     ],

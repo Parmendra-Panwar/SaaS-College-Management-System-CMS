@@ -32,17 +32,19 @@ export const markAttendance = async (req, res) => {
         }
     }
 
-    const operations = records.map(record => ({
-        updateOne: {
-            filter: { classId, studentId: record.studentId, date: new Date(date) },
-            update: { $set: { status: record.status, collegeId: classObj.collegeId } },
-            upsert: true
-        }
-    }));
+    const startOfDay = new Date(date);
+    startOfDay.setUTCHours(0, 0, 0, 0);
 
-    if (operations.length > 0) {
-        await Attendance.bulkWrite(operations);
-    }
+    await Attendance.findOneAndUpdate(
+        { classId, date: startOfDay },
+        { 
+            $set: { 
+                collegeId: classObj.collegeId,
+                records: records.map(r => ({ studentId: r.studentId, status: r.status }))
+            } 
+        },
+        { upsert: true, new: true }
+    );
 
     res.status(200).json({ success: true, message: "Attendance marked successfully" });
 };
@@ -51,6 +53,9 @@ export const queryAttendance = async (req, res) => {
     const { classId, date } = req.query;
     if (!classId || !date) return res.status(400).json({ error: "classId and date query parameters are required" });
 
-    const attendanceRecords = await Attendance.find({ classId, date: new Date(date) });
-    res.status(200).json({ success: true, data: attendanceRecords });
+    const startOfDay = new Date(date);
+    startOfDay.setUTCHours(0, 0, 0, 0);
+
+    const attendanceRecord = await Attendance.findOne({ classId, date: startOfDay });
+    res.status(200).json({ success: true, data: attendanceRecord ? attendanceRecord.records : [] });
 };
