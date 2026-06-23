@@ -4,17 +4,12 @@ const { Schema } = mongoose;
 const examSchema = new Schema({
   name: { type: String, required: true },
   collegeId: { type: Schema.Types.ObjectId, ref: 'College', required: true },
-  classIds: [{ type: Schema.Types.ObjectId, ref: 'Class' }],
-  subjectId: { type: Schema.Types.ObjectId, ref: 'Subject' }, // Optional
-  date: { type: Date },
-  
-  // Array for saving reports of students
-  results: [{
-    studentId: { type: Schema.Types.ObjectId, ref: 'Student' },
-    marksObtained: { type: Number, required: true },
-    totalMarks: { type: Number, required: true },
-    remarks: { type: String }
-  }]
+  classId: { type: Schema.Types.ObjectId, ref: 'Class', required: true },
+  subjectsConfig: [{
+    subjectId: { type: Schema.Types.ObjectId, ref: 'Subject', required: true },
+    maxTheory: { type: Number, required: true },
+    maxPractical: { type: Number, required: true }
+  }],
 }, { timestamps: true });
 
 export default mongoose.model("Exam", examSchema);

@@ -1,65 +1,167 @@
 import Exam from "../models/exam.js";
-import Class from "../models/class.js";
+import Marksheet from "../models/marksheet.js";
 import Student from "../models/student.js";
-import { invalidateInsightsCache } from "./insights.js";
+import { getCollegeFilter, isActionAllowed } from "../utils/helpers.js";
 
 export const createExam = async (req, res) => {
-  // Only Admin, Manager, Principal should be able to do this. We assume middleware or implicit trust for now based on role.
-  if (['Student', 'Teacher'].includes(req.user.role)) {
-    return res.status(403).json({ error: "Unauthorized role for creating exams" });
-  }
+    // Only Admin, Manager, Principal should be able to do this.
+    if (['Student', 'Teacher'].includes(req.user.role)) {
+        return res.status(403).json({ error: "Unauthorized role for creating exams" });
+    }
 
-  const { name, classIds, subjectId, date } = req.body;
-  const collegeId = req.collegeId;
+    const { name, classId, subjectsConfig, collegeId } = req.body;
+    const targetCollegeId = req.user.role === 'Principal' ? req.user.collegeId : collegeId;
 
-  // Initialize empty results array for all students in the selected classes
-  const students = await Student.find({ classId: { $in: classIds }, collegeId });
-  const results = students.map(student => ({
-    studentId: student._id,
-    marksObtained: 0,
-    totalMarks: 100, // default editable
-    remarks: ""
-  }));
+    if (!isActionAllowed(req, targetCollegeId)) return res.status(403).json({ error: "Access Denied" });
 
-  const newExam = await Exam.create({
-    name,
-    collegeId,
-    classIds,
-    subjectId,
-    date,
-    results
-  });
+    if (!name || !classId || !subjectsConfig || !Array.isArray(subjectsConfig)) {
+        return res.status(400).json({ error: "Invalid payload" });
+    }
 
-  res.status(201).json({ success: true, exam: newExam });
+    // Validate Theory + Practical = 100
+    for (let config of subjectsConfig) {
+        if (Number(config.maxTheory) + Number(config.maxPractical) !== 100) {
+            return res.status(400).json({ error: `Theory and Practical marks must sum to 100 for subject ID: ${config.subjectId}` });
+        }
+    }
+
+    const newExam = await Exam.create({
+        name,
+        collegeId: targetCollegeId,
+        classId,
+        subjectsConfig
+    });
+
+    // Create empty marksheets for all active students in the class
+    const students = await Student.find({ class: classId, collegeId: targetCollegeId });
+    if (students.length > 0) {
+        const marksheetsToInsert = students.map(student => {
+            const marks = subjectsConfig.map(config => ({
+                subjectId: config.subjectId,
+                theoryMarks: null,
+                practicalMarks: null
+            }));
+            return {
+                examId: newExam._id,
+                studentId: student._id,
+                classId,
+                collegeId: targetCollegeId,
+                marks
+            };
+        });
+        await Marksheet.insertMany(marksheetsToInsert);
+    }
+
+    const populatedExam = await Exam.findById(newExam._id)
+        .populate('classId')
+        .populate('subjectsConfig.subjectId');
+
+    res.status(201).json({ success: true, data: populatedExam });
 };
 
-export const manageResults = async (req, res) => {
-  const { examId } = req.params;
-  const { studentResults } = req.body; // Array of { studentId, marksObtained, totalMarks, remarks }
-  const collegeId = req.collegeId;
+export const getExams = async (req, res) => {
+    let filter = getCollegeFilter(req);
 
-  // Role validation
-  if (req.user.role === 'Student') {
-    return res.status(403).json({ error: "Students cannot manage results" });
-  }
-
-  const exam = await Exam.findOne({ _id: examId, collegeId });
-  if (!exam) return res.status(404).json({ error: "Exam not found" });
-
-  // Update logic: Loop through payload and update the array
-  studentResults.forEach(update => {
-    const existingResult = exam.results.find(r => String(r.studentId) === String(update.studentId));
-    if (existingResult) {
-      existingResult.marksObtained = update.marksObtained;
-      if (update.totalMarks !== undefined) existingResult.totalMarks = update.totalMarks;
-      if (update.remarks !== undefined) existingResult.remarks = update.remarks;
+    if (req.user.role === 'Admin' || req.user.role === 'Manager') {
+        if (req.query.collegeId) {
+            if (req.user.role === 'Manager' && !req.user.assignedColleges.map(String).includes(String(req.query.collegeId))) {
+                return res.status(403).json({ error: "Access Denied" });
+            }
+            filter.collegeId = req.query.collegeId;
+        } else {
+            return res.status(200).json({ success: true, data: [] });
+        }
     }
-  });
 
-  await exam.save();
+    if (req.query.classId) {
+        filter.classId = req.query.classId;
+    }
 
-  // Invalidate Redis Cache when new Exam result is published (Step 6)
-  await invalidateInsightsCache(collegeId);
+    const exams = await Exam.find(filter)
+        .populate('classId')
+        .populate('subjectsConfig.subjectId');
+        
+    res.status(200).json({ success: true, data: exams });
+};
 
-  res.status(200).json({ success: true, exam });
+export const getExamMarksheets = async (req, res) => {
+    const { examId } = req.params;
+    let filter = getCollegeFilter(req);
+    
+    // Admins and Managers might not have collegeId attached without query, but getCollegeFilter handles implicit mapping.
+    
+    const exam = await Exam.findOne({ _id: examId });
+    if (!exam) return res.status(404).json({ error: "Exam not found" });
+
+    // Validate if the user is allowed to access this college's data
+    if (!isActionAllowed(req, exam.collegeId)) {
+         return res.status(403).json({ error: "Access Denied" });
+    }
+
+    const marksheets = await Marksheet.find({ examId })
+        .populate('studentId')
+        .populate('marks.subjectId');
+
+    res.status(200).json({ success: true, data: marksheets, exam });
+};
+
+export const bulkUpdateMarksheets = async (req, res) => {
+    const { examId } = req.params;
+    const { marksheets } = req.body; // Array of { marksheetId, marks: [{ subjectId, theoryMarks, practicalMarks }] }
+
+    if (!Array.isArray(marksheets)) {
+        return res.status(400).json({ error: "Invalid payload format" });
+    }
+
+    const exam = await Exam.findById(examId);
+    if (!exam) return res.status(404).json({ error: "Exam not found" });
+
+    if (!isActionAllowed(req, exam.collegeId)) {
+        return res.status(403).json({ error: "Access Denied" });
+    }
+
+    // Build a map of subject max marks for validation
+    const maxMarksMap = {};
+    exam.subjectsConfig.forEach(config => {
+        maxMarksMap[String(config.subjectId)] = {
+            maxTheory: config.maxTheory,
+            maxPractical: config.maxPractical
+        };
+    });
+
+    const bulkOps = [];
+
+    for (let sheet of marksheets) {
+        // Validate individual marks against config
+        let validMarks = [];
+        for (let m of sheet.marks) {
+            const config = maxMarksMap[String(m.subjectId)];
+            if (!config) continue; // Subject not in exam
+            
+            // Allow null/empty
+            const t = m.theoryMarks === "" ? null : m.theoryMarks;
+            const p = m.practicalMarks === "" ? null : m.practicalMarks;
+
+            if (t !== null && t > config.maxTheory) {
+                return res.status(400).json({ error: `Theory marks exceed max limit for a subject.` });
+            }
+            if (p !== null && p > config.maxPractical) {
+                return res.status(400).json({ error: `Practical marks exceed max limit for a subject.` });
+            }
+            validMarks.push({ subjectId: m.subjectId, theoryMarks: t, practicalMarks: p });
+        }
+
+        bulkOps.push({
+            updateOne: {
+                filter: { _id: sheet.marksheetId, examId },
+                update: { $set: { marks: validMarks } }
+            }
+        });
+    }
+
+    if (bulkOps.length > 0) {
+        await Marksheet.bulkWrite(bulkOps);
+    }
+
+    res.status(200).json({ success: true, message: "Bulk update successful" });
 };

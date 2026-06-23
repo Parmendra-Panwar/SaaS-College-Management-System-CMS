@@ -1,12 +1,12 @@
 import express from "express";
 const router = express.Router();
-
-import * as examController from "../controller/exam.js";
 import wrapAsync from "../utils/wrapAsync.js";
 import { isloggedIn } from "../Validators/isAthen.js";
+import * as examController from "../controller/exam.js";
 
-// Step 4: Exam Management API
+router.get("/", isloggedIn, wrapAsync(examController.getExams));
 router.post("/create", isloggedIn, wrapAsync(examController.createExam));
-router.put("/:examId/results", isloggedIn, wrapAsync(examController.manageResults));
+router.get("/:examId/marksheets", isloggedIn, wrapAsync(examController.getExamMarksheets));
+router.put("/:examId/marksheets/bulk", isloggedIn, wrapAsync(examController.bulkUpdateMarksheets));
 
 export default router;

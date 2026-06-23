@@ -41,6 +41,7 @@ import { getProfile } from '@store/slices/authSlice';
 import { useToast } from '@hooks/useToast';
 import ManageClasses from './pages/ManageClasses/ManageClasses';
 import ManageSubject from './pages/ManageSubject/ManageSubject';
+import ManageMarksheet from './pages/ManageMarksheet/ManageMarksheet';
 import ManageDepartment from './pages/ManageDepartment/ManageDepartment';
 import ManageStudent from './pages/ManageStudent/ManageStudent';
 import ManageTeacher from './pages/ManageTeacher/ManageTeacher';
@@ -95,9 +96,10 @@ const router = createBrowserRouter([
           { path: 'subjects', element: <ManageSubject /> },
           { path: 'students', element: <ManageStudent /> },
           { path: 'teachers', element: <ManageTeacher /> },
-          { path: 'attendance', element: <AttendancePage /> },
-          { path: 'fees', element: <FeesPage /> },
-          { path: 'reports', element: <ReportPage /> },
+          { path: 'attendance', label: 'Attendance', element: <AttendancePage /> },
+          { path: 'fees', label: 'Fees Management', element: <FeesPage /> },
+          { path: 'marksheets', label: 'Marksheets', element: <ManageMarksheet /> },
+          { path: 'reports', label: 'Bi-Weekly Reports', element: <ReportPage /> },
           { path: 'productivity', element: <ProductivityPage /> },
         ],
       },
@@ -118,9 +120,10 @@ const router = createBrowserRouter([
           { path: 'subjects', element: <ManageSubject /> },
           { path: 'students', element: <ManageStudent /> },
           { path: 'teachers', element: <ManageTeacher /> },
-          { path: 'attendance', element: <AttendancePage /> },
-          { path: 'fees', element: <FeesPage /> },
-          { path: 'reports', element: <ReportPage /> },
+          { path: 'attendance', label: 'Attendance', element: <AttendancePage /> },
+          { path: 'fees', label: 'Fees Management', element: <FeesPage /> },
+          { path: 'marksheets', label: 'Marksheets', element: <ManageMarksheet /> },
+          { path: 'reports', label: 'Bi-Weekly Reports', element: <ReportPage /> },
           { path: 'productivity', element: <ProductivityPage /> },
         ],
       },
@@ -140,9 +143,10 @@ const router = createBrowserRouter([
           { path: 'subjects', element: <ManageSubject /> },
           { path: 'students', element: <ManageStudent /> },
           { path: 'teachers', element: <ManageTeacher /> },
-          { path: 'attendance', element: <AttendancePage /> },
-          { path: 'fees', element: <FeesPage /> },
-          { path: 'reports', element: <ReportPage /> },
+          { path: 'attendance', label: 'Attendance', element: <AttendancePage /> },
+          { path: 'fees', label: 'Fees Management', element: <FeesPage /> },
+          { path: 'marksheets', label: 'Marksheets', element: <ManageMarksheet /> },
+          { path: 'reports', label: 'Bi-Weekly Reports', element: <ReportPage /> },
           { path: 'productivity', element: <ProductivityPage /> },
         ],
       },
