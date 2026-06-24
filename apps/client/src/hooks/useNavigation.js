@@ -80,8 +80,22 @@ export const getDefaultPath = (role) => {
 export const useNavigation = () => {
     const { user } = useSelector(state => state.auth);
     const role = user?.role;
+    let navItems = NAV_CONFIG[role] || [];
+    
+    // Filter features if user has a college with defined features
+    if (user?.collegeId?.features) {
+        const allowedFeatures = user.collegeId.features;
+        navItems = navItems.filter(item => {
+            // Check if item id is in the allowed features list
+            // Exempt common items like dashboard/home/requests/managers/colleges which are not college-specific features
+            const exemptItems = ['colleges', 'managers', 'requests', 'dashboard', 'home'];
+            if (exemptItems.includes(item.id)) return true;
+            return allowedFeatures.includes(item.id);
+        });
+    }
+
     return {
-        navItems: NAV_CONFIG[role] || [],
+        navItems,
         defaultPath: getDefaultPath(role),
         role,
         user,
