@@ -6,7 +6,7 @@ const subjectSchema = new Schema({
   code: { type: String, required: true },
   collegeId: { type: Schema.Types.ObjectId, ref: 'College', required: true }, // MBTS
   departmentId: { type: Schema.Types.ObjectId, ref: 'Department' }, // CBTD
-  classIds: [{ type: Schema.Types.ObjectId, ref: 'Class' }], // CBTC
+  classId: { type: Schema.Types.ObjectId, ref: 'Class' }, // singular Class
 }, { timestamps: true });
 
 export default mongoose.model("Subject", subjectSchema);

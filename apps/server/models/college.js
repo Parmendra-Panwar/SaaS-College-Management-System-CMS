@@ -8,6 +8,10 @@ const collegeSchema = new Schema({
     primaryColor: { type: String }
   },
   subscriptionStatus: { type: String, enum: ['ACTIVE', 'INACTIVE', 'SUSPENDED'], default: 'ACTIVE' },
+  features: { 
+    type: [String], 
+    default: ['departments', 'classes', 'subjects', 'students', 'teachers', 'attendance', 'fees', 'marksheets', 'reports', 'productivity', 'grades', 'discipline'] 
+  },
 }, { timestamps: true });
 
 export default mongoose.model("College", collegeSchema);

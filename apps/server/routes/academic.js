@@ -10,6 +10,7 @@ import * as manageDepartmentController from "../controller/manageDepartment.js";
 import * as manageClassesController from "../controller/manageClasses.js";
 import * as manageTeacherController from "../controller/manageTeacher.js";
 import * as manageStudentController from "../controller/manageStudent.js";
+import * as manageSubjectController from "../controller/manageSubject.js";
 import * as manageAttendanceController from "../controller/manageAttendance.js";
 import * as manageFeesController from "../controller/manageFees.js";
 import * as manageReportController from "../controller/manageReport.js";
@@ -34,6 +35,13 @@ router.get("/classes/:id", isloggedIn, wrapAsync(manageClassesController.getClas
 router.post("/classes", isloggedIn, wrapAsync(manageClassesController.createClass));
 router.put("/classes/:id", isloggedIn, wrapAsync(manageClassesController.updateClass));
 router.delete("/classes/:id", isloggedIn, wrapAsync(manageClassesController.deleteClass));
+
+// Subjects
+router.get("/subjects", isloggedIn, wrapAsync(manageSubjectController.getSubjects));
+router.get("/subjects/:id", isloggedIn, wrapAsync(manageSubjectController.getSubject));
+router.post("/subjects", isloggedIn, wrapAsync(manageSubjectController.createSubject));
+router.put("/subjects/:id", isloggedIn, wrapAsync(manageSubjectController.updateSubject));
+router.delete("/subjects/:id", isloggedIn, wrapAsync(manageSubjectController.deleteSubject));
 
 // Teachers
 router.get("/teachers", isloggedIn, wrapAsync(manageTeacherController.getTeachers));

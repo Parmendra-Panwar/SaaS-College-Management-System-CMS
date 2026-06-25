@@ -14,6 +14,7 @@ router.post("/login", wrapAsync(superAdminController.superAdminLogin));
 // Protected
 router.post("/onboard-college", isloggedIn, wrapAsync(manageCollegesController.onboardCollege));
 router.get("/colleges", isloggedIn, wrapAsync(manageCollegesController.getCollegesList));
+router.put("/college/:id", isloggedIn, wrapAsync(manageCollegesController.updateCollege));
 
 // Manager API
 router.get("/managers", isloggedIn, wrapAsync(manageManagerController.getManagers));

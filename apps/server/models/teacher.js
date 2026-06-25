@@ -7,7 +7,8 @@ const teacherSchema = new Schema({
   level: { type: Number, enum: [1, 2, 3], default: 1 },
   workCount: { type: Number, default: 0 },
   departments: [{ type: Schema.Types.ObjectId, ref: 'Department' }],
-  classes: [{ type: Schema.Types.ObjectId, ref: 'Class' }]
+  classes: [{ type: Schema.Types.ObjectId, ref: 'Class' }],
+  subjects: [{ type: Schema.Types.ObjectId, ref: 'Subject' }]
 }, { timestamps: true });
 
 export default mongoose.model("Teacher", teacherSchema);

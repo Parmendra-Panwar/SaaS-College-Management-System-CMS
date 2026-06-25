@@ -9,7 +9,7 @@ export const login = async (req, res, next) => {
     return res.status(400).json({ error: "Email and password are required" });
   }
 
-  const user = await User.findOne({ email });
+  const user = await User.findOne({ email }).populate("collegeId");
 
   if (!user || !(await bcrypt.compare(password, user.password))) {
     return res.status(401).json({ error: "Invalid email or password" });

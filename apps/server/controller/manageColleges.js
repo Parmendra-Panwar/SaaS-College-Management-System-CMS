@@ -70,3 +70,26 @@ export const getCollegesList = async (req, res) => {
 
     res.status(200).json({ success: true, data: responseData });
 };
+
+export const updateCollege = async (req, res) => {
+    if (req.user.role !== 'Admin' && req.user.role !== 'Manager') return res.status(403).json({ error: "Access Denied" });
+
+    const { id } = req.params;
+    const { name, features } = req.body;
+
+    try {
+        const updateData = {};
+        if (name) updateData.name = name;
+        if (features) updateData.features = features;
+
+        const college = await College.findByIdAndUpdate(id, updateData, { new: true });
+        
+        if (!college) {
+            return res.status(404).json({ error: "College not found" });
+        }
+
+        res.status(200).json({ success: true, data: college });
+    } catch (error) {
+        res.status(500).json({ error: "Failed to update college" });
+    }
+};

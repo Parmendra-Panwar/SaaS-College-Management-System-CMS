@@ -77,6 +77,10 @@ const academicService = {
         invalidateCache(`student_fees_`);
         return res;
     },
+
+    // Productivity
+    getProductivityByClass: (classId) => withCache(`productivity_${classId}`, 
+        () => apiClient.get(`/insights/productivity/class/${classId}`)),
 };
 
 export default academicService;

@@ -12,6 +12,11 @@ const superAdminService = {
         invalidateCache('sa_colleges');
         return res;
     },
+    updateCollege: async (id, data) => {
+        const res = await apiClient.put(`/base/superadmin/college/${id}`, data);
+        invalidateCache('sa_colleges');
+        return res;
+    },
     createManager: async (managerForm) => {
         const res = await apiClient.post('/base/superadmin/create-manager', managerForm);
         invalidateCache('sa_managers');

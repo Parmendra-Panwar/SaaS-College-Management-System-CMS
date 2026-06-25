@@ -2,11 +2,13 @@ import React, { useState, useEffect } from 'react';
 import superAdminService from '@services/superAdminService';
 import { useToast } from '@hooks/useToast';
 import { InputField, PrimaryButton } from '@components/ui';
+import ManageFeaturesPopup from '@components/ManageFeaturesPopup';
 
 const EditCollegesAdmin = ({ refreshList, editingCollege, setEditingCollege, onClose }) => {
     const toast = useToast();
     const [formData, setFormData] = useState({ name: '', principalName: '', principalEmail: '' });
     const [loading, setLoading] = useState(false);
+    const [isManageFeaturesOpen, setIsManageFeaturesOpen] = useState(false);
 
     useEffect(() => {
         if (editingCollege) {
@@ -36,6 +38,21 @@ const EditCollegesAdmin = ({ refreshList, editingCollege, setEditingCollege, onC
         } finally { setLoading(false); }
     };
 
+    const handleSaveFeatures = async (features) => {
+        if (!editingCollege) return;
+        setLoading(true);
+        try {
+            await superAdminService.updateCollege(editingCollege._id, { features });
+            toast.success("College features updated!");
+            refreshList();
+            setEditingCollege({ ...editingCollege, features }); // Update local state so reopen shows correct features
+        } catch (error) {
+            toast.error("Failed to update features");
+        } finally {
+            setLoading(false);
+        }
+    };
+
     return (
         <div className="bg-white p-8 rounded-3xl">
             <h2 className="text-2xl font-bold mb-6">{editingCollege ? 'Edit Institute' : 'Onboard Institute'}</h2>
@@ -43,14 +60,34 @@ const EditCollegesAdmin = ({ refreshList, editingCollege, setEditingCollege, onC
                 <InputField required label="College Name" value={formData.name} onChange={e => setFormData({ ...formData, name: e.target.value })} />
                 <InputField required label="Principal Name" value={formData.principalName} onChange={e => setFormData({ ...formData, principalName: e.target.value })} />
                 <InputField required type="email" label="Principal Email" value={formData.principalEmail} onChange={e => setFormData({ ...formData, principalEmail: e.target.value })} />
-                <PrimaryButton
-                    type="submit"
-                    loading={loading}
-                    className="w-full bg-emerald-600 text-white py-3 rounded-xl font-bold hover:bg-emerald-700 transition"
-                >
-                    {editingCollege ? 'Update' : 'Onboard'}
-                </PrimaryButton>
+                <div className="flex gap-3 pt-2">
+                    {editingCollege && (
+                        <button
+                            type="button"
+                            onClick={() => setIsManageFeaturesOpen(true)}
+                            className="flex-1 bg-gray-100 text-gray-700 py-3 rounded-xl font-bold hover:bg-gray-200 transition border border-gray-200"
+                        >
+                            Manage Features
+                        </button>
+                    )}
+                    <PrimaryButton
+                        type="submit"
+                        loading={loading}
+                        className={`${editingCollege ? 'flex-1' : 'w-full'} bg-emerald-600 text-white py-3 rounded-xl font-bold hover:bg-emerald-700 transition`}
+                    >
+                        {editingCollege ? 'Update' : 'Onboard'}
+                    </PrimaryButton>
+                </div>
             </form>
+
+            {editingCollege && (
+                <ManageFeaturesPopup 
+                    isOpen={isManageFeaturesOpen} 
+                    onClose={() => setIsManageFeaturesOpen(false)} 
+                    currentFeatures={editingCollege.features}
+                    onSave={handleSaveFeatures}
+                />
+            )}
         </div>
     );
 };

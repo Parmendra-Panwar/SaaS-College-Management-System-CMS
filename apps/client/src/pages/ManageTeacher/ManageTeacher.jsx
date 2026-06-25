@@ -12,14 +12,14 @@ const ManageTeacher = () => {
     const toast = useToast();
     const dispatch = useDispatch();
     const { user } = useSelector(state => state.auth);
-    const { accessibleColleges: colleges, departments, classes, loaded: lookupsLoaded } = useSelector(state => state.lookup);
+    const { accessibleColleges: colleges, departments, classes, subjects, loaded: lookupsLoaded } = useSelector(state => state.lookup);
 
     const [teachersData, setTeachersData] = useState([]);
     const [selectedCollegeId, setSelectedCollegeId] = useState('');
     const [isFormOpen, setIsFormOpen] = useState(false);
     
     // Form state
-    const [formTeacher, setFormTeacher] = useState({ username: '', email: '', level: '1', departments: [], classes: [] });
+    const [formTeacher, setFormTeacher] = useState({ username: '', email: '', level: '1', departments: [], classes: [], subjects: [] });
     const [loading, setLoading] = useState(false);
     const [isFetchingData, setIsFetchingData] = useState(true);
     const [editingItem, setEditingItem] = useState(null);
@@ -51,7 +51,7 @@ const ManageTeacher = () => {
             dispatch(fetchLookups(selectedCollegeId));
             // Also reset the selections if college changes and we are not editing
             if (!editingItem) {
-                setFormTeacher(prev => ({ ...prev, departments: [], classes: [] }));
+                setFormTeacher(prev => ({ ...prev, departments: [], classes: [], subjects: [] }));
             }
         }
     }, [selectedCollegeId, dispatch]);
@@ -100,7 +100,7 @@ const ManageTeacher = () => {
                 toast.success("Created successfully");
             }
             fetchTeachers(selectedCollegeId);
-            setFormTeacher({ username: '', email: '', level: '1', departments: [], classes: [] });
+            setFormTeacher({ username: '', email: '', level: '1', departments: [], classes: [], subjects: [] });
             setEditingItem(null);
             if (!editingItem) {
                 setIsFormOpen(false);
@@ -118,7 +118,8 @@ const ManageTeacher = () => {
             email: row.user?.email || '',
             level: row.level?.toString() || '1',
             departments: row.departments?.map(d => d._id || d) || [],
-            classes: row.classes?.map(c => c._id || c) || []
+            classes: row.classes?.map(c => c._id || c) || [],
+            subjects: row.subjects?.map(s => s._id || s) || []
         });
         setSelectedCollegeId(row.collegeId?._id || row.collegeId || '');
         setIsFormOpen(true);
@@ -127,7 +128,7 @@ const ManageTeacher = () => {
 
     const handleCancelEdit = () => {
         setEditingItem(null);
-        setFormTeacher({ username: '', email: '', level: '1', departments: [], classes: [] });
+        setFormTeacher({ username: '', email: '', level: '1', departments: [], classes: [], subjects: [] });
         setIsFormOpen(false);
     };
 
@@ -163,7 +164,7 @@ const ManageTeacher = () => {
 
                     {isFormOpen && (
                         <div className="p-6 border-t border-gray-100">
-                            <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
+                            <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-4 gap-6 items-start">
                                 
                                 <div className="col-span-1 space-y-4">
                                     {isMultiCollegeRole && (
@@ -207,7 +208,7 @@ const ManageTeacher = () => {
                                     </SelectField>
                                 </div>
 
-                                <div className="col-span-1 md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div className="col-span-1 md:col-span-3 grid grid-cols-1 md:grid-cols-3 gap-4">
                                     <div>
                                         <label className="block text-sm font-semibold text-gray-700 mb-1">Assigned Departments</label>
                                         <div className="border border-gray-200 rounded-xl max-h-64 overflow-y-auto p-2 bg-gray-50/50">
@@ -247,9 +248,29 @@ const ManageTeacher = () => {
                                             ))}
                                         </div>
                                     </div>
+
+                                    <div>
+                                        <label className="block text-sm font-semibold text-gray-700 mb-1">Assigned Subjects</label>
+                                        <div className="border border-gray-200 rounded-xl max-h-64 overflow-y-auto p-2 bg-gray-50/50">
+                                            {subjects.length === 0 ? <p className="text-sm text-gray-400 p-2">No subjects found.</p> : subjects.map(sub => (
+                                                <label key={sub._id} className="flex items-center gap-3 p-2 hover:bg-white rounded-lg cursor-pointer transition">
+                                                    <input type="checkbox" className="w-4 h-4 accent-indigo-600 rounded"
+                                                        checked={formTeacher.subjects.includes(sub._id)}
+                                                        onChange={(e) => {
+                                                            const newSubjects = e.target.checked
+                                                                ? [...formTeacher.subjects, sub._id]
+                                                                : formTeacher.subjects.filter(id => id !== sub._id);
+                                                            setFormTeacher({ ...formTeacher, subjects: newSubjects });
+                                                        }}
+                                                    />
+                                                    <span className="text-sm font-medium text-gray-800">{sub.name} <span className="text-gray-400 text-xs ml-1">({sub.code})</span></span>
+                                                </label>
+                                            ))}
+                                        </div>
+                                    </div>
                                 </div>
 
-                                <div className="col-span-1 md:col-span-3 mt-4 flex gap-3">
+                                <div className="col-span-1 md:col-span-4 mt-4 flex gap-3">
                                     <PrimaryButton type="submit" loading={loading} className="px-8 py-3 bg-indigo-600 text-white font-bold rounded-xl hover:bg-indigo-700 transition w-full md:w-auto shadow-md flex justify-center items-center">
                                         {editingItem ? 'Update Teacher' : 'Create Teacher'}
                                     </PrimaryButton>

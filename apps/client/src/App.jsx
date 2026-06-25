@@ -35,10 +35,13 @@ import ShowCollegesManager from '@/pages/manager/colleges/ShowCollegesManager';
 import AttendancePage from '@pages/shared/AttendancePage';
 import ReportPage from '@pages/shared/ReportPage';
 import FeesPage from '@pages/shared/FeesPage';
+import ProductivityPage from '@pages/shared/ProductivityPage';
 
 import { getProfile } from '@store/slices/authSlice';
 import { useToast } from '@hooks/useToast';
 import ManageClasses from './pages/ManageClasses/ManageClasses';
+import ManageSubject from './pages/ManageSubject/ManageSubject';
+import ManageMarksheet from './pages/ManageMarksheet/ManageMarksheet';
 import ManageDepartment from './pages/ManageDepartment/ManageDepartment';
 import ManageStudent from './pages/ManageStudent/ManageStudent';
 import ManageTeacher from './pages/ManageTeacher/ManageTeacher';
@@ -90,11 +93,14 @@ const router = createBrowserRouter([
           { path: 'requests', element: <ShowRequestsAdmin /> },
           { path: 'departments', element: <ManageDepartment /> },
           { path: 'classes', element: <ManageClasses /> },
+          { path: 'subjects', element: <ManageSubject /> },
           { path: 'students', element: <ManageStudent /> },
           { path: 'teachers', element: <ManageTeacher /> },
-          { path: 'attendance', element: <AttendancePage /> },
-          { path: 'fees', element: <FeesPage /> },
-          { path: 'reports', element: <ReportPage /> },
+          { path: 'attendance', label: 'Attendance', element: <AttendancePage /> },
+          { path: 'fees', label: 'Fees Management', element: <FeesPage /> },
+          { path: 'marksheets', label: 'Marksheets', element: <ManageMarksheet /> },
+          { path: 'reports', label: 'Bi-Weekly Reports', element: <ReportPage /> },
+          { path: 'productivity', element: <ProductivityPage /> },
         ],
       },
     ],
@@ -111,11 +117,14 @@ const router = createBrowserRouter([
           // { path: 'colleges', element: <ShowCollegesManager /> },
           { path: 'departments', element: <ManageDepartment /> },
           { path: 'classes', element: <ManageClasses /> },
+          { path: 'subjects', element: <ManageSubject /> },
           { path: 'students', element: <ManageStudent /> },
           { path: 'teachers', element: <ManageTeacher /> },
-          { path: 'attendance', element: <AttendancePage /> },
-          { path: 'fees', element: <FeesPage /> },
-          { path: 'reports', element: <ReportPage /> },
+          { path: 'attendance', label: 'Attendance', element: <AttendancePage /> },
+          { path: 'fees', label: 'Fees Management', element: <FeesPage /> },
+          { path: 'marksheets', label: 'Marksheets', element: <ManageMarksheet /> },
+          { path: 'reports', label: 'Bi-Weekly Reports', element: <ReportPage /> },
+          { path: 'productivity', element: <ProductivityPage /> },
         ],
       },
     ],
@@ -131,11 +140,14 @@ const router = createBrowserRouter([
         children: [
           { path: 'departments', element: <ManageDepartment /> },
           { path: 'classes', element: <ManageClasses /> },
+          { path: 'subjects', element: <ManageSubject /> },
           { path: 'students', element: <ManageStudent /> },
           { path: 'teachers', element: <ManageTeacher /> },
-          { path: 'attendance', element: <AttendancePage /> },
-          { path: 'fees', element: <FeesPage /> },
-          { path: 'reports', element: <ReportPage /> },
+          { path: 'attendance', label: 'Attendance', element: <AttendancePage /> },
+          { path: 'fees', label: 'Fees Management', element: <FeesPage /> },
+          { path: 'marksheets', label: 'Marksheets', element: <ManageMarksheet /> },
+          { path: 'reports', label: 'Bi-Weekly Reports', element: <ReportPage /> },
+          { path: 'productivity', element: <ProductivityPage /> },
         ],
       },
     ],
@@ -154,6 +166,7 @@ const router = createBrowserRouter([
           { path: 'attendance', element: <AttendancePage /> },
           { path: 'fees', element: <FeesPage /> },
           { path: 'reports', element: <ReportPage /> },
+          { path: 'productivity', element: <ProductivityPage /> },
         ],
       },
     ],
