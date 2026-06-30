@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const apiClient = axios.create({
-    baseURL: 'http://localhost:8080/api/v1' || 'https://academia-erp-zqhx.onrender.com/api/v1' || import.meta.env.VITE_BACKEND_URL,
+    baseURL: 'https://academia-erp-zqhx.onrender.com/api/v1' || 'http://localhost:8080/api/v1' || import.meta.env.VITE_BACKEND_URL,
     headers: {
         'Content-Type': 'application/json'
     }
