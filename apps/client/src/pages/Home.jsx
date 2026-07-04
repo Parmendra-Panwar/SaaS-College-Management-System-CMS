@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import onboardingService from '@services/onboardingService';
 import { InputField, PrimaryButton } from '@components/ui';
+import { loginUser } from '@store/slices/authSlice';
+import { useToast } from '@hooks/useToast';
 
 const FeatureCard = ({ title, description, icon }) => (
     <div className="bg-white p-6 rounded-2xl border border-gray-200 hover:border-blue-200 hover:shadow-lg transition-all duration-300 group">
@@ -22,7 +24,9 @@ const TechBadge = ({ children }) => (
 
 const Home = () => {
     const navigate = useNavigate();
-    const { user } = useSelector((state) => state.auth);
+    const dispatch = useDispatch();
+    const toast = useToast();
+    const { user, loading: authLoading } = useSelector((state) => state.auth);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [formData, setFormData] = useState({ collegeName: '', principalName: '', principalEmail: '', contactNumber: '' });
     const [loading, setLoading] = useState(false);
@@ -42,6 +46,15 @@ const Home = () => {
             alert("Failed to submit request.");
         } finally {
             setLoading(false);
+        }
+    };
+
+    const handleDirectLogin = async (email, password) => {
+        const result = await dispatch(loginUser({ email, password }));
+        if (loginUser.fulfilled.match(result)) {
+            toast.success('Logged in successfully.');
+        } else {
+            toast.error(result.payload || 'Login failed.');
         }
     };
 
@@ -228,8 +241,12 @@ const Home = () => {
                                             <span className="text-gray-400">Pass:</span> <span className="font-semibold text-gray-800">{acc.pass}</span>
                                         </div>
                                     </div>
-                                    <button onClick={() => navigate('/login')} className="w-full py-2 bg-white border border-gray-900 text-gray-900 rounded-lg text-sm font-bold hover:bg-gray-900 hover:text-white transition">
-                                        Login
+                                    <button 
+                                        onClick={() => handleDirectLogin(acc.email, acc.pass)} 
+                                        disabled={authLoading}
+                                        className="w-full py-2 bg-white border border-gray-900 text-gray-900 rounded-lg text-sm font-bold hover:bg-gray-900 hover:text-white transition disabled:opacity-50 disabled:cursor-not-allowed"
+                                    >
+                                        {authLoading ? 'Logging in...' : 'Login'}
                                     </button>
                                 </div>
                             ))}
