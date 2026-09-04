@@ -1,0 +1,5 @@
+test bugs and feature fix
+
+# to make the CV update 
+# to fix the the directly login button when clicks to the main page login buttons done
+

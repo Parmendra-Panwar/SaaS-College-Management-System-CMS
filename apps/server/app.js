@@ -17,12 +17,12 @@ app.use(helmet());
 // Rate Limiting Configuration
 const limiter = rateLimit({
   windowMs: 5 * 60 * 1000, // 10 minutes
-  max: 800, // each IP max 60 requests per 10 mins
+  max: 800, // each IP max 800 requests per 10 mins
   standardHeaders: true, // Rate limit info 'RateLimit-*' headers mein bheje
   legacyHeaders: false, // 'X-RateLimit-*' headers disable kare
   message: {
     success: false,
-    error: "Too many requests, please try again after 15 minutes.",
+    error: "Too many requests, please try again after 10 minutes.",
   },
 });
 
@@ -32,9 +32,12 @@ app.use("/api/", limiter);
 const allowedOrigins = [
   "https://academia-erp.vercel.app",
   process.env.FRONTEND_URL,
-  "http://localhost:5173",
-  "http://localhost:3000"
+  "http://localhost"
 ];
+
+
+//  "http://localhost:5173",
+//   "http://localhost:3000"
 
 app.use(cors({
   origin: function (origin, callback) {
